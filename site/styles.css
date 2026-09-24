@@ -344,7 +344,7 @@ h1 {
 .snapshot-headline,
 .snapshot-logic .lead-copy {
   color: var(--text-deep-gray);
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.7;
 }
@@ -428,10 +428,10 @@ h1 {
 .quality-banner {
   margin-top: 17px;
   padding: 0;
-  border: 1px solid #ead6a9;
+  border: 1px solid #e4e7e9;
   border-radius: 15px;
-  color: #705319;
-  background: var(--yellow-soft);
+  color: var(--muted);
+  background: #fbfcfc;
   font-size: 12px;
   line-height: 1.7;
 }
@@ -439,7 +439,7 @@ h1 {
 .quality-banner summary::-webkit-details-marker { display: none; }
 .quality-banner summary span { font-weight: 750; }
 .quality-banner summary strong { text-align: right; }
-.quality-banner p { margin: 0; padding: 0 17px 15px; border-top: 1px solid rgba(181, 132, 45, 0.2); color: #80662e; font-size: 11px; line-height: 1.7; }
+.quality-banner p { margin: 0; padding: 0 17px 15px; border-top: 1px solid #edf0f2; color: var(--muted-light); font-size: 11px; line-height: 1.7; }
 .quality-banner[open] p { padding-top: 13px; }
 .route-data-state { margin-bottom: 14px; padding: 12px 15px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); background: var(--surface); font-size: 12px; }
 .route-data-state.error { color: var(--red); border-color: #ecc4c4; background: var(--red-soft); }

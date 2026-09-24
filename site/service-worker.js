@@ -1,12 +1,14 @@
-const CACHE = "lz-assetscope-v0.6.1";
+const CACHE = "lz-assetscope-v0.6.2";
 const SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=0.6.1",
   "./app.js?v=0.6.1",
   "./manifest.webmanifest",
-  "./icons/icon.svg",
-  "./icons/icon-180.png",
+  "./icons/favicon.ico?v=0.6.2",
+  "./icons/icon-32.png?v=0.6.2",
+  "./icons/icon-180.png?v=0.6.2",
+  "./icons/icon-192.png?v=0.6.2",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];

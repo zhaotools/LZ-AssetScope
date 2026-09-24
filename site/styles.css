@@ -169,8 +169,13 @@ button { font: inherit; }
 .watchlist-asset-copy { min-width: 0; }
 .watchlist-asset-copy strong { display: block; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .watchlist-asset-copy small { display: block; overflow: hidden; margin-top: 3px; color: rgba(255, 255, 255, 0.4); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-.sidebar-install-button { margin-top: auto; padding: 9px 11px; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; color: rgba(255, 255, 255, 0.72); background: rgba(255, 255, 255, 0.06); font-size: 10px; cursor: pointer; }
+.sidebar-utility { display: grid; gap: 7px; margin-top: auto; }
+.sidebar-method-link,
+.sidebar-install-button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 9px 11px; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; color: rgba(255, 255, 255, 0.72); background: rgba(255, 255, 255, 0.06); font-size: 10px; cursor: pointer; }
+.sidebar-method-link span { display: grid; place-items: center; width: 16px; height: 16px; border: 1px solid currentColor; border-radius: 50%; font-size: 9px; font-weight: 800; }
+.sidebar-method-link:hover,
 .sidebar-install-button:hover { color: white; background: rgba(255, 255, 255, 0.11); }
+.sidebar-method-link.active { color: white; border-color: rgba(128, 202, 240, 0.42); background: rgba(86, 164, 207, 0.24); }
 .sidebar-install-button:disabled { color: rgba(255, 255, 255, 0.44); cursor: default; }
 
 .asset-picker { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; }
@@ -1084,7 +1089,7 @@ h1 {
   .watchlist-asset-icon { width: 28px; height: 28px; border-radius: 8px; font-size: 8px; }
   .watchlist-asset-copy strong { font-size: 10px; }
   .watchlist-asset-copy small { display: none; }
-  .sidebar-install-button { display: none; }
+  .sidebar-utility { display: none; }
   .module-tabs { top: 106px; }
 }
 

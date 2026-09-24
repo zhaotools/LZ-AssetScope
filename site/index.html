@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
+    <meta name="theme-color" content="#f7f8f8">
+    <meta name="description" content="LZ-AssetScope 黄金多周期趋势与基本面观察系统">
+    <meta name="robots" content="index,follow">
+    <title>LZ-AssetScope · 黄金观察</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./icons/icon-180.png">
+    <link rel="stylesheet" href="./styles.css?v=0.4.0">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#/gold/overview" aria-label="LZ-AssetScope 首页">
+        <img src="./icons/icon.svg" alt="" width="40" height="40">
+        <span>
+          <strong>LZ-AssetScope</strong>
+          <small>资产观察框架</small>
+        </span>
+      </a>
+      <div class="header-actions">
+        <span class="data-state" id="header-data-state">正在读取数据</span>
+        <button class="ghost-button" id="install-button" type="button" hidden>安装应用</button>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="asset-hero shell" aria-labelledby="asset-name">
+        <div class="asset-heading">
+          <div class="asset-symbol" id="asset-symbol" aria-hidden="true">GC</div>
+          <div>
+            <p class="eyebrow">GOLD · DAILY OBSERVATORY</p>
+            <h1 id="asset-name">黄金</h1>
+            <p class="asset-benchmark" id="asset-benchmark">正在读取黄金基准</p>
+          </div>
+        </div>
+        <div class="quote-block">
+          <span class="quote-label">最新确认收盘</span>
+          <div class="quote-value"><strong id="quote-price">—</strong><span id="quote-currency">—</span></div>
+          <span id="quote-change">—</span>
+        </div>
+        <dl class="hero-meta">
+          <div><dt>日线日期</dt><dd id="daily-date">—</dd></div>
+          <div><dt>周线日期</dt><dd id="weekly-date">—</dd></div>
+          <div><dt>最近生成</dt><dd id="generated-at">—</dd></div>
+        </dl>
+      </section>
+
+      <nav class="module-tabs shell" aria-label="黄金分析模块">
+        <a href="#/gold/overview" data-route="overview">综合总览</a>
+        <a href="#/gold/weekly" data-route="weekly">周线阶段</a>
+        <a href="#/gold/daily" data-route="daily">日线状态</a>
+        <a href="#/gold/fundamentals" data-route="fundamentals">基本面</a>
+        <a href="#/gold/methodology" data-route="methodology">方法与数据</a>
+      </nav>
+
+      <div class="shell page-state" id="loading-state">
+        <span class="spinner" aria-hidden="true"></span>
+        正在加载最新快照…
+      </div>
+      <div class="shell page-state error-state" id="error-state" hidden>
+        <strong>暂时无法读取本地快照</strong>
+        <span id="error-message">请稍后重试。</span>
+      </div>
+
+      <section class="route-panel shell" data-panel="overview" hidden>
+        <div class="conclusion-card">
+          <div>
+            <p class="eyebrow">CURRENT VIEW</p>
+            <h2>当前结论</h2>
+          </div>
+          <p id="overview-headline">—</p>
+        </div>
+
+        <div class="signal-grid" id="signal-grid"></div>
+
+        <div class="content-grid overview-grid">
+          <article class="panel tension-panel">
+            <div class="panel-heading">
+              <span class="panel-kicker">SYNTHESIS</span>
+              <h2>当前主要矛盾</h2>
+            </div>
+            <p class="lead-copy" id="tension-copy">—</p>
+            <p class="muted-copy" id="method-copy">—</p>
+          </article>
+          <article class="panel">
+            <div class="panel-heading">
+              <span class="panel-kicker">RECENT CHANGES</span>
+              <h2>最近变化</h2>
+            </div>
+            <ol class="timeline" id="change-timeline"></ol>
+          </article>
+        </div>
+
+        <article class="quality-banner" id="quality-banner"></article>
+      </section>
+
+      <section class="route-panel shell" data-panel="weekly" hidden>
+        <div class="section-heading">
+          <div><p class="eyebrow">WEEKLY STRATEGY</p><h2>周线阶段</h2></div>
+          <span class="date-chip" id="weekly-asof-chip">—</span>
+        </div>
+        <div class="content-grid detail-grid">
+          <article class="panel chart-panel">
+            <div class="chart-header">
+              <div class="chart-title"><h3>周线价格与均线</h3><span>仅展示完成周线</span></div>
+              <div class="chart-legend" aria-label="周线图例"><span class="ma30">MA30</span></div>
+            </div>
+            <div class="stage-key" aria-label="周线阶段背景图例">
+              <span class="s1">S1 低位整理</span><span class="s2">S2 上升趋势</span><span class="s3">S3 高位整理</span><span class="s4">S4 下降趋势</span>
+            </div>
+            <div class="chart" id="weekly-chart" aria-label="黄金周线价格图"></div>
+          </article>
+          <aside class="panel stat-panel" id="weekly-stats"></aside>
+        </div>
+        <div class="content-grid detail-grid lower-grid">
+          <article class="panel">
+            <div class="panel-heading"><span class="panel-kicker">EVIDENCE</span><h2>阶段证据</h2></div>
+            <div class="evidence-list" id="weekly-evidence"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><span class="panel-kicker">HISTORY</span><h2>最近阶段变化</h2></div>
+            <div class="history-list" id="stage-history"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="route-panel shell" data-panel="daily" hidden>
+        <div class="section-heading">
+          <div><p class="eyebrow">DAILY EXECUTION</p><h2>日线状态</h2></div>
+          <span class="date-chip" id="daily-asof-chip">—</span>
+        </div>
+        <div class="content-grid detail-grid">
+          <article class="panel chart-panel">
+            <div class="chart-header">
+              <div class="chart-title"><h3>日线价格与均线</h3><span>仅展示确认收盘</span></div>
+              <div class="chart-legend" aria-label="日线图例"><span class="ma20">MA20</span><span class="ma50">MA50</span><span class="ma200">MA200</span></div>
+            </div>
+            <div class="band-marker-key" aria-label="波动观察点图例">
+              <span class="positive-marker">▲ 金叉</span><span class="uptrend-marker">● 上行趋势</span><span class="watch-marker">● 观察状态</span><span class="protection-marker">▼ 高位保护</span><span class="risk-marker">▼ 死叉与风险</span>
+            </div>
+            <div class="chart" id="daily-chart" aria-label="黄金日线价格图"></div>
+          </article>
+          <div class="daily-side-stack">
+            <aside class="panel stat-panel" id="daily-summary"></aside>
+            <article class="panel daily-change-summary" id="daily-change-summary"></article>
+          </div>
+        </div>
+        <article class="panel band-history-panel">
+          <div class="panel-heading history-heading">
+            <div><span class="panel-kicker">INDICATOR 03 HISTORY</span><h2>波动观察点历史状态</h2></div>
+            <span class="history-count" id="band-history-count">最近 20 条</span>
+          </div>
+          <div class="history-table-wrap">
+            <table class="band-history-table">
+              <thead><tr><th>日期</th><th>历史状态</th><th>触发价</th><th>7日后</th><th>14日后</th><th>状态说明</th></tr></thead>
+              <tbody id="band-history-list"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="route-panel shell" data-panel="fundamentals" hidden>
+        <div class="section-heading">
+          <div><p class="eyebrow">FUNDAMENTAL DRIVERS</p><h2>基本面环境</h2></div>
+          <span class="date-chip" id="fundamental-regime">—</span>
+        </div>
+        <article class="panel fundamental-intro">
+          <p id="fundamental-summary">—</p>
+          <p>每项因素按自己的实际发布频率更新。“未更新”不会被解释成中性，方向也不会合并成不透明的买卖分数。</p>
+        </article>
+        <div class="factor-grid" id="factor-grid"></div>
+        <article class="panel coverage-panel" id="coverage-panel"></article>
+      </section>
+
+      <section class="route-panel shell" data-panel="methodology" hidden>
+        <div class="section-heading">
+          <div><p class="eyebrow">METHOD & DATA</p><h2>方法与数据</h2></div>
+        </div>
+        <div class="method-grid">
+          <article class="panel method-card"><span>01</span><h3>周线决定战略背景</h3><p>LZ-4Stage 只使用完整周线，识别当前阶段、转换状态和阶段证据。</p></article>
+          <article class="panel method-card"><span>02</span><h3>日线描述执行风险</h3><p>LZ-Status-V3 只使用确认收盘日线，展示趋势、交通灯、波动与融合状态。</p></article>
+          <article class="panel method-card"><span>03</span><h3>基本面解释顺风逆风</h3><p>利率、美元、资金流和事件各自保留来源、观察日期与更新频率。</p></article>
+          <article class="panel method-card"><span>04</span><h3>分歧可以被保留</h3><p>系统不强行生成综合分数，而是明确指出周线、日线和基本面之间的共振或冲突。</p></article>
+        </div>
+        <article class="panel provenance-panel" id="provenance-panel"></article>
+        <article class="disclaimer">
+          <strong>风险说明</strong>
+          <p>本项目用于研究与信息整理，不构成投资建议。历史阶段与状态不能保证未来表现。</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer shell">
+      <span>LZ-AssetScope · 黄金样板</span>
+      <a href="#/gold/methodology">基于完成周期 · 查看方法与数据</a>
+    </footer>
+
+    <nav class="mobile-nav" aria-label="移动端导航">
+      <a href="#/gold/overview" data-route="overview"><span>总览</span></a>
+      <a href="#/gold/weekly" data-route="weekly"><span>周线</span></a>
+      <a href="#/gold/daily" data-route="daily"><span>日线</span></a>
+      <a href="#/gold/fundamentals" data-route="fundamentals"><span>基本面</span></a>
+    </nav>
+
+    <script src="./vendor-lightweight-charts.js?v=0.4.0"></script>
+    <script type="module" src="./app.js?v=0.4.0"></script>
+  </body>
+</html>

@@ -936,7 +936,7 @@ document.addEventListener("click", (event) => {
     void loadAsset(assetId, { historyMode: "push" });
     return;
   }
-  const assetButton = event.target.closest("[data-asset]");
+  const assetButton = event.target.closest(".watchlist-asset[data-asset]");
   if (assetButton) {
     event.preventDefault();
     const assetId = assetButton.dataset.asset;

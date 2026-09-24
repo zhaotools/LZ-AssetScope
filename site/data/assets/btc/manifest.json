@@ -1,17 +1,17 @@
 {
   "schemaVersion": "asset-data-manifest-v1",
-  "generatedAt": "2026-09-24T14:50:28+00:00",
+  "generatedAt": "2026-09-24T23:34:44+08:00",
   "productionReady": true,
   "asset": "btc",
   "inputHash": "fd690abf0d6cb3dafe0e056113924643c89de94d9e0401f21da37d5e0d432f2b",
   "files": [
     {
       "path": "data/assets/btc/current.json",
-      "sha256": "875725eaee8bcd6cabb38250eaf70719beca807137e309137cbaef7d70b5ba6b"
+      "sha256": "03ad83924e5e216e3d286cc72943f72cf91f0e3132ee58064e753122f411155b"
     },
     {
       "path": "data/assets/btc/daily-series.json",
-      "sha256": "aeaf2c4b81f31390fbb76b6ca21b5aff109449501314d599236be4e02faff112"
+      "sha256": "fc1b2aa900ccb90d7249ed94fb99f9ce5ca68ab1efc3847072acc8318578ae6c"
     },
     {
       "path": "data/assets/btc/weekly-series.json",
@@ -19,15 +19,15 @@
     },
     {
       "path": "data/assets/btc/fundamentals.json",
-      "sha256": "8c29e6a3fd531d69c54d7d7f6e6c0e29b39583c9aad9823c1a924cabd2ca19f4"
+      "sha256": "75e0daeb43170034875549c47a32cc16820c4dcea8d022e3ec8988232e3ca1c3"
     },
     {
       "path": "data/assets/btc/history/index.json",
-      "sha256": "58d6d4fc74873914d3513cc089e40490506a11ba7098b5a067342cddc8edc3ac"
+      "sha256": "85153595c76adcf7765a76ea92f36f6e1d370f3686287e43166ab8dffe447a63"
     },
     {
       "path": "data/assets/btc/history/2026-09.json",
-      "sha256": "f3b4ca223ff26546cf42989ed9ce5513bcab008b2b6acc7a0315cbc1627705c4"
+      "sha256": "5f463d676b2bfaaa12145c7e3e3531fabda495e69220db1fa1a82c4fdd272f1c"
     }
   ]
 }

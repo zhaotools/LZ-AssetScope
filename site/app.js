@@ -45,8 +45,8 @@ const shiftIsoMonths = (value, months) => {
   date.setUTCMonth(date.getUTCMonth() + months);
   return date.toISOString().slice(0, 10);
 };
-const impactLabel = { support: "支持", pressure: "压力", neutral: "中性" };
-const directionLabel = { up: "上升", down: "下降", flat: "持平" };
+const impactLabel = { support: "支持", pressure: "压力", neutral: "中性", unavailable: "待接入" };
+const directionLabel = { up: "上升", down: "下降", flat: "持平", unknown: "暂无数据" };
 const stagePresentation = {
   1: { code: "S1", title: "低位整理", phase: "底部阶段", arrow: "◆", color: "#3f7fd2" },
   2: { code: "S2", title: "上升趋势", phase: "上升阶段", arrow: "▲", color: "#329b57" },
@@ -393,6 +393,9 @@ function renderOverview() {
   if (health.staleFundamentals?.length) {
     qualityDetails.push(`基本面中的${health.staleFundamentals.join("、")}未在本轮更新，页面沿用各自上一有效值。`);
   }
+  if (health.pendingFundamentalGroups?.length) {
+    qualityDetails.push(`${health.pendingFundamentalGroups.join("、")}尚未接入稳定且具备展示条件的数据源，当前不参与基本面方向判断。`);
+  }
   if (current.quality.warnings?.length) qualityDetails.push(...current.quality.warnings);
   $("#quality-detail").textContent = qualityDetails.length
     ? qualityDetails.join(" ")
@@ -483,19 +486,60 @@ function renderFundamentals() {
   const fundamentals = state.current.fundamentals;
   $("#fundamental-regime").textContent = fundamentals.regime;
   $("#fundamental-summary").textContent = fundamentals.summary;
-  $("#factor-grid").innerHTML = fundamentals.factors.map((item) => {
-    const delta = Number(item.change5Observations);
-    const signed = delta > 0 ? `+${fmt(delta, 2)}` : fmt(delta, 2);
+  const factorById = new Map(fundamentals.factors.map((item) => [item.id, item]));
+  const factorChanges = (item) => {
+    const changes = item.changes?.length
+      ? item.changes
+      : Number.isFinite(Number(item.change5Observations))
+        ? [{ label: "五个观察值", value: Number(item.change5Observations), unit: item.unit }]
+        : [];
+    return changes.map((change) => {
+      const value = Number(change.value);
+      const signed = value > 0 ? `+${fmt(value, 2)}` : fmt(value, 2);
+      const unit = change.unit === "%" ? "%" : ` ${esc(change.unit || "")}`;
+      return `<span class="factor-change-chip ${value > 0 ? "positive" : value < 0 ? "negative" : ""}">${esc(change.label)} ${signed}${unit}</span>`;
+    }).join("");
+  };
+  const factorRow = (item) => {
+    const pending = item.status === "pending";
+    const stale = item.status === "stale";
+    const sourceId = item.source?.seriesId ? ` · ${esc(item.source.seriesId)}` : "";
     return `
-      <article class="factor-card ${esc(item.impact)}">
-        <div class="factor-top"><h3>${esc(item.label)}</h3><span class="tag ${esc(item.impact)}">${esc(impactLabel[item.impact] || "暂不明确")}</span></div>
-        <div class="factor-value">${fmt(item.value, 2)} <small>${esc(item.unit)}</small></div>
-        <div class="factor-change ${delta > 0 ? "positive" : delta < 0 ? "negative" : ""}">${esc(directionLabel[item.direction])} · 五个观察值变化 ${signed}</div>
+      <div class="fundamental-factor ${pending ? "pending-factor" : ""}">
+        <div class="fundamental-factor-heading">
+          <h4>${esc(item.label)}</h4>
+          <span class="tag ${esc(item.impact || "unavailable")}">${esc(stale ? "沿用旧值" : impactLabel[item.impact] || "暂不明确")}</span>
+        </div>
+        <div class="fundamental-factor-reading">
+          <strong>${pending ? "待接入" : `${fmt(item.value, 2)} <small>${esc(item.unit || "")}</small>`}</strong>
+          <div class="factor-change-list">${factorChanges(item)}</div>
+        </div>
         <p>${esc(item.explanation)}</p>
-        <div class="factor-source"><span>${esc(item.source.name)} · ${esc(item.source.seriesId)}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
-      </article>
+        <div class="factor-source"><span>${esc(item.source?.name || "来源待确认")}${sourceId}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
+      </div>
     `;
-  }).join("");
+  };
+  const groups = fundamentals.groups || [];
+  const factorGrid = $("#factor-grid");
+  factorGrid.classList.toggle("fundamental-group-grid", Boolean(groups.length));
+  factorGrid.innerHTML = groups.length ? groups.map((group) => `
+    <article class="fundamental-group group-${esc(group.id)} ${esc(group.tone || "neutral")}">
+      <header class="fundamental-group-header">
+        <div><span class="panel-kicker">${esc(group.eyebrow)}</span><h3>${esc(group.label)}</h3></div>
+        <span class="group-state ${esc(group.tone || "neutral")}">${esc(group.state)}</span>
+      </header>
+      <p class="fundamental-group-description">${esc(group.description)}</p>
+      <div class="fundamental-factor-list">${group.factorIds.map((id) => factorById.get(id)).filter(Boolean).map(factorRow).join("")}</div>
+    </article>
+  `).join("") : fundamentals.factors.map((item) => `
+    <article class="factor-card ${esc(item.impact)}">
+      <div class="factor-top"><h3>${esc(item.label)}</h3><span class="tag ${esc(item.impact)}">${esc(impactLabel[item.impact] || "暂不明确")}</span></div>
+      <div class="factor-value">${fmt(item.value, 2)} <small>${esc(item.unit)}</small></div>
+      <div class="factor-change-list">${factorChanges(item)}</div>
+      <p>${esc(item.explanation)}</p>
+      <div class="factor-source"><span>${esc(item.source.name)} · ${esc(item.source.seriesId)}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
+    </article>
+  `).join("");
   const labels = {
     "real-yield": "实际利率",
     "nominal-yield": "名义利率",
@@ -507,17 +551,20 @@ function renderFundamentals() {
     "china-premium": "中国溢价",
     "event-calendar": "宏观事件日历",
     "financial-conditions": "美国金融条件",
-    "fed-balance-sheet": "美联储资产负债表",
     "spot-etf-flows": "现货ETF资金流",
-    "stablecoin-supply": "稳定币供应",
+    "stablecoin-supply": "稳定币总供应",
+    "core-stablecoin-supply": "USDT + USDC 供应",
+    "btc-market-liquidity": "BTC 成交活跃度样本",
+    "long-term-holder-supply": "长期持有者供应",
     "exchange-balance": "交易所余额",
+    "exchange-netflow": "交易所净流量",
   };
   const coverage = state.fundamentals.coverage;
   $("#coverage-panel").innerHTML = `
     <div class="panel-heading"><span class="panel-kicker">COVERAGE</span><h2>基本面覆盖进度</h2></div>
     <div class="coverage-columns">
       <div><h3>已经接入</h3><ul>${coverage.implemented.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("")}</ul></div>
-      <div><h3>后续接入</h3><ul>${coverage.planned.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("")}</ul></div>
+      <div><h3>待接入 · 不参与当前判断</h3><ul>${coverage.planned.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("")}</ul></div>
     </div>
   `;
 }

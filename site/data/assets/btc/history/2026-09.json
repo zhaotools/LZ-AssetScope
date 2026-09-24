@@ -4,7 +4,7 @@
   "snapshots": [
     {
       "date": "2026-09-23",
-      "generatedAt": "2026-09-24T14:50:28+00:00",
+      "generatedAt": "2026-09-24T23:34:44+08:00",
       "inputHash": "fd690abf0d6cb3dafe0e056113924643c89de94d9e0401f21da37d5e0d432f2b",
       "asset": {
         "symbol": "BTC-USD",
@@ -129,7 +129,7 @@
         "summary": {
           "ok": true,
           "snapshotId": "fd690abf0d6cb3da",
-          "snapshotCreatedAt": "2026-09-24T14:50:24+00:00",
+          "snapshotCreatedAt": "2026-09-24T22:29:57+08:00",
           "symbol": "BTC-USD",
           "name": "比特币 / 美元",
           "market": "crypto",
@@ -146,7 +146,7 @@
           "volume": 46088463341.0,
           "date": "2026-09-23",
           "quoteDate": "2026-09-23",
-          "updatedAt": "2026-09-24T14:50:24+00:00",
+          "updatedAt": "2026-09-24T22:29:57+08:00",
           "bullBear": {
             "status": "牛市区",
             "score": 40,
@@ -193,7 +193,7 @@
             "status": "高位死叉",
             "score": 0,
             "action": "高位动能转弱，注意风险控制。",
-            "k": 86.91951025704968,
+            "k": 86.9195102570497,
             "d": 92.35650820825474,
             "atr": 2540.7047991071427,
             "atrPct": 3.0109199292262936,
@@ -219,14 +219,14 @@
         "change": "日线融合状态维持“趋势延续”。"
       },
       "fundamentals": {
-        "asOf": "2026-09-22",
-        "regime": "偏压制",
+        "asOf": "2026-09-24",
+        "regime": "支持与压力并存",
         "factors": [
           {
             "id": "DFII10",
             "observationDate": "2026-09-22",
             "value": 2.63,
-            "impact": "neutral"
+            "impact": "pressure"
           },
           {
             "id": "DTWEXBGS",
@@ -241,18 +241,66 @@
             "impact": "neutral"
           },
           {
-            "id": "WALCL",
-            "observationDate": "2026-09-16",
-            "value": 6746548.0,
-            "impact": "neutral"
+            "id": "STABLECOIN_TOTAL",
+            "observationDate": "2026-09-24",
+            "value": 310.98,
+            "impact": "support"
+          },
+          {
+            "id": "STABLECOIN_CORE",
+            "observationDate": "2026-09-24",
+            "value": 258.84,
+            "impact": "support"
+          },
+          {
+            "id": "BTC_VOLUME_ACTIVITY",
+            "observationDate": "2026-09-23",
+            "value": 46.09,
+            "impact": "support"
+          },
+          {
+            "id": "BTC_ETF_FLOW_1D",
+            "observationDate": null,
+            "value": null,
+            "impact": "unavailable"
+          },
+          {
+            "id": "BTC_ETF_FLOW_5D",
+            "observationDate": null,
+            "value": null,
+            "impact": "unavailable"
+          },
+          {
+            "id": "BTC_ETF_FLOW_20D",
+            "observationDate": null,
+            "value": null,
+            "impact": "unavailable"
+          },
+          {
+            "id": "BTC_LTH_SUPPLY",
+            "observationDate": null,
+            "value": null,
+            "impact": "unavailable"
+          },
+          {
+            "id": "BTC_EXCHANGE_BALANCE",
+            "observationDate": null,
+            "value": null,
+            "impact": "unavailable"
+          },
+          {
+            "id": "BTC_EXCHANGE_NETFLOW",
+            "observationDate": null,
+            "value": null,
+            "impact": "unavailable"
           }
         ]
       },
       "synthesis": {
-        "headline": "周线处于 S2 上升趋势，已确认阶段持续 3 周。日线融合状态维持“趋势延续”。基本面环境：偏压制。",
-        "kind": "conflict",
-        "title": "当前主要分歧",
-        "tension": "技术趋势偏强，但宏观因素开始形成压力，需要观察价格能否继续消化逆风。 基本面环境为偏压制。",
+        "headline": "周线处于 S2 上升趋势，已确认阶段持续 3 周。日线融合状态维持“趋势延续”。基本面环境：支持与压力并存。",
+        "kind": "convergence",
+        "title": "当前主导逻辑",
+        "tension": "周线上升结构与日线“趋势延续”方向一致，当前趋势条件保持正向。 基本面显示支持与压力并存，但有 1 项宏观数据沿用上一有效值。 资金环境、链上环境数据尚未接入，不参与当前判断。",
         "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
       }
     }

@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "btc-fundamentals-v1",
-  "generatedAt": "2026-09-24T14:50:28+00:00",
+  "schemaVersion": "btc-fundamentals-v2",
+  "generatedAt": "2026-09-24T23:33:39+08:00",
   "asset": "btc",
-  "scope": "macro-minimum",
+  "scope": "btc-four-layer-fundamentals",
   "factors": [
     {
       "id": "DFII10",
@@ -10,10 +10,17 @@
       "value": 2.63,
       "unit": "%",
       "observationDate": "2026-09-22",
-      "comparisonDate": "2026-09-15",
-      "change5Observations": 0.01,
-      "direction": "flat",
-      "impact": "neutral",
+      "comparisonDate": "2026-08-24",
+      "change5Observations": 0.25,
+      "changes": [
+        {
+          "label": "20个观察值",
+          "value": 0.25,
+          "unit": "%"
+        }
+      ],
+      "direction": "up",
+      "impact": "pressure",
       "frequency": "daily",
       "source": {
         "name": "Federal Reserve Economic Data (FRED)",
@@ -21,6 +28,10 @@
         "url": "https://fred.stlouisfed.org/series/DFII10"
       },
       "explanation": "实际利率上升通常收紧金融条件，并提高高波动资产的估值压力。",
+      "freshness": {
+        "calendarDays": 2,
+        "businessDays": 2
+      },
       "status": "ok"
     },
     {
@@ -29,8 +40,15 @@
       "value": 119.5133,
       "unit": "index",
       "observationDate": "2026-09-18",
-      "comparisonDate": "2026-09-11",
-      "change5Observations": 1.3007,
+      "comparisonDate": "2026-08-20",
+      "change5Observations": 1.2585,
+      "changes": [
+        {
+          "label": "20个观察值",
+          "value": 1.2585,
+          "unit": "index"
+        }
+      ],
       "direction": "up",
       "impact": "pressure",
       "frequency": "daily",
@@ -40,7 +58,12 @@
         "url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       },
       "explanation": "美元走强通常对应全球美元流动性收紧，对 BTC 风险偏好形成压力。",
-      "status": "ok"
+      "freshness": {
+        "calendarDays": 6,
+        "businessDays": 4
+      },
+      "status": "stale",
+      "staleReason": "数据发布日期超过当前指标允许的更新时间窗口"
     },
     {
       "id": "NFCI",
@@ -48,8 +71,15 @@
       "value": -0.555,
       "unit": "index",
       "observationDate": "2026-09-18",
-      "comparisonDate": "2026-08-14",
-      "change5Observations": -0.008,
+      "comparisonDate": "2026-08-21",
+      "change5Observations": -0.004,
+      "changes": [
+        {
+          "label": "4周",
+          "value": -0.004,
+          "unit": "index"
+        }
+      ],
       "direction": "flat",
       "impact": "neutral",
       "frequency": "weekly",
@@ -59,26 +89,280 @@
         "url": "https://fred.stlouisfed.org/series/NFCI"
       },
       "explanation": "金融条件指数上升代表环境趋紧，通常不利于加密资产风险偏好。",
+      "freshness": {
+        "calendarDays": 6,
+        "businessDays": 4
+      },
       "status": "ok"
     },
     {
-      "id": "WALCL",
-      "label": "美联储总资产",
-      "value": 6746548.0,
-      "unit": "USD millions",
-      "observationDate": "2026-09-16",
-      "comparisonDate": "2026-08-12",
-      "change5Observations": -13407.0,
-      "direction": "flat",
-      "impact": "neutral",
-      "frequency": "weekly",
+      "id": "STABLECOIN_TOTAL",
+      "label": "美元稳定币总供应",
+      "value": 310.98,
+      "unit": "USD bn",
+      "observationDate": "2026-09-24",
+      "comparisonDate": "2026-08-25",
+      "changes": [
+        {
+          "label": "7日",
+          "value": 0.475,
+          "unit": "%"
+        },
+        {
+          "label": "30日",
+          "value": 0.797,
+          "unit": "%"
+        }
+      ],
+      "direction": "up",
+      "impact": "support",
+      "frequency": "daily",
       "source": {
-        "name": "Federal Reserve Economic Data (FRED)",
-        "seriesId": "WALCL",
-        "url": "https://fred.stlouisfed.org/series/WALCL"
+        "name": "DefiLlama Stablecoins",
+        "seriesId": "TOTAL_USD_STABLECOINS",
+        "url": "https://defillama.com/stablecoins",
+        "access": "public-keyless-endpoint",
+        "licenseStatus": "external-display-rights-not-independently-verified"
       },
-      "explanation": "美联储资产负债表扩张可作为美元流动性改善的观察维度，但不构成单独交易信号。",
+      "explanation": "稳定币供应扩张通常意味着加密市场可用美元流动性增加，但不等同于资金必然流入 BTC。",
       "status": "ok"
+    },
+    {
+      "id": "STABLECOIN_CORE",
+      "label": "USDT + USDC 供应",
+      "value": 258.84,
+      "unit": "USD bn",
+      "observationDate": "2026-09-24",
+      "comparisonDate": null,
+      "changes": [
+        {
+          "label": "7日",
+          "value": 0.66,
+          "unit": "%"
+        },
+        {
+          "label": "30日",
+          "value": 0.73,
+          "unit": "%"
+        }
+      ],
+      "direction": "up",
+      "impact": "support",
+      "frequency": "daily",
+      "source": {
+        "name": "DefiLlama Stablecoins",
+        "seriesId": "USDT_PLUS_USDC",
+        "url": "https://defillama.com/stablecoins",
+        "access": "public-keyless-endpoint",
+        "licenseStatus": "external-display-rights-not-independently-verified"
+      },
+      "explanation": "两种主要美元稳定币的供应变化用于观察核心加密流动性扩张或收缩。",
+      "status": "ok"
+    },
+    {
+      "id": "BTC_VOLUME_ACTIVITY",
+      "label": "BTC 成交活跃度（聚合样本）",
+      "value": 46.09,
+      "unit": "USD bn",
+      "observationDate": "2026-09-23",
+      "comparisonDate": "2026-09-03",
+      "changes": [
+        {
+          "label": "较20日均量",
+          "value": 53.82,
+          "unit": "%"
+        }
+      ],
+      "direction": "up",
+      "impact": "support",
+      "frequency": "daily",
+      "source": {
+        "name": "Yahoo Finance Bitcoin",
+        "seriesId": "BTC-USD",
+        "url": "https://finance.yahoo.com/quote/BTC-USD/history/"
+      },
+      "explanation": "成交量仅反映 Yahoo Finance 的 BTC-USD 聚合样本；它用于观察市场活跃度，不代表全球现货市场总成交量。",
+      "status": "ok"
+    },
+    {
+      "id": "BTC_ETF_FLOW_1D",
+      "label": "美国现货 BTC ETF 当日净流量",
+      "value": null,
+      "unit": null,
+      "observationDate": null,
+      "comparisonDate": null,
+      "changes": [],
+      "direction": "unknown",
+      "impact": "unavailable",
+      "frequency": "pending",
+      "source": {
+        "name": "尚未接入具备稳定性与展示授权的数据源",
+        "seriesId": null,
+        "url": null
+      },
+      "explanation": "等待接入具备稳定性与公开展示授权的 ETF 资金流数据源。",
+      "status": "pending"
+    },
+    {
+      "id": "BTC_ETF_FLOW_5D",
+      "label": "美国现货 BTC ETF 5日累计",
+      "value": null,
+      "unit": null,
+      "observationDate": null,
+      "comparisonDate": null,
+      "changes": [],
+      "direction": "unknown",
+      "impact": "unavailable",
+      "frequency": "pending",
+      "source": {
+        "name": "尚未接入具备稳定性与展示授权的数据源",
+        "seriesId": null,
+        "url": null
+      },
+      "explanation": "短期资金状态应以多个交易日累计值为主，不能由单日流量替代。",
+      "status": "pending"
+    },
+    {
+      "id": "BTC_ETF_FLOW_20D",
+      "label": "美国现货 BTC ETF 20日累计",
+      "value": null,
+      "unit": null,
+      "observationDate": null,
+      "comparisonDate": null,
+      "changes": [],
+      "direction": "unknown",
+      "impact": "unavailable",
+      "frequency": "pending",
+      "source": {
+        "name": "尚未接入具备稳定性与展示授权的数据源",
+        "seriesId": null,
+        "url": null
+      },
+      "explanation": "中期资金趋势将在授权数据源接入后参与基本面判断。",
+      "status": "pending"
+    },
+    {
+      "id": "BTC_LTH_SUPPLY",
+      "label": "长期持有者供应",
+      "value": null,
+      "unit": null,
+      "observationDate": null,
+      "comparisonDate": null,
+      "changes": [],
+      "direction": "unknown",
+      "impact": "unavailable",
+      "frequency": "pending",
+      "source": {
+        "name": "尚未接入具备稳定性与展示授权的数据源",
+        "seriesId": null,
+        "url": null
+      },
+      "explanation": "该指标依赖 UTXO 年龄分组，暂不以活跃地址等免费指标替代。",
+      "status": "pending"
+    },
+    {
+      "id": "BTC_EXCHANGE_BALANCE",
+      "label": "交易所 BTC 余额",
+      "value": null,
+      "unit": null,
+      "observationDate": null,
+      "comparisonDate": null,
+      "changes": [],
+      "direction": "unknown",
+      "impact": "unavailable",
+      "frequency": "pending",
+      "source": {
+        "name": "尚未接入具备稳定性与展示授权的数据源",
+        "seriesId": null,
+        "url": null
+      },
+      "explanation": "该指标依赖持续维护的交易所地址标签，暂不使用来源不明的聚合值。",
+      "status": "pending"
+    },
+    {
+      "id": "BTC_EXCHANGE_NETFLOW",
+      "label": "交易所净流量",
+      "value": null,
+      "unit": null,
+      "observationDate": null,
+      "comparisonDate": null,
+      "changes": [],
+      "direction": "unknown",
+      "impact": "unavailable",
+      "frequency": "pending",
+      "source": {
+        "name": "尚未接入具备稳定性与展示授权的数据源",
+        "seriesId": null,
+        "url": null
+      },
+      "explanation": "计划观察 7 日与 30 日累计净流量，待稳定授权数据源接入。",
+      "status": "pending"
+    }
+  ],
+  "groups": [
+    {
+      "id": "liquidity",
+      "eyebrow": "GLOBAL LIQUIDITY",
+      "label": "流动性环境",
+      "description": "观察美元、实际利率和金融条件对 BTC 风险偏好的外部约束。",
+      "factorIds": [
+        "DTWEXBGS",
+        "DFII10",
+        "NFCI"
+      ],
+      "state": "逆风",
+      "tone": "pressure",
+      "status": "partial",
+      "pendingCount": 0,
+      "staleCount": 1
+    },
+    {
+      "id": "fund-flows",
+      "eyebrow": "CAPITAL FLOWS",
+      "label": "资金环境",
+      "description": "以美国现货 BTC ETF 的短中期净流量观察传统资金进出。",
+      "factorIds": [
+        "BTC_ETF_FLOW_1D",
+        "BTC_ETF_FLOW_5D",
+        "BTC_ETF_FLOW_20D"
+      ],
+      "state": "数据不足",
+      "tone": "unavailable",
+      "status": "pending",
+      "pendingCount": 3,
+      "staleCount": 0
+    },
+    {
+      "id": "crypto-liquidity",
+      "eyebrow": "CRYPTO LIQUIDITY",
+      "label": "加密环境",
+      "description": "观察稳定币供应和 BTC 成交活跃度；成交量为提供方聚合样本，并非全市场总量。",
+      "factorIds": [
+        "STABLECOIN_TOTAL",
+        "STABLECOIN_CORE",
+        "BTC_VOLUME_ACTIVITY"
+      ],
+      "state": "顺风",
+      "tone": "support",
+      "status": "ok",
+      "pendingCount": 0,
+      "staleCount": 0
+    },
+    {
+      "id": "onchain",
+      "eyebrow": "ON-CHAIN STRUCTURE",
+      "label": "链上环境",
+      "description": "观察长期持有者筹码与交易所余额变化，不以活跃地址替代持仓结构。",
+      "factorIds": [
+        "BTC_LTH_SUPPLY",
+        "BTC_EXCHANGE_BALANCE",
+        "BTC_EXCHANGE_NETFLOW"
+      ],
+      "state": "数据不足",
+      "tone": "unavailable",
+      "status": "pending",
+      "pendingCount": 3,
+      "staleCount": 0
     }
   ],
   "coverage": {
@@ -86,15 +370,17 @@
       "real-yield",
       "broad-dollar",
       "financial-conditions",
-      "fed-balance-sheet"
+      "stablecoin-supply",
+      "core-stablecoin-supply",
+      "btc-market-liquidity"
     ],
     "planned": [
       "spot-etf-flows",
-      "stablecoin-supply",
+      "long-term-holder-supply",
       "exchange-balance",
-      "event-calendar"
+      "exchange-netflow"
     ]
   },
   "warnings": [],
-  "methodNote": "方向判断只描述因素变化，不构成买卖信号，也不合并为综合分数。"
+  "methodNote": "方向判断只描述因素变化，不构成买卖信号，也不合并为综合分数。缺失数据明确标记为待接入，不按中性处理。"
 }

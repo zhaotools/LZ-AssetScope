@@ -494,6 +494,7 @@ h1 {
 .tag.support, .tag.ok { color: var(--green); background: var(--green-soft); }
 .tag.pressure, .tag.warning { color: var(--red); background: var(--red-soft); }
 .tag.neutral { color: var(--yellow); background: var(--yellow-soft); }
+.tag.unavailable { color: var(--muted); background: #edf1f4; }
 
 .content-grid { display: grid; gap: 17px; }
 .detail-grid { grid-template-columns: minmax(0, 1.62fr) minmax(280px, 0.78fr); }
@@ -942,6 +943,55 @@ h1 {
 .factor-change { font-size: 12px; font-weight: 650; }
 .factor-card p { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
 .factor-source { display: flex; justify-content: space-between; gap: 14px; margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--muted-light); font-size: 10px; }
+.fundamental-group-grid { align-items: start; }
+.fundamental-group {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.fundamental-group-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 21px 22px 16px;
+  border-top: 4px solid var(--line-strong);
+}
+.fundamental-group.support .fundamental-group-header { border-top-color: #6eb391; }
+.fundamental-group.pressure .fundamental-group-header { border-top-color: #cf8584; }
+.fundamental-group.mixed .fundamental-group-header { border-top-color: #c8a35e; }
+.fundamental-group.unavailable .fundamental-group-header { border-top-color: #a8b5bf; }
+.fundamental-group-header h3 { margin: 5px 0 0; color: var(--ink-strong); font-size: 21px; }
+.group-state {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: #edf1f4;
+  font-size: 11px;
+  font-weight: 780;
+}
+.group-state.support { color: var(--green); background: var(--green-soft); }
+.group-state.pressure { color: var(--red); background: var(--red-soft); }
+.group-state.mixed { color: var(--yellow); background: var(--yellow-soft); }
+.fundamental-group-description { margin: 0; padding: 0 22px 18px; color: var(--muted); font-size: 11px; line-height: 1.65; }
+.fundamental-factor-list { border-top: 1px solid var(--line); }
+.fundamental-factor { padding: 17px 22px; border-bottom: 1px solid var(--line); }
+.fundamental-factor:last-child { border-bottom: 0; }
+.fundamental-factor.pending-factor { background: #fafbfc; }
+.fundamental-factor-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.fundamental-factor-heading h4 { margin: 0; color: var(--ink); font-size: 13px; line-height: 1.45; }
+.fundamental-factor-reading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.fundamental-factor-reading > strong { color: var(--ink-strong); font-size: 24px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.fundamental-factor-reading > strong small { color: var(--muted); font-size: 10px; letter-spacing: 0; }
+.pending-factor .fundamental-factor-reading > strong { color: var(--muted); font-size: 15px; letter-spacing: 0; }
+.fundamental-factor p { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.65; }
+.factor-change-list { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.factor-change-chip { padding: 4px 7px; border-radius: 7px; color: var(--muted); background: #f0f3f5; font-size: 9px; font-weight: 720; font-variant-numeric: tabular-nums; }
+.factor-change-chip.positive { color: var(--green); background: var(--green-soft); }
+.factor-change-chip.negative { color: var(--red); background: var(--red-soft); }
 .coverage-panel { margin-top: 17px; }
 .coverage-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .coverage-columns h3 { color: var(--ink); font-size: 13px; }
@@ -1069,6 +1119,10 @@ h1 {
   .section-heading { align-items: flex-end; }
   .section-heading h2 { font-size: 25px; }
   .fundamental-intro, .coverage-columns, .provenance-grid { grid-template-columns: 1fr; }
+  .fundamental-group-header, .fundamental-factor { padding-inline: 18px; }
+  .fundamental-group-description { padding-inline: 18px; }
+  .fundamental-factor-reading { align-items: flex-start; flex-direction: column; }
+  .factor-change-list { justify-content: flex-start; }
   .factor-source { flex-direction: column; gap: 4px; }
   .site-footer { flex-direction: column; padding-bottom: 90px; }
   .mobile-nav {

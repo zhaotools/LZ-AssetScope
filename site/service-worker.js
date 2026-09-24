@@ -1,9 +1,9 @@
-const CACHE = "lz-assetscope-v0.6.0";
+const CACHE = "lz-assetscope-v0.6.1";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=0.6.0",
-  "./app.js?v=0.6.0",
+  "./styles.css?v=0.6.1",
+  "./app.js?v=0.6.1",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon-180.png",
@@ -43,9 +43,21 @@ async function navigationFirst(request) {
     const response = await fetch(request);
     if (response.ok) return response;
   } catch (error) {
-    // Fall through to the cached application shell while offline.
+    // Continue with a route-safe cached application shell while offline.
   }
-  return caches.match(new URL("./index.html", self.registration.scope));
+  const requestUrl = new URL(request.url);
+  const scopeUrl = new URL(self.registration.scope);
+  const isShellLocation = requestUrl.pathname === scopeUrl.pathname
+    || requestUrl.pathname === new URL("./index.html", scopeUrl).pathname;
+  if (isShellLocation) return caches.match(new URL("./index.html", scopeUrl));
+
+  const relativePath = requestUrl.pathname.startsWith(scopeUrl.pathname)
+    ? requestUrl.pathname.slice(scopeUrl.pathname.length).replace(/\/$/, "")
+    : "";
+  const route = relativePath.startsWith("gold/") ? `/${relativePath}` : "/gold/overview";
+  const shellUrl = new URL("./", scopeUrl);
+  shellUrl.searchParams.set("route", route);
+  return Response.redirect(shellUrl, 302);
 }
 
 self.addEventListener("fetch", (event) => {

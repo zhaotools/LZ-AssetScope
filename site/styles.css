@@ -924,7 +924,7 @@ h1 {
   background: var(--surface);
 }
 .fundamental-intro p { margin-bottom: 0; line-height: 1.8; }
-.fundamental-intro p:first-child { color: var(--ink); font-size: 19px; font-weight: 520; }
+.fundamental-intro p:first-child { color: var(--text-deep-gray); font-size: 16px; font-weight: 520; }
 .fundamental-intro p:last-child { color: var(--muted); font-size: 12px; }
 .factor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 .factor-card {

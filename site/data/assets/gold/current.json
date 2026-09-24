@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-24T08:07:22+00:00",
+  "generatedAt": "2026-09-24T09:32:22+00:00",
   "productionReady": true,
   "asset": {
     "id": "gold",
@@ -33,7 +33,7 @@
       "dailyBoundary": "Yahoo Finance provider-defined GC=F daily bar; accepted after 18:00 America/New_York",
       "volumeSemantics": "provider-reported COMEX gold-futures volume; contract rolls can change comparability",
       "volumeRuleStatus": "exchange-volume-available",
-      "fetchedAt": "2026-09-24T08:05:40+00:00",
+      "fetchedAt": "2026-09-24T09:30:40+00:00",
       "observationDate": "2026-09-23"
     }
   },
@@ -161,7 +161,7 @@
     "summary": {
       "ok": true,
       "snapshotId": "05d1f675324217d0",
-      "snapshotCreatedAt": "2026-09-24T08:05:40+00:00",
+      "snapshotCreatedAt": "2026-09-24T09:30:41+00:00",
       "symbol": "GC=F",
       "name": "COMEX 黄金连续合约",
       "market": "commodity",
@@ -178,7 +178,7 @@
       "volume": 178132.0,
       "date": "2026-09-23",
       "quoteDate": "2026-09-23",
-      "updatedAt": "2026-09-24T08:05:40+00:00",
+      "updatedAt": "2026-09-24T09:30:41+00:00",
       "bullBear": {
         "status": "熊市区",
         "score": 5,
@@ -350,32 +350,81 @@
         "china-premium",
         "event-calendar"
       ]
+    },
+    "health": {
+      "status": "partial",
+      "staleCount": 4
     }
   },
   "synthesis": {
     "headline": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。日线融合状态维持“风险升高”。基本面环境：偏压制。",
-    "tension": "周线、日线与当前宏观因素没有出现需要单独升级提示的结构性冲突。",
+    "kind": "convergence",
+    "title": "当前主导逻辑",
+    "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面显示偏压制，但有 4 项宏观数据沿用上一有效值。",
     "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
+  },
+  "changeSummary": {
+    "count": 1,
+    "direction": "weakening",
+    "label": "过去 1 个交易日有 1 项转弱",
+    "items": [
+      {
+        "date": "2026-09-23",
+        "scope": "daily",
+        "direction": "weakening",
+        "title": "日线风险程度加深",
+        "detail": "状态维持“风险升高”，融合分数 24 → 9"
+      }
+    ]
   },
   "recentChanges": [
     {
       "date": "2026-09-23",
       "scope": "daily",
-      "title": "日线融合状态维持“风险升高”。"
+      "direction": "weakening",
+      "title": "日线风险程度加深",
+      "detail": "状态维持“风险升高”，融合分数 24 → 9"
+    }
+  ],
+  "validationConditions": [
+    {
+      "key": "daily-repair",
+      "tone": "repair",
+      "label": "日线修复",
+      "value": 4343.0419921875,
+      "condition": "确认收盘重新站上 MA50 4,343.0"
     },
     {
-      "date": "2026-09-18",
-      "scope": "weekly",
-      "title": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。"
+      "key": "daily-risk",
+      "tone": "risk",
+      "label": "日线风险",
+      "value": 4302.264990234375,
+      "condition": "确认收盘跌破结构支撑 4,302.3"
     },
     {
-      "date": "2026-09-18",
-      "scope": "fundamentals",
-      "title": "美联储广义美元指数较五个观察值前上升。"
+      "key": "weekly-confirmation",
+      "tone": "repair",
+      "label": "周线确认",
+      "value": 4513.893343098958,
+      "condition": "完成周线重新站上 MA30 4,513.9"
     }
   ],
   "quality": {
-    "status": "ok",
+    "status": "warning",
+    "dataHealth": {
+      "status": "partial",
+      "label": "数据可用 · 4 项沿用",
+      "market": "ok",
+      "technical": "ok",
+      "fundamentals": "partial",
+      "staleFundamentalCount": 4,
+      "staleFundamentals": [
+        "美国10年实际利率",
+        "美国10年期国债收益率",
+        "美国10年盈亏平衡通胀率",
+        "美联储广义美元指数"
+      ]
+    },
     "inputHash": "05d1f675324217d0f1ee9d1c57e19d6599219cee3e276bc4baa5d63f4ed7222f",
     "dataVersion": "LZAS-GOLD-20260923",
     "dailyBars": 4181,

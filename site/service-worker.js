@@ -1,10 +1,9 @@
-const CACHE = "lz-assetscope-v0.5.1";
+const CACHE = "lz-assetscope-v0.6.0";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=0.5.1",
-  "./app.js?v=0.5.1",
-  "./vendor-lightweight-charts.js?v=0.5.1",
+  "./styles.css?v=0.6.0",
+  "./app.js?v=0.6.0",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon-180.png",
@@ -26,8 +25,12 @@ async function networkFirst(request) {
   const cache = await caches.open(CACHE);
   try {
     const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
-    return response;
+    if (response.ok) {
+      cache.put(request, response.clone());
+      return response;
+    }
+    const cached = await cache.match(request);
+    return cached || response;
   } catch (error) {
     const cached = await cache.match(request);
     if (cached) return cached;

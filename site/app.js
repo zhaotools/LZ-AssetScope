@@ -2,7 +2,15 @@ const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
 const DATA_ROOT = new URL("data/assets/gold/", SITE_ROOT);
 const routes = new Set(["overview", "weekly", "daily", "fundamentals", "methodology"]);
-const state = { current: null, daily: null, weekly: null, fundamentals: null, charts: new Map() };
+const state = {
+  current: null,
+  daily: null,
+  weekly: null,
+  fundamentals: null,
+  charts: new Map(),
+  routeLoads: new Map(),
+};
+let chartLibraryPromise;
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -71,15 +79,96 @@ function activateRoute() {
   const route = routeFromLocation();
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
   $$('[data-route]').forEach((link) => link.classList.toggle("active", link.dataset.route === route));
-  if (route === "weekly") requestAnimationFrame(renderWeeklyChart);
-  if (route === "daily") requestAnimationFrame(renderDailyChart);
+  if (state.current) void ensureRouteData(route);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-async function loadJson(path) {
-  const response = await fetch(path, { cache: "no-store" });
-  if (!response.ok) throw new Error(`${path} 返回 HTTP ${response.status}`);
-  return response.json();
+const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+async function loadJson(path, { attempts = 2, timeoutMs = 8000 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(path, { cache: "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error(`${path} 返回 HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) await wait(350 * attempt);
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+  if (lastError?.name === "AbortError") throw new Error("数据请求超时，请检查网络后重试。");
+  throw lastError;
+}
+
+function loadChartLibrary() {
+  if (window.LightweightCharts) return Promise.resolve();
+  if (chartLibraryPromise) return chartLibraryPromise;
+  chartLibraryPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = new URL("vendor-lightweight-charts.js?v=0.6.0", SITE_ROOT);
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = () => {
+      chartLibraryPromise = null;
+      reject(new Error("图表组件加载失败，请重试。"));
+    };
+    document.head.append(script);
+  });
+  return chartLibraryPromise;
+}
+
+function setRouteState(route, status, message = "") {
+  const node = $(`[data-route-state="${route}"]`);
+  if (!node) return;
+  node.hidden = status === "ready";
+  node.classList.toggle("error", status === "error");
+  if (status === "loading") node.textContent = "正在加载本页详细数据…";
+  if (status === "error") {
+    node.innerHTML = `${esc(message || "本页详细数据暂时不可用。")}<button type="button" data-retry-route="${esc(route)}">重试</button>`;
+  }
+}
+
+async function ensureRouteData(route, { force = false } = {}) {
+  if (["overview", "methodology"].includes(route)) return;
+  if (force) state.routeLoads.delete(route);
+  if (state.routeLoads.has(route)) return state.routeLoads.get(route);
+  const load = (async () => {
+    setRouteState(route, "loading");
+    if (route === "weekly") {
+      state.weekly = force || !state.weekly
+        ? await loadJson(new URL("weekly-series.json", DATA_ROOT))
+        : state.weekly;
+      renderWeekly();
+      await loadChartLibrary();
+      requestAnimationFrame(renderWeeklyChart);
+    }
+    if (route === "daily") {
+      state.daily = force || !state.daily
+        ? await loadJson(new URL("daily-series.json", DATA_ROOT))
+        : state.daily;
+      renderDaily();
+      await loadChartLibrary();
+      requestAnimationFrame(renderDailyChart);
+    }
+    if (route === "fundamentals") {
+      state.fundamentals = force || !state.fundamentals
+        ? await loadJson(new URL("fundamentals.json", DATA_ROOT))
+        : state.fundamentals;
+      renderFundamentals();
+    }
+    setRouteState(route, "ready");
+  })().catch((error) => {
+    state.routeLoads.delete(route);
+    setRouteState(route, "error", error.message);
+    console.error(error);
+  });
+  state.routeLoads.set(route, load);
+  return load;
 }
 
 function signalClass(value) {
@@ -133,9 +222,16 @@ function updateHeader() {
     month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
   }).replaceAll("/", "-");
   $("#generated-at").title = generatedAt.toLocaleString("zh-CN", { hour12: false });
+  const health = current.quality.dataHealth || {
+    status: current.productionReady ? current.quality.status : "development",
+    label: current.productionReady ? "数据可用" : "开发数据 · 未发布",
+  };
   const status = $("#header-data-state");
-  status.textContent = current.productionReady ? "数据正常" : "开发数据 · 未发布";
-  status.className = `data-state ${current.quality.status}`;
+  status.textContent = health.label;
+  status.className = `data-state ${health.status === "ok" ? "ok" : "warning"}`;
+  status.title = health.staleFundamentals?.length
+    ? `沿用上一有效值：${health.staleFundamentals.join("、")}`
+    : health.label;
 }
 
 function renderOverview() {
@@ -145,46 +241,59 @@ function renderOverview() {
   const weeklyStage = Number(weeklyObservation.primaryStage || current.weekly.current.confirmed?.primary);
   const weeklyStageTitle = stagePresentation[weeklyStage]?.title || "";
   const weeklyLabel = [weeklyObservation.label || "未确认", weeklyStageTitle].filter(Boolean).join(" ");
-  const cards = [
-    {
-      title: "周线战略",
-      icon: "W",
-      main: weeklyLabel,
-      tag: `截至 ${fmtDate(current.weekly.asOf)}`,
-      body: current.weekly.summary,
-    },
-    {
-      title: "日线状态",
-      icon: "D",
-      main: current.daily.summary.fusion.status,
-      tag: current.daily.summary.traffic.status,
-      body: current.daily.change,
-    },
-    {
-      title: "基本面环境",
-      icon: "F",
-      main: current.fundamentals.regime,
-      tag: `截至 ${fmtDate(current.fundamentals.asOf)}`,
-      body: current.fundamentals.summary,
-    },
+  const fundamentalHealth = current.fundamentals.health || {};
+  const staleCount = Number(fundamentalHealth.staleCount || current.quality.dataHealth?.staleFundamentalCount || 0);
+  const metrics = [
+    ["#overview-weekly-card", "#overview-weekly", "#overview-weekly-note", weeklyLabel, `完成周线 · ${fmtDate(current.weekly.asOf)}`],
+    ["#overview-daily-card", "#overview-daily", "#overview-daily-note", current.daily.summary.fusion.status, `${current.daily.summary.traffic.status} · ${fmtDate(current.daily.asOf)}`],
+    ["#overview-fundamental-card", "#overview-fundamental", "#overview-fundamental-note", current.fundamentals.regime, staleCount ? `${staleCount} 项沿用上一有效值` : `更新至 ${fmtDate(current.fundamentals.asOf)}`],
   ];
-  $("#signal-grid").innerHTML = cards.map((card) => `
-    <article class="signal-card ${signalClass(card.main)}">
-      <div class="card-top"><span class="card-title">${esc(card.title)}</span><span class="signal-icon">${esc(card.icon)}</span></div>
-      <div class="signal-main">${esc(card.main)}</div>
-      <span class="tag ${signalClass(card.main)}">${esc(card.tag)}</span>
-      <p>${esc(card.body)}</p>
-    </article>
-  `).join("");
+  metrics.forEach(([cardSelector, valueSelector, noteSelector, value, note]) => {
+    const card = $(cardSelector);
+    card.classList.remove("support", "pressure", "neutral");
+    card.classList.add(signalClass(value));
+    $(valueSelector).textContent = value;
+    $(noteSelector).textContent = note;
+  });
+  const changeSummary = current.changeSummary || {
+    direction: "stable",
+    label: current.daily.change,
+    items: current.recentChanges || [],
+  };
+  const changeBox = $("#overview-change");
+  changeBox.classList.remove("improving", "weakening", "mixed", "stable");
+  changeBox.classList.add(changeSummary.direction || "stable");
+  $("#overview-change-label").textContent = changeSummary.label;
+  $("#synthesis-title").textContent = current.synthesis.title || "当前主导逻辑";
   $("#tension-copy").textContent = current.synthesis.tension;
-  $("#method-copy").textContent = current.synthesis.method;
-  $("#change-timeline").innerHTML = current.recentChanges.map((item) => `
-    <li>${esc(item.title)}<time datetime="${esc(item.date)}">${esc(fmtDate(item.date))}</time></li>
-  `).join("");
-  const warningText = current.quality.warnings.length
-    ? current.quality.warnings.join(" ")
-    : "所有关键数据检查均已通过。";
-  $("#quality-banner").innerHTML = `<span aria-hidden="true">●</span><div><strong>数据质量：${esc(current.quality.status === "ok" ? "正常" : "需注意")}</strong><br>${esc(warningText)}</div>`;
+  const changes = changeSummary.items || current.recentChanges || [];
+  $("#change-timeline").innerHTML = changes.length ? changes.map((item) => `
+    <li class="${esc(item.direction || "changed")}">
+      <div><strong>${esc(item.title)}</strong>${item.detail ? `<small>${esc(item.detail)}</small>` : ""}</div>
+      <time datetime="${esc(item.date)}">${esc(fmtDate(item.date))}</time>
+    </li>
+  `).join("") : '<li class="empty-change">完成周期内暂无关键状态变化。</li>';
+  const conditions = current.validationConditions || [];
+  $("#validation-list").innerHTML = conditions.length ? conditions.map((item) => `
+    <div class="validation-item ${esc(item.tone || "watch")}">
+      <span>${esc(item.label)}</span>
+      <strong>${esc(item.condition)}</strong>
+    </div>
+  `).join("") : '<div class="validation-item watch"><span>等待更新</span><strong>下一次数据生成后补充验证条件</strong></div>';
+  const health = current.quality.dataHealth || {
+    status: current.quality.status,
+    label: current.quality.status === "ok" ? "数据正常" : "数据需注意",
+    staleFundamentals: [],
+  };
+  $("#quality-summary").textContent = health.label;
+  const qualityDetails = [];
+  if (health.staleFundamentals?.length) {
+    qualityDetails.push(`基本面中的${health.staleFundamentals.join("、")}未在本轮更新，页面沿用各自上一有效值。`);
+  }
+  if (current.quality.warnings?.length) qualityDetails.push(...current.quality.warnings);
+  $("#quality-detail").textContent = qualityDetails.length
+    ? qualityDetails.join(" ")
+    : `行情、周线和日线数据已更新至 ${fmtDate(current.daily.asOf)}。`;
 }
 
 function renderWeekly() {
@@ -656,17 +765,9 @@ function renderDailyChart() {
 
 async function boot() {
   try {
-    [state.current, state.daily, state.weekly, state.fundamentals] = await Promise.all([
-      loadJson(new URL("current.json", DATA_ROOT)),
-      loadJson(new URL("daily-series.json", DATA_ROOT)),
-      loadJson(new URL("weekly-series.json", DATA_ROOT)),
-      loadJson(new URL("fundamentals.json", DATA_ROOT)),
-    ]);
+    state.current = await loadJson(new URL("current.json", DATA_ROOT), { attempts: 3, timeoutMs: 9000 });
     updateHeader();
     renderOverview();
-    renderWeekly();
-    renderDaily();
-    renderFundamentals();
     renderMethodology();
     $("#loading-state").hidden = true;
     activateRoute();
@@ -681,6 +782,12 @@ async function boot() {
 lockMobilePageZoom();
 normalizeRoute();
 document.addEventListener("click", (event) => {
+  const retry = event.target.closest("[data-retry-route]");
+  if (retry) {
+    event.preventDefault();
+    void ensureRouteData(retry.dataset.retryRoute, { force: true });
+    return;
+  }
   const link = event.target.closest("[data-route]");
   if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();

@@ -11,7 +11,7 @@
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./icons/icon-180.png">
-    <link rel="stylesheet" href="./styles.css?v=0.5.1">
+    <link rel="stylesheet" href="./styles.css?v=0.6.0">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -72,38 +72,61 @@
       </div>
 
       <section class="route-panel shell" data-panel="overview" hidden>
-        <div class="conclusion-card">
-          <div>
-            <p class="eyebrow">CURRENT VIEW</p>
-            <h2>当前结论</h2>
+        <article class="overview-snapshot">
+          <header class="snapshot-header">
+            <div>
+              <p class="eyebrow">ASSET SNAPSHOT</p>
+              <h2>黄金状态总览</h2>
+              <p class="snapshot-headline" id="overview-headline">—</p>
+            </div>
+            <div class="snapshot-change" id="overview-change">
+              <span>最近变化</span>
+              <strong id="overview-change-label">—</strong>
+            </div>
+          </header>
+
+          <div class="snapshot-status-grid">
+            <div class="snapshot-metric" id="overview-weekly-card">
+              <span>周线趋势</span><strong id="overview-weekly">—</strong><small id="overview-weekly-note">—</small>
+            </div>
+            <div class="snapshot-metric" id="overview-daily-card">
+              <span>日线状态</span><strong id="overview-daily">—</strong><small id="overview-daily-note">—</small>
+            </div>
+            <div class="snapshot-metric" id="overview-fundamental-card">
+              <span>基本面环境</span><strong id="overview-fundamental">—</strong><small id="overview-fundamental-note">—</small>
+            </div>
           </div>
-          <p id="overview-headline">—</p>
-        </div>
 
-        <div class="signal-grid" id="signal-grid"></div>
-
-        <div class="content-grid overview-grid">
-          <article class="panel tension-panel">
-            <div class="panel-heading">
+          <div class="snapshot-insight-grid">
+            <section class="snapshot-logic">
               <span class="panel-kicker">SYNTHESIS</span>
-              <h2>当前主要矛盾</h2>
-            </div>
-            <p class="lead-copy" id="tension-copy">—</p>
-            <p class="muted-copy" id="method-copy">—</p>
-          </article>
-          <article class="panel">
-            <div class="panel-heading">
+              <h3 id="synthesis-title">当前主导逻辑</h3>
+              <p class="lead-copy" id="tension-copy">—</p>
+            </section>
+            <section class="snapshot-recent">
               <span class="panel-kicker">RECENT CHANGES</span>
-              <h2>最近变化</h2>
-            </div>
-            <ol class="timeline" id="change-timeline"></ol>
-          </article>
-        </div>
+              <h3>最近变化</h3>
+              <ol class="compact-change-list" id="change-timeline"></ol>
+            </section>
+          </div>
 
-        <article class="quality-banner" id="quality-banner"></article>
+          <section class="validation-strip">
+            <div class="validation-heading">
+              <span class="panel-kicker">NEXT VALIDATION</span>
+              <h3>下一验证条件</h3>
+            </div>
+            <div class="validation-list" id="validation-list"></div>
+          </section>
+        </article>
+
+        <details class="quality-banner" id="quality-banner">
+          <summary><span>数据状态</span><strong id="quality-summary">—</strong></summary>
+          <p id="quality-detail">—</p>
+        </details>
       </section>
 
       <section class="route-panel shell" data-panel="weekly" hidden>
+        <div class="route-data-state" data-route-state="weekly" hidden></div>
         <div class="section-heading">
           <div><p class="eyebrow">WEEKLY STRATEGY</p><h2>周线阶段</h2></div>
           <span class="date-chip" id="weekly-asof-chip">—</span>
@@ -134,6 +157,7 @@
       </section>
 
       <section class="route-panel shell" data-panel="daily" hidden>
+        <div class="route-data-state" data-route-state="daily" hidden></div>
         <div class="section-heading">
           <div><p class="eyebrow">DAILY EXECUTION</p><h2>日线状态</h2></div>
           <span class="date-chip" id="daily-asof-chip">—</span>
@@ -169,6 +193,7 @@
       </section>
 
       <section class="route-panel shell" data-panel="fundamentals" hidden>
+        <div class="route-data-state" data-route-state="fundamentals" hidden></div>
         <div class="section-heading">
           <div><p class="eyebrow">FUNDAMENTAL DRIVERS</p><h2>基本面环境</h2></div>
           <span class="date-chip" id="fundamental-regime">—</span>
@@ -211,7 +236,6 @@
       <a href="./gold/fundamentals" data-route="fundamentals"><span>基本面</span></a>
     </nav>
 
-    <script src="./vendor-lightweight-charts.js?v=0.5.1"></script>
-    <script type="module" src="./app.js?v=0.5.1"></script>
+    <script type="module" src="./app.js?v=0.6.0"></script>
   </body>
 </html>

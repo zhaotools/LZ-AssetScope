@@ -290,8 +290,8 @@ h1 {
 .module-tabs a:hover { color: var(--ink); background: var(--surface-muted); }
 .module-tabs a.active {
   color: var(--navy);
-  border-color: rgba(63, 130, 173, 0.25);
-  background: rgba(63, 130, 173, 0.18);
+  border-color: rgba(63, 130, 173, 0.34);
+  background: rgba(63, 130, 173, 0.24);
   box-shadow: 0 5px 14px rgba(18, 53, 83, 0.09);
 }
 
@@ -344,7 +344,7 @@ h1 {
 .snapshot-headline,
 .snapshot-logic .lead-copy {
   color: var(--text-deep-gray);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.7;
 }

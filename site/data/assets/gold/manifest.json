@@ -1,13 +1,13 @@
 {
   "schemaVersion": "asset-data-manifest-v1",
-  "generatedAt": "2026-09-24T13:53:24+00:00",
+  "generatedAt": "2026-09-24T14:02:47+00:00",
   "productionReady": true,
   "asset": "gold",
   "inputHash": "05d1f675324217d0f1ee9d1c57e19d6599219cee3e276bc4baa5d63f4ed7222f",
   "files": [
     {
       "path": "data/assets/gold/current.json",
-      "sha256": "ef23af43b7dd565294ecdd54d54c0690e8c37a5102b41378cdcd621016dbc964"
+      "sha256": "31d636bd97c27e1a5486bf6196de58707a4b2d6d05d4b3d8f899a37048018fa9"
     },
     {
       "path": "data/assets/gold/daily-series.json",
@@ -19,15 +19,15 @@
     },
     {
       "path": "data/assets/gold/fundamentals.json",
-      "sha256": "8a0d35a0e4e68bf47721d9a35d6eac9f79527a91521a42829bea6a5dd9008de9"
+      "sha256": "8701769ca9d85481a35ad03ee34cf9beb219e1f459a011454fc5c70a125a28f4"
     },
     {
       "path": "data/assets/gold/history/index.json",
-      "sha256": "fafccd69f34381f3fb12a6462248dc7cbe4019f7cbbabed766ccfafe6fc801d3"
+      "sha256": "f64dcfb3c3b1f94750a495e906b080e5dc11ea6ac731f048a76e9e6c48de2c24"
     },
     {
       "path": "data/assets/gold/history/2026-09.json",
-      "sha256": "8a876952bcdd76b57aad408f2a957cbe311ec90f1a7a7568f709aa27c26558fc"
+      "sha256": "72e703a11cd7ca34cc31016f526d961a0f23c7ecb64905d69e1e9083d5a04861"
     }
   ]
 }

@@ -1016,18 +1016,36 @@ window.addEventListener("popstate", () => {
 });
 
 let deferredInstall;
+const installButton = $("#install-button");
+const isInstalledApp = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const syncInstallButton = () => {
+  installButton.hidden = false;
+  installButton.textContent = isInstalledApp() ? "应用已安装" : "安装应用";
+  installButton.disabled = isInstalledApp();
+};
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
   deferredInstall = event;
-  $("#install-button").hidden = false;
+  syncInstallButton();
 });
-$("#install-button").addEventListener("click", async () => {
-  if (!deferredInstall) return;
-  deferredInstall.prompt();
-  await deferredInstall.userChoice;
+window.addEventListener("appinstalled", () => {
   deferredInstall = null;
-  $("#install-button").hidden = true;
+  syncInstallButton();
 });
+installButton.addEventListener("click", async () => {
+  if (!deferredInstall) {
+    const appleDevice = /Macintosh|iPhone|iPad|iPod/.test(navigator.userAgent);
+    window.alert(appleDevice
+      ? "请打开浏览器的“分享”菜单，选择“添加到主屏幕”或“添加到程序坞”。"
+      : "请打开浏览器菜单，选择“安装应用”或“添加到主屏幕”。");
+    return;
+  }
+  deferredInstall.prompt();
+  const choice = await deferredInstall.userChoice;
+  deferredInstall = null;
+  if (choice.outcome === "accepted") syncInstallButton();
+});
+syncInstallButton();
 
 if ("serviceWorker" in navigator) {
   const localPreview = ["127.0.0.1", "localhost"].includes(location.hostname);

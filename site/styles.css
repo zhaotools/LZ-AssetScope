@@ -170,6 +170,8 @@ button { font: inherit; }
 .watchlist-asset-copy strong { display: block; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .watchlist-asset-copy small { display: block; overflow: hidden; margin-top: 3px; color: rgba(255, 255, 255, 0.4); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-install-button { margin-top: auto; padding: 9px 11px; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; color: rgba(255, 255, 255, 0.72); background: rgba(255, 255, 255, 0.06); font-size: 10px; cursor: pointer; }
+.sidebar-install-button:hover { color: white; background: rgba(255, 255, 255, 0.11); }
+.sidebar-install-button:disabled { color: rgba(255, 255, 255, 0.44); cursor: default; }
 
 .asset-picker { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; }
 body.picker-open { overflow: hidden; }

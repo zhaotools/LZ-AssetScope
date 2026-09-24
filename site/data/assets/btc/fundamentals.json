@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "btc-fundamentals-v1",
+  "generatedAt": "2026-09-24T14:50:28+00:00",
+  "asset": "btc",
+  "scope": "macro-minimum",
+  "factors": [
+    {
+      "id": "DFII10",
+      "label": "美国10年实际利率",
+      "value": 2.63,
+      "unit": "%",
+      "observationDate": "2026-09-22",
+      "comparisonDate": "2026-09-15",
+      "change5Observations": 0.01,
+      "direction": "flat",
+      "impact": "neutral",
+      "frequency": "daily",
+      "source": {
+        "name": "Federal Reserve Economic Data (FRED)",
+        "seriesId": "DFII10",
+        "url": "https://fred.stlouisfed.org/series/DFII10"
+      },
+      "explanation": "实际利率上升通常收紧金融条件，并提高高波动资产的估值压力。",
+      "status": "ok"
+    },
+    {
+      "id": "DTWEXBGS",
+      "label": "美联储广义美元指数",
+      "value": 119.5133,
+      "unit": "index",
+      "observationDate": "2026-09-18",
+      "comparisonDate": "2026-09-11",
+      "change5Observations": 1.3007,
+      "direction": "up",
+      "impact": "pressure",
+      "frequency": "daily",
+      "source": {
+        "name": "Federal Reserve Economic Data (FRED)",
+        "seriesId": "DTWEXBGS",
+        "url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+      },
+      "explanation": "美元走强通常对应全球美元流动性收紧，对 BTC 风险偏好形成压力。",
+      "status": "ok"
+    },
+    {
+      "id": "NFCI",
+      "label": "美国金融条件指数",
+      "value": -0.555,
+      "unit": "index",
+      "observationDate": "2026-09-18",
+      "comparisonDate": "2026-08-14",
+      "change5Observations": -0.008,
+      "direction": "flat",
+      "impact": "neutral",
+      "frequency": "weekly",
+      "source": {
+        "name": "Federal Reserve Economic Data (FRED)",
+        "seriesId": "NFCI",
+        "url": "https://fred.stlouisfed.org/series/NFCI"
+      },
+      "explanation": "金融条件指数上升代表环境趋紧，通常不利于加密资产风险偏好。",
+      "status": "ok"
+    },
+    {
+      "id": "WALCL",
+      "label": "美联储总资产",
+      "value": 6746548.0,
+      "unit": "USD millions",
+      "observationDate": "2026-09-16",
+      "comparisonDate": "2026-08-12",
+      "change5Observations": -13407.0,
+      "direction": "flat",
+      "impact": "neutral",
+      "frequency": "weekly",
+      "source": {
+        "name": "Federal Reserve Economic Data (FRED)",
+        "seriesId": "WALCL",
+        "url": "https://fred.stlouisfed.org/series/WALCL"
+      },
+      "explanation": "美联储资产负债表扩张可作为美元流动性改善的观察维度，但不构成单独交易信号。",
+      "status": "ok"
+    }
+  ],
+  "coverage": {
+    "implemented": [
+      "real-yield",
+      "broad-dollar",
+      "financial-conditions",
+      "fed-balance-sheet"
+    ],
+    "planned": [
+      "spot-etf-flows",
+      "stablecoin-supply",
+      "exchange-balance",
+      "event-calendar"
+    ]
+  },
+  "warnings": [],
+  "methodNote": "方向判断只描述因素变化，不构成买卖信号，也不合并为综合分数。"
+}

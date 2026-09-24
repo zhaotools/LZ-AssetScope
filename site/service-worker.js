@@ -1,9 +1,9 @@
-const CACHE = "lz-assetscope-v0.6.8";
+const CACHE = "lz-assetscope-v0.7.0";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=0.6.8",
-  "./app.js?v=0.6.1",
+  "./styles.css?v=0.7.0",
+  "./app.js?v=0.7.0",
   "./manifest.webmanifest",
   "./favicon.ico?v=0.6.3",
   "./icons/icon-32.png?v=0.6.3",
@@ -56,7 +56,7 @@ async function navigationFirst(request) {
   const relativePath = requestUrl.pathname.startsWith(scopeUrl.pathname)
     ? requestUrl.pathname.slice(scopeUrl.pathname.length).replace(/\/$/, "")
     : "";
-  const route = relativePath.startsWith("gold/") ? `/${relativePath}` : "/gold/overview";
+  const route = /^(gold|btc)\//.test(relativePath) ? `/${relativePath}` : "/gold/overview";
   const shellUrl = new URL("./", scopeUrl);
   shellUrl.searchParams.set("route", route);
   return Response.redirect(shellUrl, 302);

@@ -1,0 +1,422 @@
+{
+  "schemaVersion": "asset-snapshot-v1",
+  "generatedAt": "2026-09-24T14:50:28+00:00",
+  "productionReady": true,
+  "asset": {
+    "id": "btc",
+    "symbol": "BTC-USD",
+    "displaySymbol": "BTC",
+    "name": "比特币 / 美元",
+    "exchange": "CRYPTO",
+    "market": "全球加密资产市场",
+    "category": "加密货币",
+    "currency": "USD",
+    "technicalBenchmark": "BTC-USD · 比特币 / 美元",
+    "priceBasis": "provider-aggregated-crypto-ohlcv"
+  },
+  "quote": {
+    "price": 84383.0078125,
+    "previousClose": 86172.28125,
+    "date": "2026-09-23",
+    "currency": "USD",
+    "source": {
+      "name": "Yahoo Finance Bitcoin",
+      "providerSymbol": "BTC-USD",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?period1=1262304000&period2=1790208000&interval=1d&events=history",
+      "providerPage": "https://finance.yahoo.com/quote/BTC-USD/history/",
+      "purpose": "production-bitcoin-usd",
+      "licenseStatus": "public-endpoint; owner-accepted-display-risk; independent-rights-not-verified",
+      "publicationRightsConfirmed": false,
+      "publicationRiskAccepted": true,
+      "productionReady": true,
+      "priceBasis": "provider-aggregated-crypto-ohlcv",
+      "dailyBoundary": "Yahoo Finance provider-defined BTC-USD UTC daily bar; current UTC day excluded",
+      "volumeSemantics": "Yahoo Finance provider-reported BTC-USD aggregate volume; not a single-exchange volume",
+      "volumeRuleStatus": "provider-volume-available",
+      "fetchedAt": "2026-09-24T14:50:23+00:00",
+      "observationDate": "2026-09-23"
+    }
+  },
+  "weekly": {
+    "asOf": "2026-09-20",
+    "current": {
+      "stage": 2,
+      "observation": {
+        "primaryStage": 2,
+        "primary": 2,
+        "code": "S2",
+        "label": "S2",
+        "neutral": false,
+        "bias": null,
+        "rawStage": 2,
+        "reason": "本周观察与已确认主阶段一致。",
+        "bridge": false
+      },
+      "confirmed": {
+        "stage": 2,
+        "primary": 2,
+        "code": "S2",
+        "label": "S2",
+        "weeks": 3
+      },
+      "status": "confirmed",
+      "transition": null,
+      "close": 81142.609375,
+      "ma10": 71493.029296875,
+      "ma30": 70439.02122395833,
+      "slope": 0.011243216733410888,
+      "recentSlope": 0.006421536193727206,
+      "distance": 0.15195537878088894,
+      "position52": 0.3417785188364871,
+      "volumeRatio": 1.1613010136277735,
+      "scores": {
+        "1": 3,
+        "2": 9,
+        "3": 3,
+        "4": 1
+      },
+      "s2State": {
+        "key": "normal",
+        "label": "Stage 2",
+        "summary": "第二阶段上涨结构正常，价格仍运行在10周均线上方。",
+        "rawKey": "normal",
+        "reasons": [],
+        "signals": {
+          "slopeDecelerating": false,
+          "momentumStalled": false,
+          "offPeak": false,
+          "noNewHigh": false,
+          "choppy": false,
+          "maFlattening": false,
+          "nearMa30": false
+        },
+        "deterioration": 0,
+        "momentumLabel": "S2正常推进",
+        "momentumSummary": "价格与长期趋势保持上升结构，暂未出现持续性顶部信号。",
+        "lifecycle": {
+          "code": "2",
+          "label": "Stage 2",
+          "summary": "第二阶段上涨结构正常，价格仍运行在10周均线上方。",
+          "runWeeks": 3,
+          "belowMa10": false,
+          "mature": false
+        },
+        "runWeeks": 3,
+        "weeks": 3,
+        "stateWeeks": 3
+      },
+      "s4State": null,
+      "evidence": [
+        {
+          "label": "价格与MA30",
+          "value": "高于 15.20%",
+          "detail": "S2通常要求价格运行在30周均线上方",
+          "state": "support"
+        },
+        {
+          "label": "MA30方向",
+          "value": "5周斜率 +1.12%",
+          "detail": "上升的长期均线代表趋势方向向上",
+          "state": "support"
+        },
+        {
+          "label": "10/30周结构",
+          "value": "MA10 高于 MA30 1.50%",
+          "detail": "中期均线位于长期均线上方支持上涨结构",
+          "state": "support"
+        },
+        {
+          "label": "52周位置",
+          "value": "区间 34%",
+          "detail": "位于年度区间中上部更符合趋势发展阶段",
+          "state": "warning"
+        }
+      ],
+      "explanation": "主要支持证据来自价格与MA30、MA30方向、10/30周结构。52周位置仍与目标阶段存在分歧。",
+      "confidence": 73,
+      "confidenceBasis": {
+        "supportCount": 3,
+        "neutralCount": 0,
+        "warningCount": 1,
+        "total": 4,
+        "transitionLimited": false
+      },
+      "asOf": "2026-09-20",
+      "usesCompletedWeek": true,
+      "latestClose": 84383.0078125,
+      "latestMa30": 71060.51809895833,
+      "latestDistance": 0.18748089754973174,
+      "latestAsOf": "2026-09-23",
+      "hasProvisionalBar": true
+    },
+    "summary": "周线处于 S2 上升趋势，已确认阶段持续 3 周。"
+  },
+  "daily": {
+    "asOf": "2026-09-23",
+    "summary": {
+      "ok": true,
+      "snapshotId": "fd690abf0d6cb3da",
+      "snapshotCreatedAt": "2026-09-24T14:50:24+00:00",
+      "symbol": "BTC-USD",
+      "name": "比特币 / 美元",
+      "market": "crypto",
+      "currency": "USD",
+      "contractMultiplier": null,
+      "source": "Yahoo Finance Bitcoin",
+      "signalSource": "已收盘日线",
+      "hasIntradayReference": false,
+      "referenceLabel": null,
+      "referenceNote": null,
+      "splitAdjustments": [],
+      "price": 84383.0078125,
+      "previousClose": 86172.28125,
+      "volume": 46088463341.0,
+      "date": "2026-09-23",
+      "quoteDate": "2026-09-23",
+      "updatedAt": "2026-09-24T14:50:24+00:00",
+      "bullBear": {
+        "status": "牛市区",
+        "score": 40,
+        "strength": "强",
+        "gap": 19.254343434826886,
+        "summary": "中长期环境偏强，优先寻找顺势机会。"
+      },
+      "traffic": {
+        "status": "绿灯",
+        "score": 30,
+        "trendScore": 5,
+        "checks": [
+          {
+            "label": "MA50 > MA200",
+            "pass": true,
+            "detail": "MA50 74531.87 / MA200 70758.85"
+          },
+          {
+            "label": "MA200 高于 20 天前",
+            "pass": true,
+            "detail": "MA200 70758.85 / 20天前 69568.20"
+          },
+          {
+            "label": "最新收盘价在 MA50 之上",
+            "pass": true,
+            "detail": "收盘 84383.01 / MA50 74531.87"
+          },
+          {
+            "label": "最近 20 日高点高于前 20 日高点",
+            "pass": true,
+            "detail": "近20日高点 87363.76 / 前20日高点 82262.21"
+          },
+          {
+            "label": "最近 20 日低点不低于前 20 日低点",
+            "pass": true,
+            "detail": "近20日低点 74944.59 / 前20日低点 62648.57"
+          }
+        ],
+        "summary": "趋势条件较完整，可以关注顺势机会。"
+      },
+      "band": {
+        "index": 4389,
+        "date": "2026-09-23",
+        "status": "高位死叉",
+        "score": 0,
+        "action": "高位动能转弱，注意风险控制。",
+        "k": 86.91951025704968,
+        "d": 92.35650820825474,
+        "atr": 2540.7047991071427,
+        "atrPct": 3.0109199292262936,
+        "riskLevel": "中",
+        "support": 79513.816015625,
+        "pressure": 87363.7578125
+      },
+      "fusion": {
+        "score": 70,
+        "status": "趋势延续",
+        "advice": "趋势结构仍然偏强；不建议在短期过热时追高。",
+        "riskNote": "高位动能转弱，注意风险控制。",
+        "conflict": "高位风险",
+        "pool": "高位保护池"
+      },
+      "previousFusion": {
+        "date": "2026-09-22",
+        "score": 78,
+        "status": "趋势延续",
+        "advice": "趋势结构仍然偏强；不建议在短期过热时追高。"
+      }
+    },
+    "change": "日线融合状态维持“趋势延续”。"
+  },
+  "fundamentals": {
+    "asOf": "2026-09-22",
+    "regime": "偏压制",
+    "summary": "压力因素包括美联储广义美元指数。",
+    "factors": [
+      {
+        "id": "DFII10",
+        "label": "美国10年实际利率",
+        "value": 2.63,
+        "unit": "%",
+        "observationDate": "2026-09-22",
+        "comparisonDate": "2026-09-15",
+        "change5Observations": 0.01,
+        "direction": "flat",
+        "impact": "neutral",
+        "frequency": "daily",
+        "source": {
+          "name": "Federal Reserve Economic Data (FRED)",
+          "seriesId": "DFII10",
+          "url": "https://fred.stlouisfed.org/series/DFII10"
+        },
+        "explanation": "实际利率上升通常收紧金融条件，并提高高波动资产的估值压力。",
+        "status": "ok"
+      },
+      {
+        "id": "DTWEXBGS",
+        "label": "美联储广义美元指数",
+        "value": 119.5133,
+        "unit": "index",
+        "observationDate": "2026-09-18",
+        "comparisonDate": "2026-09-11",
+        "change5Observations": 1.3007,
+        "direction": "up",
+        "impact": "pressure",
+        "frequency": "daily",
+        "source": {
+          "name": "Federal Reserve Economic Data (FRED)",
+          "seriesId": "DTWEXBGS",
+          "url": "https://fred.stlouisfed.org/series/DTWEXBGS"
+        },
+        "explanation": "美元走强通常对应全球美元流动性收紧，对 BTC 风险偏好形成压力。",
+        "status": "ok"
+      },
+      {
+        "id": "NFCI",
+        "label": "美国金融条件指数",
+        "value": -0.555,
+        "unit": "index",
+        "observationDate": "2026-09-18",
+        "comparisonDate": "2026-08-14",
+        "change5Observations": -0.008,
+        "direction": "flat",
+        "impact": "neutral",
+        "frequency": "weekly",
+        "source": {
+          "name": "Federal Reserve Economic Data (FRED)",
+          "seriesId": "NFCI",
+          "url": "https://fred.stlouisfed.org/series/NFCI"
+        },
+        "explanation": "金融条件指数上升代表环境趋紧，通常不利于加密资产风险偏好。",
+        "status": "ok"
+      },
+      {
+        "id": "WALCL",
+        "label": "美联储总资产",
+        "value": 6746548.0,
+        "unit": "USD millions",
+        "observationDate": "2026-09-16",
+        "comparisonDate": "2026-08-12",
+        "change5Observations": -13407.0,
+        "direction": "flat",
+        "impact": "neutral",
+        "frequency": "weekly",
+        "source": {
+          "name": "Federal Reserve Economic Data (FRED)",
+          "seriesId": "WALCL",
+          "url": "https://fred.stlouisfed.org/series/WALCL"
+        },
+        "explanation": "美联储资产负债表扩张可作为美元流动性改善的观察维度，但不构成单独交易信号。",
+        "status": "ok"
+      }
+    ],
+    "coverage": {
+      "implemented": [
+        "real-yield",
+        "broad-dollar",
+        "financial-conditions",
+        "fed-balance-sheet"
+      ],
+      "planned": [
+        "spot-etf-flows",
+        "stablecoin-supply",
+        "exchange-balance",
+        "event-calendar"
+      ]
+    },
+    "health": {
+      "status": "ok",
+      "staleCount": 0
+    }
+  },
+  "synthesis": {
+    "headline": "周线处于 S2 上升趋势，已确认阶段持续 3 周。日线融合状态维持“趋势延续”。基本面环境：偏压制。",
+    "kind": "conflict",
+    "title": "当前主要分歧",
+    "tension": "技术趋势偏强，但宏观因素开始形成压力，需要观察价格能否继续消化逆风。 基本面环境为偏压制。",
+    "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
+  },
+  "changeSummary": {
+    "count": 0,
+    "direction": "stable",
+    "label": "过去 1 个交易日无关键状态变化",
+    "items": []
+  },
+  "recentChanges": [],
+  "validationConditions": [
+    {
+      "key": "daily-repair",
+      "tone": "repair",
+      "label": "日线修复",
+      "value": 74531.87359375,
+      "condition": "确认收盘重新站上 MA50 74,531.9"
+    },
+    {
+      "key": "daily-risk",
+      "tone": "risk",
+      "label": "日线风险",
+      "value": 79513.816015625,
+      "condition": "确认收盘跌破结构支撑 79,513.8"
+    },
+    {
+      "key": "weekly-confirmation",
+      "tone": "risk",
+      "label": "周线确认",
+      "value": 70439.02122395833,
+      "condition": "完成周线跌破 MA30 70,439.0"
+    }
+  ],
+  "quality": {
+    "status": "ok",
+    "dataHealth": {
+      "status": "ok",
+      "label": "数据正常",
+      "market": "ok",
+      "technical": "ok",
+      "fundamentals": "ok",
+      "staleFundamentalCount": 0,
+      "staleFundamentals": []
+    },
+    "inputHash": "fd690abf0d6cb3dafe0e056113924643c89de94d9e0401f21da37d5e0d432f2b",
+    "dataVersion": "LZAS-BTC-20260923",
+    "dailyBars": 4390,
+    "dailyAsOf": "2026-09-23",
+    "weeklyAsOf": "2026-09-20",
+    "volumeAvailable": true,
+    "warnings": [
+      "行情使用 Yahoo Finance 的 BTC-USD 日线序列，成交量为提供方聚合口径，不等同于单一交易所成交量。",
+      "系统只采纳已经结束的 UTC 日线；当前 UTC 日期的数据会被剔除。",
+      "BTC 为 7×24 小时交易资产，完整周线按照加密资产的 UTC 周边界判断。",
+      "Yahoo Finance 外部展示授权未获得独立书面确认；项目所有者已选择该免费数据源并接受上线风险。"
+    ]
+  },
+  "engines": {
+    "weekly": {
+      "name": "LZ-4Stage",
+      "version": "LZAS-W-1.0.0",
+      "sourceSchema": "weekly-stage-v2"
+    },
+    "daily": {
+      "name": "LZ-Status-V3",
+      "version": "LZAS-D-1.0.0",
+      "includeWeinstein": false
+    }
+  }
+}

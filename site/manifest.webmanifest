@@ -1,7 +1,7 @@
 {
-  "name": "LZ-AssetScope 黄金观察",
+  "name": "LZ-AssetScope 多资产观察",
   "short_name": "AssetScope",
-  "description": "黄金周线、日线与基本面观察系统",
+  "description": "黄金与比特币的周线、日线与基本面观察系统",
   "lang": "zh-CN",
   "start_url": "./gold/overview",
   "scope": "./",

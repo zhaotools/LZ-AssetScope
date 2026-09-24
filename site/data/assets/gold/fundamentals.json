@@ -1,16 +1,17 @@
 {
   "schemaVersion": "gold-fundamentals-v1",
-  "generatedAt": "2026-09-24T14:02:47+00:00",
+  "generatedAt": "2026-09-24T14:50:27+00:00",
+  "asset": "gold",
   "scope": "macro-minimum",
   "factors": [
     {
       "id": "DFII10",
       "label": "美国10年实际利率",
-      "value": 2.62,
+      "value": 2.63,
       "unit": "%",
-      "observationDate": "2026-09-21",
-      "comparisonDate": "2026-09-14",
-      "change5Observations": 0.02,
+      "observationDate": "2026-09-22",
+      "comparisonDate": "2026-09-15",
+      "change5Observations": 0.01,
       "direction": "flat",
       "impact": "neutral",
       "frequency": "daily",
@@ -20,17 +21,16 @@
         "url": "https://fred.stlouisfed.org/series/DFII10"
       },
       "explanation": "实际利率上升通常提高持有黄金的机会成本。",
-      "status": "stale",
-      "error": "The read operation timed out"
+      "status": "ok"
     },
     {
       "id": "DGS10",
       "label": "美国10年期国债收益率",
       "value": 4.96,
       "unit": "%",
-      "observationDate": "2026-09-21",
-      "comparisonDate": "2026-09-14",
-      "change5Observations": -0.01,
+      "observationDate": "2026-09-22",
+      "comparisonDate": "2026-09-15",
+      "change5Observations": -0.04,
       "direction": "flat",
       "impact": "neutral",
       "frequency": "daily",
@@ -40,17 +40,16 @@
         "url": "https://fred.stlouisfed.org/series/DGS10"
       },
       "explanation": "名义长端利率上升通常对无息资产估值构成压力。",
-      "status": "stale",
-      "error": "The read operation timed out"
+      "status": "ok"
     },
     {
       "id": "T10YIE",
       "label": "美国10年盈亏平衡通胀率",
-      "value": 2.33,
+      "value": 2.35,
       "unit": "%",
-      "observationDate": "2026-09-22",
-      "comparisonDate": "2026-09-15",
-      "change5Observations": -0.05,
+      "observationDate": "2026-09-23",
+      "comparisonDate": "2026-09-16",
+      "change5Observations": 0.02,
       "direction": "flat",
       "impact": "neutral",
       "frequency": "daily",
@@ -60,8 +59,7 @@
         "url": "https://fred.stlouisfed.org/series/T10YIE"
       },
       "explanation": "通胀预期上升通常增加黄金的通胀对冲需求，但仍需结合实际利率判断。",
-      "status": "stale",
-      "error": "The read operation timed out"
+      "status": "ok"
     },
     {
       "id": "DTWEXBGS",
@@ -80,8 +78,7 @@
         "url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       },
       "explanation": "美元走强通常对美元计价黄金形成压力。",
-      "status": "stale",
-      "error": "The read operation timed out"
+      "status": "ok"
     }
   ],
   "coverage": {
@@ -99,11 +96,6 @@
       "event-calendar"
     ]
   },
-  "warnings": [
-    "美国10年实际利率 更新失败，沿用上一份有效值",
-    "美国10年期国债收益率 更新失败，沿用上一份有效值",
-    "美国10年盈亏平衡通胀率 更新失败，沿用上一份有效值",
-    "美联储广义美元指数 更新失败，沿用上一份有效值"
-  ],
+  "warnings": [],
   "methodNote": "方向判断只描述因素变化，不构成买卖信号，也不合并为综合分数。"
 }

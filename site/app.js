@@ -1,14 +1,33 @@
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
-const DATA_ROOT = new URL("data/assets/gold/", SITE_ROOT);
 const routes = new Set(["overview", "weekly", "daily", "fundamentals", "methodology"]);
+const assets = {
+  gold: {
+    id: "gold",
+    code: "GOLD",
+    name: "黄金",
+    shortName: "黄金",
+    eyebrow: "GOLD · DAILY OBSERVATORY",
+  },
+  btc: {
+    id: "btc",
+    code: "BTC",
+    name: "比特币",
+    shortName: "比特币",
+    eyebrow: "BTC · DIGITAL ASSET OBSERVATORY",
+  },
+};
+const WATCHLIST_KEY = "lz-assetscope-watchlist-v1";
+const DEFAULT_WATCHLIST = ["gold", "btc"];
 const state = {
+  assetId: "gold",
   current: null,
   daily: null,
   weekly: null,
   fundamentals: null,
   charts: new Map(),
   routeLoads: new Map(),
+  loadToken: 0,
 };
 let chartLibraryPromise;
 
@@ -35,27 +54,42 @@ const stagePresentation = {
   4: { code: "S4", title: "下降趋势", phase: "下降阶段", arrow: "▼", color: "#d0444e" },
 };
 
-function routePath(route) {
-  return `${SITE_BASE_PATH}/gold/${route}`;
+function dataRoot(assetId = state.assetId) {
+  return new URL(`data/assets/${assetId}/`, SITE_ROOT);
+}
+
+function routePath(route, assetId = state.assetId) {
+  return `${SITE_BASE_PATH}/${assetId}/${route}`;
+}
+
+function locationContext() {
+  const forwardedPath = new URLSearchParams(location.search).get("route");
+  const candidatePath = forwardedPath || location.pathname.slice(SITE_BASE_PATH.length);
+  const parts = candidatePath.split("/").filter(Boolean);
+  const assetId = assets[parts[0]] ? parts[0] : "gold";
+  const pathRoute = parts[1];
+  const legacyRoute = location.hash.split("/").filter(Boolean).at(-1);
+  const route = pathRoute || legacyRoute || "overview";
+  return { assetId, route: routes.has(route) ? route : "overview" };
 }
 
 function routeFromLocation() {
-  const forwardedPath = new URLSearchParams(location.search).get("route");
-  const candidatePath = forwardedPath || location.pathname.slice(SITE_BASE_PATH.length);
-  const pathRoute = candidatePath.split("/").filter(Boolean)[1];
-  const legacyRoute = location.hash.split("/").filter(Boolean).at(-1);
-  const route = pathRoute || legacyRoute || "overview";
-  return routes.has(route) ? route : "overview";
+  return locationContext().route;
 }
 
 function normalizeRoute() {
-  const route = routeFromLocation();
-  const target = routePath(route);
+  const { assetId, route } = locationContext();
+  state.assetId = assetId;
+  const target = routePath(route, assetId);
   if (location.pathname !== target || location.search || location.hash) {
-    history.replaceState({ route }, "", target);
+    history.replaceState({ assetId, route }, "", target);
   }
-  $$('[data-route]').forEach((link) => { link.href = routePath(link.dataset.route); });
+  updateRouteLinks();
   return route;
+}
+
+function updateRouteLinks() {
+  $$('[data-route]').forEach((link) => { link.href = routePath(link.dataset.route); });
 }
 
 function lockMobilePageZoom() {
@@ -75,10 +109,73 @@ function lockMobilePageZoom() {
   }, { passive: false });
 }
 
+function readWatchlist() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]");
+    const normalized = saved.filter((assetId) => assets[assetId]);
+    return normalized.length ? [...new Set(normalized)] : [...DEFAULT_WATCHLIST];
+  } catch {
+    return [...DEFAULT_WATCHLIST];
+  }
+}
+
+function writeWatchlist(items) {
+  const normalized = [...new Set(items.filter((assetId) => assets[assetId]))];
+  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(normalized.length ? normalized : DEFAULT_WATCHLIST));
+}
+
+function ensureActiveAssetInWatchlist() {
+  const current = readWatchlist();
+  if (!current.includes(state.assetId)) writeWatchlist([...current, state.assetId]);
+}
+
+function renderWatchlist() {
+  ensureActiveAssetInWatchlist();
+  const watchlist = readWatchlist();
+  $("#asset-watchlist").innerHTML = watchlist.map((assetId) => {
+    const asset = assets[assetId];
+    return `
+      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""}" type="button" data-asset="${esc(assetId)}" aria-pressed="${assetId === state.assetId}">
+        <span class="watchlist-asset-icon">${esc(asset.code)}</span>
+        <span class="watchlist-asset-copy"><strong>${esc(asset.shortName)}</strong><small>${esc(asset.code)} / USD</small></span>
+      </button>
+    `;
+  }).join("");
+  const available = Object.keys(assets).filter((assetId) => !watchlist.includes(assetId));
+  $("#asset-catalog").innerHTML = available.length ? available.map((assetId) => {
+    const asset = assets[assetId];
+    return `
+      <button class="catalog-asset" type="button" data-add-asset="${esc(assetId)}">
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.code)} / USD</span><em>添加</em>
+      </button>
+    `;
+  }).join("") : '<p class="catalog-empty">当前支持的资产已经全部加入自选。</p>';
+}
+
+function setAssetPicker(open) {
+  $("#asset-picker").hidden = !open;
+  document.body.classList.toggle("picker-open", open);
+  if (open) $("#asset-picker-title").focus?.();
+}
+
+function clearCharts() {
+  state.charts.forEach(({ chart, observer }) => {
+    observer?.disconnect();
+    chart?.remove?.();
+  });
+  state.charts.clear();
+  for (const id of ["weekly-chart", "daily-chart"]) {
+    const container = document.getElementById(id);
+    if (container) container.replaceChildren();
+  }
+}
+
 function activateRoute() {
   const route = routeFromLocation();
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
   $$('[data-route]').forEach((link) => link.classList.toggle("active", link.dataset.route === route));
+  updateRouteLinks();
+  renderWatchlist();
   if (state.current) void ensureRouteData(route);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -135,30 +232,35 @@ function setRouteState(route, status, message = "") {
 
 async function ensureRouteData(route, { force = false } = {}) {
   if (["overview", "methodology"].includes(route)) return;
+  const assetId = state.assetId;
+  const root = dataRoot(assetId);
   if (force) state.routeLoads.delete(route);
   if (state.routeLoads.has(route)) return state.routeLoads.get(route);
   const load = (async () => {
     setRouteState(route, "loading");
     if (route === "weekly") {
       state.weekly = force || !state.weekly
-        ? await loadJson(new URL("weekly-series.json", DATA_ROOT))
+        ? await loadJson(new URL("weekly-series.json", root))
         : state.weekly;
+      if (assetId !== state.assetId) return;
       renderWeekly();
       await loadChartLibrary();
       requestAnimationFrame(renderWeeklyChart);
     }
     if (route === "daily") {
       state.daily = force || !state.daily
-        ? await loadJson(new URL("daily-series.json", DATA_ROOT))
+        ? await loadJson(new URL("daily-series.json", root))
         : state.daily;
+      if (assetId !== state.assetId) return;
       renderDaily();
       await loadChartLibrary();
       requestAnimationFrame(renderDailyChart);
     }
     if (route === "fundamentals") {
       state.fundamentals = force || !state.fundamentals
-        ? await loadJson(new URL("fundamentals.json", DATA_ROOT))
+        ? await loadJson(new URL("fundamentals.json", root))
         : state.fundamentals;
+      if (assetId !== state.assetId) return;
       renderFundamentals();
     }
     setRouteState(route, "ready");
@@ -205,8 +307,18 @@ function returnTone(value) {
 
 function updateHeader() {
   const { current } = state;
+  const presentation = assets[state.assetId];
   const quote = current.quote;
-  $("#asset-symbol").textContent = "GOLD";
+  document.body.dataset.asset = state.assetId;
+  document.title = `LZ-AssetScope · ${presentation.name}观察`;
+  $("#asset-symbol").textContent = presentation.code;
+  $("#asset-eyebrow").textContent = presentation.eyebrow;
+  $("#asset-name").textContent = presentation.name;
+  $("#overview-title").textContent = `${presentation.name}状态总览`;
+  $("#footer-label").textContent = `LZ-AssetScope · ${presentation.name}观察`;
+  $("#module-tabs").setAttribute("aria-label", `${presentation.name}分析模块`);
+  $("#weekly-chart").setAttribute("aria-label", `${presentation.name}周线价格图`);
+  $("#daily-chart").setAttribute("aria-label", `${presentation.name}日线价格图`);
   const delta = Number(quote.price) - Number(quote.previousClose);
   const percent = Number(quote.previousClose) ? (delta / Number(quote.previousClose)) * 100 : 0;
   $("#asset-benchmark").textContent = current.asset.technicalBenchmark;
@@ -222,16 +334,7 @@ function updateHeader() {
     month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
   }).replaceAll("/", "-");
   $("#generated-at").title = generatedAt.toLocaleString("zh-CN", { hour12: false });
-  const health = current.quality.dataHealth || {
-    status: current.productionReady ? current.quality.status : "development",
-    label: current.productionReady ? "数据可用" : "开发数据 · 未发布",
-  };
-  const status = $("#header-data-state");
-  status.textContent = health.label;
-  status.className = `data-state ${health.status === "ok" ? "ok" : "warning"}`;
-  status.title = health.staleFundamentals?.length
-    ? `沿用上一有效值：${health.staleFundamentals.join("、")}`
-    : health.label;
+  renderWatchlist();
 }
 
 function renderOverview() {
@@ -403,6 +506,11 @@ function renderFundamentals() {
     "central-bank-demand": "央行购金",
     "china-premium": "中国溢价",
     "event-calendar": "宏观事件日历",
+    "financial-conditions": "美国金融条件",
+    "fed-balance-sheet": "美联储资产负债表",
+    "spot-etf-flows": "现货ETF资金流",
+    "stablecoin-supply": "稳定币供应",
+    "exchange-balance": "交易所余额",
   };
   const coverage = state.fundamentals.coverage;
   $("#coverage-panel").innerHTML = `
@@ -763,15 +871,35 @@ function renderDailyChart() {
   );
 }
 
-async function boot() {
+async function loadAsset(assetId, { historyMode = "none" } = {}) {
+  if (!assets[assetId]) return;
+  const route = routeFromLocation();
+  if (historyMode === "push") history.pushState({ assetId, route }, "", routePath(route, assetId));
+  if (historyMode === "replace") history.replaceState({ assetId, route }, "", routePath(route, assetId));
+  const token = state.loadToken + 1;
+  state.loadToken = token;
+  state.assetId = assetId;
+  state.current = null;
+  state.daily = null;
+  state.weekly = null;
+  state.fundamentals = null;
+  state.routeLoads.clear();
+  clearCharts();
+  updateRouteLinks();
+  renderWatchlist();
+  $("#loading-state").hidden = false;
+  $("#error-state").hidden = true;
   try {
-    state.current = await loadJson(new URL("current.json", DATA_ROOT), { attempts: 3, timeoutMs: 9000 });
+    const current = await loadJson(new URL("current.json", dataRoot(assetId)), { attempts: 3, timeoutMs: 9000 });
+    if (token !== state.loadToken || assetId !== state.assetId) return;
+    state.current = current;
     updateHeader();
     renderOverview();
     renderMethodology();
     $("#loading-state").hidden = true;
     activateRoute();
   } catch (error) {
+    if (token !== state.loadToken) return;
     $("#loading-state").hidden = true;
     $("#error-state").hidden = false;
     $("#error-message").textContent = error.message || "请稍后重试。";
@@ -779,9 +907,42 @@ async function boot() {
   }
 }
 
+async function boot() {
+  normalizeRoute();
+  renderWatchlist();
+  await loadAsset(state.assetId);
+}
+
 lockMobilePageZoom();
-normalizeRoute();
 document.addEventListener("click", (event) => {
+  const addButton = event.target.closest("#add-asset-button");
+  if (addButton) {
+    event.preventDefault();
+    renderWatchlist();
+    setAssetPicker(true);
+    return;
+  }
+  if (event.target.closest("[data-close-asset-picker]")) {
+    event.preventDefault();
+    setAssetPicker(false);
+    return;
+  }
+  const addAsset = event.target.closest("[data-add-asset]");
+  if (addAsset) {
+    event.preventDefault();
+    const assetId = addAsset.dataset.addAsset;
+    writeWatchlist([...readWatchlist(), assetId]);
+    setAssetPicker(false);
+    void loadAsset(assetId, { historyMode: "push" });
+    return;
+  }
+  const assetButton = event.target.closest("[data-asset]");
+  if (assetButton) {
+    event.preventDefault();
+    const assetId = assetButton.dataset.asset;
+    if (assetId !== state.assetId) void loadAsset(assetId, { historyMode: "push" });
+    return;
+  }
   const retry = event.target.closest("[data-retry-route]");
   if (retry) {
     event.preventDefault();
@@ -792,10 +953,20 @@ document.addEventListener("click", (event) => {
   if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
   const route = routes.has(link.dataset.route) ? link.dataset.route : "overview";
-  if (location.pathname !== routePath(route)) history.pushState({ route }, "", routePath(route));
+  if (location.pathname !== routePath(route)) history.pushState({ assetId: state.assetId, route }, "", routePath(route));
   activateRoute();
 });
-window.addEventListener("popstate", activateRoute);
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !$("#asset-picker").hidden) setAssetPicker(false);
+});
+window.addEventListener("popstate", () => {
+  const context = locationContext();
+  if (context.assetId !== state.assetId) {
+    void loadAsset(context.assetId);
+  } else {
+    activateRoute();
+  }
+});
 
 let deferredInstall;
 window.addEventListener("beforeinstallprompt", (event) => {

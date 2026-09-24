@@ -6,9 +6,10 @@
     <meta name="robots" content="noindex">
     <title>LZ-AssetScope · 正在返回首页</title>
     <script>
-      const match = location.pathname.match(/\/gold\/(overview|weekly|daily|fundamentals|methodology)\/?$/);
-      const route = match ? match[1] : "overview";
-      location.replace("/LZ-AssetScope/?route=" + encodeURIComponent(`/gold/${route}`));
+      const match = location.pathname.match(/\/(gold|btc)\/(overview|weekly|daily|fundamentals|methodology)\/?$/);
+      const asset = match ? match[1] : "gold";
+      const route = match ? match[2] : "overview";
+      location.replace("/LZ-AssetScope/?route=" + encodeURIComponent(`/${asset}/${route}`));
     </script>
   </head>
   <body><a href="/LZ-AssetScope/">返回 LZ-AssetScope 首页</a></body>

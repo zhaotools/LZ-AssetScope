@@ -5,40 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
     <meta name="theme-color" content="#f7f8f8">
-    <meta name="description" content="LZ-AssetScope 黄金多周期趋势与基本面观察系统">
+    <meta name="description" content="LZ-AssetScope 多资产周线、日线与基本面观察系统">
     <meta name="robots" content="index,follow">
-    <title>LZ-AssetScope · 黄金观察</title>
+    <title>LZ-AssetScope · 多资产观察</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./favicon.ico?v=0.6.3" sizes="any">
     <link rel="icon" href="./icons/icon-32.png?v=0.6.3" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="./icons/icon-180.png?v=0.6.3">
-    <link rel="stylesheet" href="./styles.css?v=0.6.8">
+    <link rel="stylesheet" href="./styles.css?v=0.7.0">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
     <div class="ambient ambient-one"></div>
     <div class="ambient ambient-two"></div>
 
-    <header class="site-header">
-      <a class="brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
-        <img src="./icons/icon-192.png?v=0.6.3" alt="" width="40" height="40">
-        <span>
-          <strong>LZ-AssetScope</strong>
-          <small>资产观察框架</small>
-        </span>
-      </a>
-      <div class="header-actions">
-        <span class="data-state" id="header-data-state">正在读取数据</span>
-        <button class="ghost-button" id="install-button" type="button" hidden>安装应用</button>
-      </div>
-    </header>
+    <div class="application-shell">
+      <aside class="asset-sidebar" aria-label="我的自选资产">
+        <a class="brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
+          <img src="./icons/icon-192.png?v=0.6.3" alt="" width="44" height="44">
+          <span><strong>LZ-AssetScope</strong><small>资产观察框架</small></span>
+        </a>
+        <div class="watchlist-heading">
+          <div><span>WATCHLIST</span><strong>我的自选</strong></div>
+          <button class="asset-add-button" id="add-asset-button" type="button" aria-label="新增自选资产" title="新增资产">+</button>
+        </div>
+        <nav class="asset-watchlist" id="asset-watchlist" aria-label="自选资产列表"></nav>
+        <button class="sidebar-install-button" id="install-button" type="button" hidden>安装应用</button>
+      </aside>
 
-    <main id="main-content">
+      <div class="application-content">
+      <main id="main-content">
       <section class="asset-hero shell" aria-labelledby="asset-name">
         <div class="asset-heading">
           <div class="asset-symbol" id="asset-symbol" aria-hidden="true">GOLD</div>
           <div>
-            <p class="eyebrow">GOLD · DAILY OBSERVATORY</p>
+            <p class="eyebrow" id="asset-eyebrow">GOLD · DAILY OBSERVATORY</p>
             <h1 id="asset-name">黄金</h1>
             <p class="asset-benchmark" id="asset-benchmark">正在读取黄金基准</p>
           </div>
@@ -55,7 +56,7 @@
         </dl>
       </section>
 
-      <nav class="module-tabs shell" aria-label="黄金分析模块">
+      <nav class="module-tabs shell" id="module-tabs" aria-label="黄金分析模块">
         <a href="./gold/overview" data-route="overview">综合总览</a>
         <a href="./gold/weekly" data-route="weekly">周线阶段</a>
         <a href="./gold/daily" data-route="daily">日线状态</a>
@@ -78,7 +79,7 @@
             <article class="overview-module overview-summary-module">
               <header class="snapshot-header">
                 <p class="eyebrow">ASSET SNAPSHOT</p>
-                <h2>黄金状态总览</h2>
+                <h2 id="overview-title">黄金状态总览</h2>
                 <p class="snapshot-headline" id="overview-headline">—</p>
               </header>
 
@@ -224,20 +225,31 @@
           <p>本项目用于研究与信息整理，不构成投资建议。历史阶段与状态不能保证未来表现。</p>
         </article>
       </section>
-    </main>
+      </main>
 
-    <footer class="site-footer shell">
-      <span>LZ-AssetScope · 黄金样板</span>
+      <footer class="site-footer shell">
+      <span id="footer-label">LZ-AssetScope · 黄金观察</span>
       <a href="./gold/methodology" data-route="methodology">基于完成周期 · 查看方法与数据</a>
-    </footer>
+      </footer>
 
-    <nav class="mobile-nav" aria-label="移动端导航">
+      <nav class="mobile-nav" aria-label="移动端导航">
       <a href="./gold/overview" data-route="overview"><span>总览</span></a>
       <a href="./gold/weekly" data-route="weekly"><span>周线</span></a>
       <a href="./gold/daily" data-route="daily"><span>日线</span></a>
       <a href="./gold/fundamentals" data-route="fundamentals"><span>基本面</span></a>
-    </nav>
+      </nav>
+      </div>
+    </div>
 
-    <script type="module" src="./app.js?v=0.6.1"></script>
+    <div class="asset-picker" id="asset-picker" hidden>
+      <button class="asset-picker-backdrop" type="button" data-close-asset-picker aria-label="关闭资产选择"></button>
+      <section class="asset-picker-panel" role="dialog" aria-modal="true" aria-labelledby="asset-picker-title">
+        <div class="asset-picker-header"><div><span>ASSET LIBRARY</span><h2 id="asset-picker-title">添加资产</h2></div><button type="button" data-close-asset-picker aria-label="关闭">×</button></div>
+        <p>选择系统已经完成数据接入与分析验证的资产。</p>
+        <div class="asset-catalog" id="asset-catalog"></div>
+      </section>
+    </div>
+
+    <script type="module" src="./app.js?v=0.7.0"></script>
   </body>
 </html>

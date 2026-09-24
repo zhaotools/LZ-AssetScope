@@ -4,7 +4,7 @@
   "snapshots": [
     {
       "date": "2026-09-23",
-      "generatedAt": "2026-09-24T14:02:47+00:00",
+      "generatedAt": "2026-09-24T14:50:28+00:00",
       "inputHash": "05d1f675324217d0f1ee9d1c57e19d6599219cee3e276bc4baa5d63f4ed7222f",
       "asset": {
         "symbol": "GC=F",
@@ -134,7 +134,7 @@
         "summary": {
           "ok": true,
           "snapshotId": "05d1f675324217d0",
-          "snapshotCreatedAt": "2026-09-24T14:01:06+00:00",
+          "snapshotCreatedAt": "2026-09-24T14:50:23+00:00",
           "symbol": "GC=F",
           "name": "COMEX 黄金连续合约",
           "market": "commodity",
@@ -151,7 +151,7 @@
           "volume": 178132.0,
           "date": "2026-09-23",
           "quoteDate": "2026-09-23",
-          "updatedAt": "2026-09-24T14:01:06+00:00",
+          "updatedAt": "2026-09-24T14:50:23+00:00",
           "bullBear": {
             "status": "熊市区",
             "score": 5,
@@ -224,25 +224,25 @@
         "change": "日线融合状态维持“风险升高”。"
       },
       "fundamentals": {
-        "asOf": "2026-09-22",
+        "asOf": "2026-09-23",
         "regime": "偏压制",
         "factors": [
           {
             "id": "DFII10",
-            "observationDate": "2026-09-21",
-            "value": 2.62,
+            "observationDate": "2026-09-22",
+            "value": 2.63,
             "impact": "neutral"
           },
           {
             "id": "DGS10",
-            "observationDate": "2026-09-21",
+            "observationDate": "2026-09-22",
             "value": 4.96,
             "impact": "neutral"
           },
           {
             "id": "T10YIE",
-            "observationDate": "2026-09-22",
-            "value": 2.33,
+            "observationDate": "2026-09-23",
+            "value": 2.35,
             "impact": "neutral"
           },
           {
@@ -257,7 +257,7 @@
         "headline": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。日线融合状态维持“风险升高”。基本面环境：偏压制。",
         "kind": "convergence",
         "title": "当前主导逻辑",
-        "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面显示偏压制，但有 4 项宏观数据沿用上一有效值。",
+        "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面环境为偏压制。",
         "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
       }
     }

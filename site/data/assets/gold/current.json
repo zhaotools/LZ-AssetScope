@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-24T14:02:47+00:00",
+  "generatedAt": "2026-09-24T14:50:28+00:00",
   "productionReady": true,
   "asset": {
     "id": "gold",
@@ -33,7 +33,7 @@
       "dailyBoundary": "Yahoo Finance provider-defined GC=F daily bar; accepted after 18:00 America/New_York",
       "volumeSemantics": "provider-reported COMEX gold-futures volume; contract rolls can change comparability",
       "volumeRuleStatus": "exchange-volume-available",
-      "fetchedAt": "2026-09-24T14:01:06+00:00",
+      "fetchedAt": "2026-09-24T14:50:23+00:00",
       "observationDate": "2026-09-23"
     }
   },
@@ -161,7 +161,7 @@
     "summary": {
       "ok": true,
       "snapshotId": "05d1f675324217d0",
-      "snapshotCreatedAt": "2026-09-24T14:01:06+00:00",
+      "snapshotCreatedAt": "2026-09-24T14:50:23+00:00",
       "symbol": "GC=F",
       "name": "COMEX 黄金连续合约",
       "market": "commodity",
@@ -178,7 +178,7 @@
       "volume": 178132.0,
       "date": "2026-09-23",
       "quoteDate": "2026-09-23",
-      "updatedAt": "2026-09-24T14:01:06+00:00",
+      "updatedAt": "2026-09-24T14:50:23+00:00",
       "bullBear": {
         "status": "熊市区",
         "score": 5,
@@ -251,18 +251,18 @@
     "change": "日线融合状态维持“风险升高”。"
   },
   "fundamentals": {
-    "asOf": "2026-09-22",
+    "asOf": "2026-09-23",
     "regime": "偏压制",
     "summary": "压力因素包括美联储广义美元指数。",
     "factors": [
       {
         "id": "DFII10",
         "label": "美国10年实际利率",
-        "value": 2.62,
+        "value": 2.63,
         "unit": "%",
-        "observationDate": "2026-09-21",
-        "comparisonDate": "2026-09-14",
-        "change5Observations": 0.02,
+        "observationDate": "2026-09-22",
+        "comparisonDate": "2026-09-15",
+        "change5Observations": 0.01,
         "direction": "flat",
         "impact": "neutral",
         "frequency": "daily",
@@ -272,17 +272,16 @@
           "url": "https://fred.stlouisfed.org/series/DFII10"
         },
         "explanation": "实际利率上升通常提高持有黄金的机会成本。",
-        "status": "stale",
-        "error": "The read operation timed out"
+        "status": "ok"
       },
       {
         "id": "DGS10",
         "label": "美国10年期国债收益率",
         "value": 4.96,
         "unit": "%",
-        "observationDate": "2026-09-21",
-        "comparisonDate": "2026-09-14",
-        "change5Observations": -0.01,
+        "observationDate": "2026-09-22",
+        "comparisonDate": "2026-09-15",
+        "change5Observations": -0.04,
         "direction": "flat",
         "impact": "neutral",
         "frequency": "daily",
@@ -292,17 +291,16 @@
           "url": "https://fred.stlouisfed.org/series/DGS10"
         },
         "explanation": "名义长端利率上升通常对无息资产估值构成压力。",
-        "status": "stale",
-        "error": "The read operation timed out"
+        "status": "ok"
       },
       {
         "id": "T10YIE",
         "label": "美国10年盈亏平衡通胀率",
-        "value": 2.33,
+        "value": 2.35,
         "unit": "%",
-        "observationDate": "2026-09-22",
-        "comparisonDate": "2026-09-15",
-        "change5Observations": -0.05,
+        "observationDate": "2026-09-23",
+        "comparisonDate": "2026-09-16",
+        "change5Observations": 0.02,
         "direction": "flat",
         "impact": "neutral",
         "frequency": "daily",
@@ -312,8 +310,7 @@
           "url": "https://fred.stlouisfed.org/series/T10YIE"
         },
         "explanation": "通胀预期上升通常增加黄金的通胀对冲需求，但仍需结合实际利率判断。",
-        "status": "stale",
-        "error": "The read operation timed out"
+        "status": "ok"
       },
       {
         "id": "DTWEXBGS",
@@ -332,8 +329,7 @@
           "url": "https://fred.stlouisfed.org/series/DTWEXBGS"
         },
         "explanation": "美元走强通常对美元计价黄金形成压力。",
-        "status": "stale",
-        "error": "The read operation timed out"
+        "status": "ok"
       }
     ],
     "coverage": {
@@ -352,15 +348,15 @@
       ]
     },
     "health": {
-      "status": "partial",
-      "staleCount": 4
+      "status": "ok",
+      "staleCount": 0
     }
   },
   "synthesis": {
     "headline": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。日线融合状态维持“风险升高”。基本面环境：偏压制。",
     "kind": "convergence",
     "title": "当前主导逻辑",
-    "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面显示偏压制，但有 4 项宏观数据沿用上一有效值。",
+    "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面环境为偏压制。",
     "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
   },
   "changeSummary": {
@@ -410,20 +406,15 @@
     }
   ],
   "quality": {
-    "status": "warning",
+    "status": "ok",
     "dataHealth": {
-      "status": "partial",
-      "label": "数据可用 · 4 项沿用",
+      "status": "ok",
+      "label": "数据正常",
       "market": "ok",
       "technical": "ok",
-      "fundamentals": "partial",
-      "staleFundamentalCount": 4,
-      "staleFundamentals": [
-        "美国10年实际利率",
-        "美国10年期国债收益率",
-        "美国10年盈亏平衡通胀率",
-        "美联储广义美元指数"
-      ]
+      "fundamentals": "ok",
+      "staleFundamentalCount": 0,
+      "staleFundamentals": []
     },
     "inputHash": "05d1f675324217d0f1ee9d1c57e19d6599219cee3e276bc4baa5d63f4ed7222f",
     "dataVersion": "LZAS-GOLD-20260923",
@@ -435,11 +426,7 @@
       "行情使用 Yahoo Finance 的 GC=F 黄金期货连续序列，价格会受合约换月影响，不等同于 XAU/USD 现货金价。",
       "系统只采纳纽约时间 18:00 后已经完成的日线；当日未完成数据会被剔除。",
       "成交量采用 Yahoo Finance 返回的期货成交量；合约换月附近的成交量与价格连续性需要结合换月因素理解。",
-      "Yahoo Finance 外部展示授权未获得独立书面确认；项目所有者已明确选择该免费数据源并接受上线风险。",
-      "美国10年实际利率 更新失败，沿用上一份有效值",
-      "美国10年期国债收益率 更新失败，沿用上一份有效值",
-      "美国10年盈亏平衡通胀率 更新失败，沿用上一份有效值",
-      "美联储广义美元指数 更新失败，沿用上一份有效值"
+      "Yahoo Finance 外部展示授权未获得独立书面确认；项目所有者已明确选择该免费数据源并接受上线风险。"
     ]
   },
   "engines": {

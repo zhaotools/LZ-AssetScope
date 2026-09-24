@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
     <meta name="theme-color" content="#f7f8f8">
     <meta name="description" content="LZ-AssetScope 黄金多周期趋势与基本面观察系统">
@@ -11,7 +11,7 @@
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./icons/icon-180.png">
-    <link rel="stylesheet" href="./styles.css?v=0.4.0">
+    <link rel="stylesheet" href="./styles.css?v=0.5.0">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -19,7 +19,7 @@
     <div class="ambient ambient-two"></div>
 
     <header class="site-header">
-      <a class="brand" href="#/gold/overview" aria-label="LZ-AssetScope 首页">
+      <a class="brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
         <img src="./icons/icon.svg" alt="" width="40" height="40">
         <span>
           <strong>LZ-AssetScope</strong>
@@ -35,7 +35,7 @@
     <main id="main-content">
       <section class="asset-hero shell" aria-labelledby="asset-name">
         <div class="asset-heading">
-          <div class="asset-symbol" id="asset-symbol" aria-hidden="true">GC</div>
+          <div class="asset-symbol" id="asset-symbol" aria-hidden="true">GOLD</div>
           <div>
             <p class="eyebrow">GOLD · DAILY OBSERVATORY</p>
             <h1 id="asset-name">黄金</h1>
@@ -55,11 +55,11 @@
       </section>
 
       <nav class="module-tabs shell" aria-label="黄金分析模块">
-        <a href="#/gold/overview" data-route="overview">综合总览</a>
-        <a href="#/gold/weekly" data-route="weekly">周线阶段</a>
-        <a href="#/gold/daily" data-route="daily">日线状态</a>
-        <a href="#/gold/fundamentals" data-route="fundamentals">基本面</a>
-        <a href="#/gold/methodology" data-route="methodology">方法与数据</a>
+        <a href="./gold/overview" data-route="overview">综合总览</a>
+        <a href="./gold/weekly" data-route="weekly">周线阶段</a>
+        <a href="./gold/daily" data-route="daily">日线状态</a>
+        <a href="./gold/fundamentals" data-route="fundamentals">基本面</a>
+        <a href="./gold/methodology" data-route="methodology">方法与数据</a>
       </nav>
 
       <div class="shell page-state" id="loading-state">
@@ -201,17 +201,17 @@
 
     <footer class="site-footer shell">
       <span>LZ-AssetScope · 黄金样板</span>
-      <a href="#/gold/methodology">基于完成周期 · 查看方法与数据</a>
+      <a href="./gold/methodology" data-route="methodology">基于完成周期 · 查看方法与数据</a>
     </footer>
 
     <nav class="mobile-nav" aria-label="移动端导航">
-      <a href="#/gold/overview" data-route="overview"><span>总览</span></a>
-      <a href="#/gold/weekly" data-route="weekly"><span>周线</span></a>
-      <a href="#/gold/daily" data-route="daily"><span>日线</span></a>
-      <a href="#/gold/fundamentals" data-route="fundamentals"><span>基本面</span></a>
+      <a href="./gold/overview" data-route="overview"><span>总览</span></a>
+      <a href="./gold/weekly" data-route="weekly"><span>周线</span></a>
+      <a href="./gold/daily" data-route="daily"><span>日线</span></a>
+      <a href="./gold/fundamentals" data-route="fundamentals"><span>基本面</span></a>
     </nav>
 
-    <script src="./vendor-lightweight-charts.js?v=0.4.0"></script>
-    <script type="module" src="./app.js?v=0.4.0"></script>
+    <script src="./vendor-lightweight-charts.js?v=0.5.0"></script>
+    <script type="module" src="./app.js?v=0.5.0"></script>
   </body>
 </html>

@@ -1,4 +1,6 @@
-const DATA_ROOT = "./data/assets/gold";
+const SITE_ROOT = new URL("./", import.meta.url);
+const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
+const DATA_ROOT = new URL("data/assets/gold/", SITE_ROOT);
 const routes = new Set(["overview", "weekly", "daily", "fundamentals", "methodology"]);
 const state = { current: null, daily: null, weekly: null, fundamentals: null, charts: new Map() };
 
@@ -25,13 +27,31 @@ const stagePresentation = {
   4: { code: "S4", title: "下降趋势", phase: "下降阶段", arrow: "▼", color: "#d0444e" },
 };
 
-function routeFromHash() {
-  const route = location.hash.split("/").filter(Boolean).at(-1) || "overview";
+function routePath(route) {
+  return `${SITE_BASE_PATH}/gold/${route}`;
+}
+
+function routeFromLocation() {
+  const forwardedPath = new URLSearchParams(location.search).get("route");
+  const candidatePath = forwardedPath || location.pathname.slice(SITE_BASE_PATH.length);
+  const pathRoute = candidatePath.split("/").filter(Boolean)[1];
+  const legacyRoute = location.hash.split("/").filter(Boolean).at(-1);
+  const route = pathRoute || legacyRoute || "overview";
   return routes.has(route) ? route : "overview";
 }
 
+function normalizeRoute() {
+  const route = routeFromLocation();
+  const target = routePath(route);
+  if (location.pathname !== target || location.search || location.hash) {
+    history.replaceState({ route }, "", target);
+  }
+  $$('[data-route]').forEach((link) => { link.href = routePath(link.dataset.route); });
+  return route;
+}
+
 function activateRoute() {
-  const route = routeFromHash();
+  const route = routeFromLocation();
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
   $$('[data-route]').forEach((link) => link.classList.toggle("active", link.dataset.route === route));
   if (route === "weekly") requestAnimationFrame(renderWeeklyChart);
@@ -80,7 +100,7 @@ function returnTone(value) {
 function updateHeader() {
   const { current } = state;
   const quote = current.quote;
-  $("#asset-symbol").textContent = current.asset.displaySymbol || String(current.asset.symbol || "GC").split("/")[0];
+  $("#asset-symbol").textContent = "GOLD";
   const delta = Number(quote.price) - Number(quote.previousClose);
   const percent = Number(quote.previousClose) ? (delta / Number(quote.previousClose)) * 100 : 0;
   $("#asset-benchmark").textContent = current.asset.technicalBenchmark;
@@ -620,10 +640,10 @@ function renderDailyChart() {
 async function boot() {
   try {
     [state.current, state.daily, state.weekly, state.fundamentals] = await Promise.all([
-      loadJson(`${DATA_ROOT}/current.json`),
-      loadJson(`${DATA_ROOT}/daily-series.json`),
-      loadJson(`${DATA_ROOT}/weekly-series.json`),
-      loadJson(`${DATA_ROOT}/fundamentals.json`),
+      loadJson(new URL("current.json", DATA_ROOT)),
+      loadJson(new URL("daily-series.json", DATA_ROOT)),
+      loadJson(new URL("weekly-series.json", DATA_ROOT)),
+      loadJson(new URL("fundamentals.json", DATA_ROOT)),
     ]);
     updateHeader();
     renderOverview();
@@ -641,8 +661,16 @@ async function boot() {
   }
 }
 
-window.addEventListener("hashchange", activateRoute);
-if (!location.hash) history.replaceState(null, "", "#/gold/overview");
+normalizeRoute();
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-route]");
+  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  const route = routes.has(link.dataset.route) ? link.dataset.route : "overview";
+  if (location.pathname !== routePath(route)) history.pushState({ route }, "", routePath(route));
+  activateRoute();
+});
+window.addEventListener("popstate", activateRoute);
 
 let deferredInstall;
 window.addEventListener("beforeinstallprompt", (event) => {
@@ -666,7 +694,7 @@ if ("serviceWorker" in navigator) {
       await Promise.all(registrations.map((registration) => registration.unregister()));
       return;
     }
-    navigator.serviceWorker.register("./service-worker.js").catch(console.warn);
+    navigator.serviceWorker.register(new URL("service-worker.js", SITE_ROOT)).catch(console.warn);
   });
 }
 

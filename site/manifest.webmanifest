@@ -3,7 +3,7 @@
   "short_name": "AssetScope",
   "description": "黄金周线、日线与基本面观察系统",
   "lang": "zh-CN",
-  "start_url": "./#/gold/overview",
+  "start_url": "./gold/overview",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f5f6",

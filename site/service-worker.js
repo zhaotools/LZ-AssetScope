@@ -1,10 +1,10 @@
-const CACHE = "lz-assetscope-v0.4.0";
+const CACHE = "lz-assetscope-v0.5.0";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=0.4.0",
-  "./app.js?v=0.4.0",
-  "./vendor-lightweight-charts.js?v=0.4.0",
+  "./styles.css?v=0.5.0",
+  "./app.js?v=0.5.0",
+  "./vendor-lightweight-charts.js?v=0.5.0",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon-180.png",
@@ -35,11 +35,25 @@ async function networkFirst(request) {
   }
 }
 
+async function navigationFirst(request) {
+  try {
+    const response = await fetch(request);
+    if (response.ok) return response;
+  } catch (error) {
+    // Fall through to the cached application shell while offline.
+  }
+  return caches.match(new URL("./index.html", self.registration.scope));
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-  if (event.request.mode === "navigate" || url.pathname.includes("/data/")) {
+  if (event.request.mode === "navigate") {
+    event.respondWith(navigationFirst(event.request));
+    return;
+  }
+  if (url.pathname.includes("/data/")) {
     event.respondWith(networkFirst(event.request));
     return;
   }

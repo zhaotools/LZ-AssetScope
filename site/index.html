@@ -12,7 +12,7 @@
     <link rel="icon" href="./favicon.ico?v=0.6.3" sizes="any">
     <link rel="icon" href="./icons/icon-32.png?v=0.6.3" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="./icons/icon-180.png?v=0.6.3">
-    <link rel="stylesheet" href="./styles.css?v=0.6.1">
+    <link rel="stylesheet" href="./styles.css?v=0.6.4">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -73,32 +73,28 @@
       </div>
 
       <section class="route-panel shell" data-panel="overview" hidden>
-        <article class="overview-snapshot">
-          <header class="snapshot-header">
-            <div>
+        <div class="overview-snapshot">
+          <article class="overview-module overview-summary-module">
+            <header class="snapshot-header">
               <p class="eyebrow">ASSET SNAPSHOT</p>
               <h2>黄金状态总览</h2>
               <p class="snapshot-headline" id="overview-headline">—</p>
-            </div>
-            <div class="snapshot-change" id="overview-change">
-              <span>最近变化</span>
-              <strong id="overview-change-label">—</strong>
-            </div>
-          </header>
+            </header>
 
-          <div class="snapshot-status-grid">
-            <div class="snapshot-metric" id="overview-weekly-card">
-              <span>周线趋势</span><strong id="overview-weekly">—</strong><small id="overview-weekly-note">—</small>
+            <div class="snapshot-status-grid">
+              <div class="snapshot-metric" id="overview-weekly-card">
+                <span>周线趋势</span><strong id="overview-weekly">—</strong><small id="overview-weekly-note">—</small>
+              </div>
+              <div class="snapshot-metric" id="overview-daily-card">
+                <span>日线状态</span><strong id="overview-daily">—</strong><small id="overview-daily-note">—</small>
+              </div>
+              <div class="snapshot-metric" id="overview-fundamental-card">
+                <span>基本面环境</span><strong id="overview-fundamental">—</strong><small id="overview-fundamental-note">—</small>
+              </div>
             </div>
-            <div class="snapshot-metric" id="overview-daily-card">
-              <span>日线状态</span><strong id="overview-daily">—</strong><small id="overview-daily-note">—</small>
-            </div>
-            <div class="snapshot-metric" id="overview-fundamental-card">
-              <span>基本面环境</span><strong id="overview-fundamental">—</strong><small id="overview-fundamental-note">—</small>
-            </div>
-          </div>
+          </article>
 
-          <div class="snapshot-insight-grid">
+          <article class="overview-module snapshot-insight-grid">
             <section class="snapshot-logic">
               <span class="panel-kicker">SYNTHESIS</span>
               <h3 id="synthesis-title">当前主导逻辑</h3>
@@ -107,18 +103,22 @@
             <section class="snapshot-recent">
               <span class="panel-kicker">RECENT CHANGES</span>
               <h3>最近变化</h3>
+              <div class="snapshot-change" id="overview-change">
+                <span>变化方向</span>
+                <strong id="overview-change-label">—</strong>
+              </div>
               <ol class="compact-change-list" id="change-timeline"></ol>
             </section>
-          </div>
+          </article>
 
-          <section class="validation-strip">
+          <article class="overview-module validation-strip">
             <div class="validation-heading">
               <span class="panel-kicker">NEXT VALIDATION</span>
               <h3>下一验证条件</h3>
             </div>
             <div class="validation-list" id="validation-list"></div>
-          </section>
-        </article>
+          </article>
+        </div>
 
         <details class="quality-banner" id="quality-banner">
           <summary><span>数据状态</span><strong id="quality-summary">—</strong></summary>

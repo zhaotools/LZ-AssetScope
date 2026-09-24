@@ -7,6 +7,7 @@
   --surface-blue: #eef5f8;
   --ink: #112a43;
   --ink-strong: #071d32;
+  --text-deep-gray: #3f4850;
   --muted: #65778a;
   --muted-light: #8593a1;
   --navy: #123553;
@@ -334,7 +335,14 @@ h1 {
   border-bottom: 1px solid var(--line);
 }
 .snapshot-header h2 { margin: 4px 0 5px; color: var(--ink-strong); font-size: 23px; }
-.snapshot-headline { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.snapshot-headline,
+.snapshot-logic .lead-copy {
+  color: var(--text-deep-gray);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+.snapshot-headline { margin: 0; }
 .snapshot-recent .snapshot-change {
   margin-top: 12px;
   padding: 13px 15px;
@@ -360,7 +368,7 @@ h1 {
 .snapshot-logic, .snapshot-recent { padding: 21px 28px; }
 .snapshot-recent { border-left: 1px solid var(--line); }
 .snapshot-insight-grid h3, .validation-strip h3 { margin: 5px 0 0; color: var(--ink-strong); font-size: 17px; }
-.snapshot-logic .lead-copy { margin: 12px 0 0; font-size: 16px; line-height: 1.75; }
+.snapshot-logic .lead-copy { margin: 12px 0 0; }
 .compact-change-list { margin: 12px 0 0; padding: 0; list-style: none; }
 .compact-change-list li { position: relative; display: flex; justify-content: space-between; gap: 12px; padding-left: 16px; color: var(--ink); font-size: 12px; line-height: 1.55; }
 .compact-change-list li + li { margin-top: 8px; }
@@ -929,14 +937,12 @@ h1 {
   .overview-snapshot { gap: 12px; }
   .snapshot-header { padding: 19px 18px 16px; }
   .snapshot-header h2 { font-size: 21px; }
-  .snapshot-headline { font-size: 12px; }
   .snapshot-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0 18px; }
   .snapshot-metric { padding: 16px 14px 15px 0; }
   .snapshot-metric:nth-child(2) { padding-left: 14px; }
   .snapshot-metric:nth-child(3) { grid-column: 1 / -1; padding-left: 0; border-top: 1px solid var(--line); border-left: 0; }
   .snapshot-metric strong { font-size: 18px; }
   .snapshot-logic, .snapshot-recent { padding: 18px; }
-  .snapshot-logic .lead-copy { font-size: 15px; }
   .validation-strip { gap: 13px; padding: 16px 18px; }
   .validation-list { grid-template-columns: 1fr; }
   .compact-change-list li { align-items: flex-start; }

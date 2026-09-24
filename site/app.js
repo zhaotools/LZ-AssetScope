@@ -50,6 +50,23 @@ function normalizeRoute() {
   return route;
 }
 
+function lockMobilePageZoom() {
+  if (!navigator.maxTouchPoints) return;
+  const preventZoom = (event) => event.preventDefault();
+  ["gesturestart", "gesturechange", "gestureend"].forEach((eventName) => {
+    document.addEventListener(eventName, preventZoom, { passive: false });
+  });
+  document.addEventListener("touchmove", (event) => {
+    if (event.touches.length > 1) preventZoom(event);
+  }, { passive: false });
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) preventZoom(event);
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
 function activateRoute() {
   const route = routeFromLocation();
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
@@ -661,6 +678,7 @@ async function boot() {
   }
 }
 
+lockMobilePageZoom();
 normalizeRoute();
 document.addEventListener("click", (event) => {
   const link = event.target.closest("[data-route]");

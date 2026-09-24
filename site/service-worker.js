@@ -1,10 +1,10 @@
-const CACHE = "lz-assetscope-v0.5.0";
+const CACHE = "lz-assetscope-v0.5.1";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=0.5.0",
-  "./app.js?v=0.5.0",
-  "./vendor-lightweight-charts.js?v=0.5.0",
+  "./styles.css?v=0.5.1",
+  "./app.js?v=0.5.1",
+  "./vendor-lightweight-charts.js?v=0.5.1",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon-180.png",

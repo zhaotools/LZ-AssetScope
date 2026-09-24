@@ -39,6 +39,9 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { scroll-behavior: smooth; background: var(--canvas); }
+@media (pointer: coarse) {
+  html, body { touch-action: pan-x pan-y; }
+}
 ::selection { color: var(--ink-strong); background: var(--gold-light); }
 body {
   position: relative;

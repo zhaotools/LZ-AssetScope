@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.15";
+} from "./member-auth.js?v=1.0.16";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -1030,7 +1030,6 @@ function renderWeekly() {
   const stageTone = signalClass(current.observation?.label);
   const currentPrimaryStage = Number(current.observation?.primaryStage || current.confirmed?.primary);
   const currentStageTitle = stagePresentation[currentPrimaryStage]?.title || "";
-  $("#weekly-asof-chip").textContent = `截至 ${fmtDate(state.weekly.asOf)}`;
   const confirmed = current.confirmed || {};
   $("#weekly-stats").innerHTML = `
     <span class="panel-kicker">CURRENT STAGE</span>
@@ -1070,7 +1069,6 @@ function renderDaily() {
   const ma200Distance = Number(latestBar.ma200)
     ? ((Number(latestBar.close) / Number(latestBar.ma200)) - 1) * 100
     : null;
-  $("#daily-asof-chip").textContent = `截至 ${fmtDate(state.daily.asOf)}`;
   $("#daily-summary").innerHTML = `
     <span class="panel-kicker">FUSION STATUS</span>
     <div class="big-state ${fusionTone}">${esc(summary.fusion.status)}</div>
@@ -1107,7 +1105,6 @@ function renderDaily() {
 
 function renderFundamentals() {
   const fundamentals = state.current.fundamentals;
-  $("#fundamental-regime").textContent = fundamentals.regime;
   $("#fundamental-summary").textContent = fundamentals.summary;
   const factorById = new Map(fundamentals.factors.map((item) => [item.id, item]));
   const factorChanges = (item) => {

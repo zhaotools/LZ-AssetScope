@@ -626,6 +626,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
 
 .content-grid { display: grid; gap: 17px; }
 .detail-grid { grid-template-columns: minmax(0, 1.62fr) minmax(280px, 0.78fr); }
+.weekly-detail-grid { grid-template-columns: minmax(0, 3fr) minmax(250px, 0.82fr); }
 .lower-grid { grid-template-columns: 1fr 1fr; margin-top: 17px; }
 .panel {
   min-width: 0;
@@ -1181,6 +1182,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .overview-top-row { grid-template-columns: 1fr; }
   .validation-strip { grid-template-columns: 1fr; }
   .detail-grid { grid-template-columns: 1fr; }
+  .weekly-detail-grid { grid-template-columns: 1fr; }
   .daily-side-stack { gap: 12px; }
   .stat-panel { min-height: 330px; }
   .daily-side-stack .stat-panel { min-height: 0; }

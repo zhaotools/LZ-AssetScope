@@ -14,7 +14,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.10";
+} from "./member-auth.js?v=1.0.11";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -1398,7 +1398,7 @@ function renderWeeklyChart() {
     completedSeries,
     [["ma30", "#3f82ad", "MA30"]],
     "weekly",
-    { stageBackground: true, stageTransitions: state.weekly?.stageHistory, movingAverageLabels: false },
+    { stageBackground: true, stageTransitions: state.weekly?.stageHistory, movingAverageLabels: false, visibleMonths: 48 },
   );
 }
 

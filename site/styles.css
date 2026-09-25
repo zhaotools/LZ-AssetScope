@@ -55,23 +55,10 @@ body {
   font-family: var(--font-ui);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  background:
-    radial-gradient(circle at 92% 3%, rgba(220, 188, 117, 0.22), transparent 25rem),
-    radial-gradient(circle at 3% 45%, rgba(102, 159, 190, 0.12), transparent 28rem),
-    linear-gradient(180deg, #fafbfb 0%, var(--canvas) 50%, #eef2f4 100%);
+  background: var(--canvas);
 }
 body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  content: "";
-  opacity: 0.35;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(17, 42, 67, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 42, 67, 0.025) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: linear-gradient(to bottom, black, transparent 72%);
+  display: none;
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
@@ -93,7 +80,7 @@ button { font: inherit; }
 .ambient { display: none; }
 .shell { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
 .application-shell { min-height: 100vh; }
-.application-content { min-width: 0; min-height: 100vh; margin-left: var(--sidebar-width); }
+.application-content { min-width: 0; min-height: 100vh; margin-left: var(--sidebar-width); background: var(--canvas); }
 
 .asset-sidebar {
   position: fixed;
@@ -129,7 +116,7 @@ button { font: inherit; }
 .watchlist-mobile-actions { display: flex; align-items: center; gap: 6px; }
 .watchlist-table-header {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.88fr) minmax(0, 0.68fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 1fr) 68px 54px 76px;
   gap: 6px;
   padding: 8px 9px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -144,7 +131,7 @@ button { font: inherit; }
 .watchlist-asset {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.88fr) minmax(0, 0.68fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 1fr) 68px 54px 76px;
   gap: 6px;
   align-items: center;
   width: 100%;
@@ -1215,7 +1202,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .watchlist-table-header { grid-column: 1 / -1; margin-top: 8px; }
   .asset-watchlist { grid-column: 1 / -1; display: flex; gap: 7px; margin-top: 9px; overflow-x: auto; scrollbar-width: none; }
   .asset-watchlist::-webkit-scrollbar { display: none; }
-  .watchlist-asset { width: auto; min-width: 286px; padding: 7px 8px; }
+  .watchlist-asset { width: auto; min-width: 320px; padding: 7px 8px; }
   .watchlist-asset-copy strong { font-size: 12px; }
   .top-utility-bar { padding-top: 8px; }
   .module-tabs { top: 106px; }

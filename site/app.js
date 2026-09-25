@@ -14,7 +14,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.5";
+} from "./member-auth.js?v=1.0.6";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -273,12 +273,13 @@ function renderWatchlist() {
     const snapshot = ready ? watchlistSnapshot(assetId) : null;
     const quote = watchlistQuote(snapshot);
     const weekly = watchlistWeekly(snapshot, status);
+    const weeklyStage = weekly.match(/^S([1-4])/i)?.[1] || "";
     return `
       <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}">
         <span class="watchlist-asset-copy"><strong>${esc(asset.code)}/${esc(asset.currency || "USD")}</strong><small>${esc(asset.shortName)}</small></span>
         <span class="watchlist-price">${ready ? quote.price : "—"}</span>
         <span class="watchlist-change ${quote.tone}">${ready ? quote.change : "—"}</span>
-        <span class="watchlist-stage">${weekly}</span>
+        <span class="watchlist-stage ${weeklyStage ? `stage-s${weeklyStage}` : ""}">${weekly}</span>
         ${removable ? `<span class="watchlist-remove" role="button" tabindex="0" data-remove-asset="${esc(assetId)}" aria-label="从自选移除">×</span>` : ""}
       </button>
     `;

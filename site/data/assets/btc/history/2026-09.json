@@ -4,7 +4,7 @@
   "snapshots": [
     {
       "date": "2026-09-23",
-      "generatedAt": "2026-09-24T23:34:44+08:00",
+      "generatedAt": "2026-09-25T02:18:43+00:00",
       "inputHash": "fd690abf0d6cb3dafe0e056113924643c89de94d9e0401f21da37d5e0d432f2b",
       "asset": {
         "symbol": "BTC-USD",
@@ -129,7 +129,7 @@
         "summary": {
           "ok": true,
           "snapshotId": "fd690abf0d6cb3da",
-          "snapshotCreatedAt": "2026-09-24T22:29:57+08:00",
+          "snapshotCreatedAt": "2026-09-25T02:18:39+00:00",
           "symbol": "BTC-USD",
           "name": "比特币 / 美元",
           "market": "crypto",
@@ -146,7 +146,7 @@
           "volume": 46088463341.0,
           "date": "2026-09-23",
           "quoteDate": "2026-09-23",
-          "updatedAt": "2026-09-24T22:29:57+08:00",
+          "updatedAt": "2026-09-25T02:18:39+00:00",
           "bullBear": {
             "status": "牛市区",
             "score": 40,
@@ -193,7 +193,7 @@
             "status": "高位死叉",
             "score": 0,
             "action": "高位动能转弱，注意风险控制。",
-            "k": 86.9195102570497,
+            "k": 86.91951025704968,
             "d": 92.35650820825474,
             "atr": 2540.7047991071427,
             "atrPct": 3.0109199292262936,
@@ -219,13 +219,13 @@
         "change": "日线融合状态维持“趋势延续”。"
       },
       "fundamentals": {
-        "asOf": "2026-09-24",
+        "asOf": "2026-09-25",
         "regime": "支持与压力并存",
         "factors": [
           {
             "id": "DFII10",
-            "observationDate": "2026-09-22",
-            "value": 2.63,
+            "observationDate": "2026-09-23",
+            "value": 2.76,
             "impact": "pressure"
           },
           {
@@ -242,14 +242,14 @@
           },
           {
             "id": "STABLECOIN_TOTAL",
-            "observationDate": "2026-09-24",
-            "value": 310.98,
+            "observationDate": "2026-09-25",
+            "value": 312.29,
             "impact": "support"
           },
           {
             "id": "STABLECOIN_CORE",
-            "observationDate": "2026-09-24",
-            "value": 258.84,
+            "observationDate": "2026-09-25",
+            "value": 260.12,
             "impact": "support"
           },
           {

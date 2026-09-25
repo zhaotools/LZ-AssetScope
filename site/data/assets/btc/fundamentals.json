@@ -1,21 +1,21 @@
 {
   "schemaVersion": "btc-fundamentals-v2",
-  "generatedAt": "2026-09-24T23:33:39+08:00",
+  "generatedAt": "2026-09-25T02:18:43+00:00",
   "asset": "btc",
   "scope": "btc-four-layer-fundamentals",
   "factors": [
     {
       "id": "DFII10",
       "label": "美国10年实际利率",
-      "value": 2.63,
+      "value": 2.76,
       "unit": "%",
-      "observationDate": "2026-09-22",
-      "comparisonDate": "2026-08-24",
-      "change5Observations": 0.25,
+      "observationDate": "2026-09-23",
+      "comparisonDate": "2026-08-25",
+      "change5Observations": 0.44,
       "changes": [
         {
           "label": "20个观察值",
-          "value": 0.25,
+          "value": 0.44,
           "unit": "%"
         }
       ],
@@ -59,8 +59,8 @@
       },
       "explanation": "美元走强通常对应全球美元流动性收紧，对 BTC 风险偏好形成压力。",
       "freshness": {
-        "calendarDays": 6,
-        "businessDays": 4
+        "calendarDays": 7,
+        "businessDays": 5
       },
       "status": "stale",
       "staleReason": "数据发布日期超过当前指标允许的更新时间窗口"
@@ -90,27 +90,27 @@
       },
       "explanation": "金融条件指数上升代表环境趋紧，通常不利于加密资产风险偏好。",
       "freshness": {
-        "calendarDays": 6,
-        "businessDays": 4
+        "calendarDays": 7,
+        "businessDays": 5
       },
       "status": "ok"
     },
     {
       "id": "STABLECOIN_TOTAL",
       "label": "美元稳定币总供应",
-      "value": 310.98,
+      "value": 312.29,
       "unit": "USD bn",
-      "observationDate": "2026-09-24",
-      "comparisonDate": "2026-08-25",
+      "observationDate": "2026-09-25",
+      "comparisonDate": "2026-08-26",
       "changes": [
         {
           "label": "7日",
-          "value": 0.475,
+          "value": 0.896,
           "unit": "%"
         },
         {
           "label": "30日",
-          "value": 0.797,
+          "value": 1.132,
           "unit": "%"
         }
       ],
@@ -130,19 +130,19 @@
     {
       "id": "STABLECOIN_CORE",
       "label": "USDT + USDC 供应",
-      "value": 258.84,
+      "value": 260.12,
       "unit": "USD bn",
-      "observationDate": "2026-09-24",
+      "observationDate": "2026-09-25",
       "comparisonDate": null,
       "changes": [
         {
           "label": "7日",
-          "value": 0.66,
+          "value": 1.119,
           "unit": "%"
         },
         {
           "label": "30日",
-          "value": 0.73,
+          "value": 1.211,
           "unit": "%"
         }
       ],

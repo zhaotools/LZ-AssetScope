@@ -1,7 +1,7 @@
 {
   "schemaVersion": "weekly-series-v1",
   "asOf": "2026-09-18",
-  "inputHash": "05d1f675324217d0f1ee9d1c57e19d6599219cee3e276bc4baa5d63f4ed7222f",
+  "inputHash": "feee4981c7615c30f9d189cf8e61d84d3d60ec49203ef3761bd29a1262c0e7d1",
   "series": [
     {
       "time": "2023-04-21",
@@ -2152,14 +2152,14 @@
       "provisional": false
     },
     {
-      "time": "2026-09-23",
+      "time": "2026-09-24",
       "open": 4413,
       "high": 4422.10009765625,
-      "low": 4310.7001953125,
-      "close": 4318.39990234375,
-      "volume": 494467,
-      "ma10": 4385.409985351563,
-      "ma30": 4482.910009765625,
+      "low": 4299.2998046875,
+      "close": 4328.5,
+      "volume": 474311,
+      "ma10": 4386.419995117188,
+      "ma30": 4483.2466796875,
       "stage": 4,
       "provisional": true
     }

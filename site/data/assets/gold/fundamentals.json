@@ -1,19 +1,26 @@
 {
   "schemaVersion": "gold-fundamentals-v1",
-  "generatedAt": "2026-09-24T14:50:27+00:00",
+  "generatedAt": "2026-09-25T02:18:42+00:00",
   "asset": "gold",
   "scope": "macro-minimum",
   "factors": [
     {
       "id": "DFII10",
       "label": "美国10年实际利率",
-      "value": 2.63,
+      "value": 2.76,
       "unit": "%",
-      "observationDate": "2026-09-22",
-      "comparisonDate": "2026-09-15",
-      "change5Observations": 0.01,
-      "direction": "flat",
-      "impact": "neutral",
+      "observationDate": "2026-09-23",
+      "comparisonDate": "2026-09-16",
+      "change5Observations": 0.08,
+      "changes": [
+        {
+          "label": "五个观察值",
+          "value": 0.08,
+          "unit": "%"
+        }
+      ],
+      "direction": "up",
+      "impact": "pressure",
       "frequency": "daily",
       "source": {
         "name": "Federal Reserve Economic Data (FRED)",
@@ -21,18 +28,29 @@
         "url": "https://fred.stlouisfed.org/series/DFII10"
       },
       "explanation": "实际利率上升通常提高持有黄金的机会成本。",
+      "freshness": {
+        "calendarDays": 2,
+        "businessDays": 2
+      },
       "status": "ok"
     },
     {
       "id": "DGS10",
       "label": "美国10年期国债收益率",
-      "value": 4.96,
+      "value": 5.11,
       "unit": "%",
-      "observationDate": "2026-09-22",
-      "comparisonDate": "2026-09-15",
-      "change5Observations": -0.04,
-      "direction": "flat",
-      "impact": "neutral",
+      "observationDate": "2026-09-23",
+      "comparisonDate": "2026-09-16",
+      "change5Observations": 0.1,
+      "changes": [
+        {
+          "label": "五个观察值",
+          "value": 0.1,
+          "unit": "%"
+        }
+      ],
+      "direction": "up",
+      "impact": "pressure",
       "frequency": "daily",
       "source": {
         "name": "Federal Reserve Economic Data (FRED)",
@@ -40,16 +58,27 @@
         "url": "https://fred.stlouisfed.org/series/DGS10"
       },
       "explanation": "名义长端利率上升通常对无息资产估值构成压力。",
+      "freshness": {
+        "calendarDays": 2,
+        "businessDays": 2
+      },
       "status": "ok"
     },
     {
       "id": "T10YIE",
       "label": "美国10年盈亏平衡通胀率",
-      "value": 2.35,
+      "value": 2.33,
       "unit": "%",
-      "observationDate": "2026-09-23",
-      "comparisonDate": "2026-09-16",
-      "change5Observations": 0.02,
+      "observationDate": "2026-09-24",
+      "comparisonDate": "2026-09-17",
+      "change5Observations": 0.0,
+      "changes": [
+        {
+          "label": "五个观察值",
+          "value": 0.0,
+          "unit": "%"
+        }
+      ],
       "direction": "flat",
       "impact": "neutral",
       "frequency": "daily",
@@ -59,6 +88,10 @@
         "url": "https://fred.stlouisfed.org/series/T10YIE"
       },
       "explanation": "通胀预期上升通常增加黄金的通胀对冲需求，但仍需结合实际利率判断。",
+      "freshness": {
+        "calendarDays": 1,
+        "businessDays": 1
+      },
       "status": "ok"
     },
     {
@@ -69,6 +102,13 @@
       "observationDate": "2026-09-18",
       "comparisonDate": "2026-09-11",
       "change5Observations": 1.3007,
+      "changes": [
+        {
+          "label": "五个观察值",
+          "value": 1.3007,
+          "unit": "index"
+        }
+      ],
       "direction": "up",
       "impact": "pressure",
       "frequency": "daily",
@@ -78,9 +118,14 @@
         "url": "https://fred.stlouisfed.org/series/DTWEXBGS"
       },
       "explanation": "美元走强通常对美元计价黄金形成压力。",
+      "freshness": {
+        "calendarDays": 7,
+        "businessDays": 5
+      },
       "status": "ok"
     }
   ],
+  "groups": [],
   "coverage": {
     "implemented": [
       "real-yield",
@@ -97,5 +142,5 @@
     ]
   },
   "warnings": [],
-  "methodNote": "方向判断只描述因素变化，不构成买卖信号，也不合并为综合分数。"
+  "methodNote": "方向判断只描述因素变化，不构成买卖信号，也不合并为综合分数。缺失数据明确标记为待接入，不按中性处理。"
 }

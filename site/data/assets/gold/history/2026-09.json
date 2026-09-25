@@ -260,6 +260,265 @@
         "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面环境为偏压制。",
         "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
       }
+    },
+    {
+      "date": "2026-09-24",
+      "generatedAt": "2026-09-25T02:18:43+00:00",
+      "inputHash": "feee4981c7615c30f9d189cf8e61d84d3d60ec49203ef3761bd29a1262c0e7d1",
+      "asset": {
+        "symbol": "GC=F",
+        "name": "COMEX 黄金连续合约"
+      },
+      "weekly": {
+        "asOf": "2026-09-18",
+        "current": {
+          "stage": 4,
+          "observation": {
+            "primaryStage": 4,
+            "primary": 4,
+            "code": "S4-",
+            "label": "S4-",
+            "neutral": false,
+            "bias": null,
+            "rawStage": 4,
+            "reason": "本周观察与已确认主阶段一致。",
+            "bridge": false
+          },
+          "confirmed": {
+            "stage": 4,
+            "primary": 4,
+            "code": "S4-",
+            "label": "S4-",
+            "weeks": 12
+          },
+          "status": "confirmed",
+          "transition": null,
+          "close": 4424.89990234375,
+          "ma10": 4355.45,
+          "ma30": 4513.893343098958,
+          "slope": -0.0167787590954227,
+          "recentSlope": -0.004820948775858369,
+          "distance": -0.019715450497133524,
+          "position52": 0.3783522122686375,
+          "volumeRatio": 1.2504081562834204,
+          "scores": {
+            "1": 6,
+            "2": 0,
+            "3": 2,
+            "4": 8
+          },
+          "s2State": null,
+          "s4State": {
+            "key": "slowing",
+            "label": "Stage 4-",
+            "summary": "仍属于第四阶段下降，但本周收盘价已反弹到10周均线上方。下降趋势仍未结束，但跌速、低点推进或均线下行动能正在减弱。",
+            "rawKey": "slowing",
+            "reasons": [
+              "近8周跌幅明显收窄",
+              "价格已脱离S4低点",
+              "连续多周未创新低",
+              "价格回到MA30附近"
+            ],
+            "signals": {
+              "slopeDecelerating": false,
+              "declineStalled": true,
+              "offTrough": true,
+              "noNewLow": true,
+              "choppy": false,
+              "maFlattening": false,
+              "nearMa30": true
+            },
+            "repair": 3,
+            "momentumLabel": "S4下降减速",
+            "momentumSummary": "下降趋势仍未结束，但跌速、低点推进或均线下行动能正在减弱。",
+            "lifecycle": {
+              "code": "4-",
+              "label": "Stage 4-",
+              "summary": "仍属于第四阶段下降，但本周收盘价已反弹到10周均线上方。",
+              "runWeeks": 12,
+              "aboveMa10": true,
+              "mature": false
+            },
+            "runWeeks": 12,
+            "weeks": 12,
+            "stateWeeks": 3
+          },
+          "evidence": [
+            {
+              "label": "价格与MA30",
+              "value": "低于 1.97%",
+              "detail": "S4通常表现为价格运行在30周均线下方",
+              "state": "support"
+            },
+            {
+              "label": "MA30方向",
+              "value": "5周斜率 -1.68%",
+              "detail": "下降的长期均线代表趋势方向向下",
+              "state": "support"
+            },
+            {
+              "label": "10/30周结构",
+              "value": "MA10 低于 MA30 3.51%",
+              "detail": "中期均线位于长期均线下方支持下降结构",
+              "state": "support"
+            },
+            {
+              "label": "52周位置",
+              "value": "区间 38%",
+              "detail": "位于年度区间中下部更符合风险释放阶段",
+              "state": "support"
+            }
+          ],
+          "explanation": "主要支持证据来自价格与MA30、MA30方向、10/30周结构、52周位置。",
+          "confidence": 95,
+          "confidenceBasis": {
+            "supportCount": 4,
+            "neutralCount": 0,
+            "warningCount": 0,
+            "total": 4,
+            "transitionLimited": false
+          },
+          "asOf": "2026-09-18",
+          "usesCompletedWeek": true,
+          "latestClose": 4328.5,
+          "latestMa30": 4483.2466796875,
+          "latestDistance": -0.03451665517059754,
+          "latestAsOf": "2026-09-24",
+          "hasProvisionalBar": true
+        },
+        "summary": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。"
+      },
+      "daily": {
+        "asOf": "2026-09-24",
+        "summary": {
+          "ok": true,
+          "snapshotId": "feee4981c7615c30",
+          "snapshotCreatedAt": "2026-09-25T02:18:38+00:00",
+          "symbol": "GC=F",
+          "name": "COMEX 黄金连续合约",
+          "market": "commodity",
+          "currency": "USD",
+          "contractMultiplier": null,
+          "source": "Yahoo Finance Gold Futures",
+          "signalSource": "已收盘日线",
+          "hasIntradayReference": false,
+          "referenceLabel": null,
+          "referenceNote": null,
+          "splitAdjustments": [],
+          "price": 4328.5,
+          "previousClose": 4318.39990234375,
+          "volume": 14103.0,
+          "date": "2026-09-24",
+          "quoteDate": "2026-09-24",
+          "updatedAt": "2026-09-25T02:18:38+00:00",
+          "bullBear": {
+            "status": "熊市区",
+            "score": 5,
+            "strength": "中",
+            "gap": -4.986960848717849,
+            "summary": "当前处于熊市区，趋势环境偏弱。"
+          },
+          "traffic": {
+            "status": "红灯",
+            "score": 0,
+            "trendScore": 2,
+            "checks": [
+              {
+                "label": "MA50 > MA200",
+                "pass": false,
+                "detail": "MA50 4348.58 / MA200 4555.69"
+              },
+              {
+                "label": "MA200 高于 20 天前",
+                "pass": true,
+                "detail": "MA200 4555.69 / 20天前 4527.99"
+              },
+              {
+                "label": "最新收盘价在 MA50 之上",
+                "pass": false,
+                "detail": "收盘 4328.50 / MA50 4348.58"
+              },
+              {
+                "label": "最近 20 日高点高于前 20 日高点",
+                "pass": false,
+                "detail": "近20日高点 4697.70 / 前20日高点 4755.00"
+              },
+              {
+                "label": "最近 20 日低点不低于前 20 日低点",
+                "pass": true,
+                "detail": "近20日低点 4273.30 / 前20日低点 4028.50"
+              }
+            ],
+            "summary": "趋势条件不足，等待重新转强。"
+          },
+          "band": {
+            "index": 4181,
+            "date": "2026-09-24",
+            "status": "下行风险",
+            "score": 4,
+            "action": "波动信号转弱，注意回撤风险",
+            "k": 12.217061170296352,
+            "d": 22.906865672160524,
+            "atr": 96.85707310267857,
+            "atrPct": 2.2376590759542236,
+            "riskLevel": "低",
+            "support": 4307.098323567709,
+            "pressure": 4348.575991210938
+          },
+          "fusion": {
+            "score": 9,
+            "status": "风险升高",
+            "advice": "多项指标偏弱，趋势结构和交易条件均不理想，建议以风险控制和观察为主。",
+            "riskNote": "波动信号转弱，注意回撤风险。 趋势条件不足，等待重新转强。 当前处于熊市区，趋势环境偏弱。",
+            "conflict": "风险优先",
+            "pool": "红灯风险池"
+          },
+          "previousFusion": {
+            "date": "2026-09-23",
+            "score": 9,
+            "status": "风险升高",
+            "advice": "多项指标偏弱，趋势结构和交易条件均不理想，建议以风险控制和观察为主。"
+          }
+        },
+        "change": "日线融合状态维持“风险升高”。"
+      },
+      "fundamentals": {
+        "asOf": "2026-09-24",
+        "regime": "偏压制",
+        "factors": [
+          {
+            "id": "DFII10",
+            "observationDate": "2026-09-23",
+            "value": 2.76,
+            "impact": "pressure"
+          },
+          {
+            "id": "DGS10",
+            "observationDate": "2026-09-23",
+            "value": 5.11,
+            "impact": "pressure"
+          },
+          {
+            "id": "T10YIE",
+            "observationDate": "2026-09-24",
+            "value": 2.33,
+            "impact": "neutral"
+          },
+          {
+            "id": "DTWEXBGS",
+            "observationDate": "2026-09-18",
+            "value": 119.5133,
+            "impact": "pressure"
+          }
+        ]
+      },
+      "synthesis": {
+        "headline": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。日线融合状态维持“风险升高”。基本面环境：偏压制。",
+        "kind": "convergence",
+        "title": "当前主导逻辑",
+        "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面环境为偏压制。",
+        "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
+      }
     }
   ]
 }

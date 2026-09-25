@@ -14,7 +14,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.11";
+} from "./member-auth.js?v=1.0.12";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -81,10 +81,10 @@ const shiftIsoMonths = (value, months) => {
 const impactLabel = { support: "支持", pressure: "压力", neutral: "中性", unavailable: "待接入" };
 const directionLabel = { up: "上升", down: "下降", flat: "持平", unknown: "暂无数据" };
 const stagePresentation = {
-  1: { code: "S1", title: "低位整理", phase: "底部阶段", arrow: "◆", color: "#3f7fd2" },
-  2: { code: "S2", title: "上升趋势", phase: "上升阶段", arrow: "▲", color: "#329b57" },
-  3: { code: "S3", title: "高位整理", phase: "顶部阶段", arrow: "◆", color: "#d68428" },
-  4: { code: "S4", title: "下降趋势", phase: "下降阶段", arrow: "▼", color: "#d0444e" },
+  1: { code: "S1", title: "低位整理", phase: "底部阶段", arrow: "◆", color: "#4b82c3" },
+  2: { code: "S2", title: "上升趋势", phase: "上升阶段", arrow: "▲", color: "#16835d" },
+  3: { code: "S3", title: "高位整理", phase: "顶部阶段", arrow: "◆", color: "#c98632" },
+  4: { code: "S4", title: "下降趋势", phase: "下降阶段", arrow: "▼", color: "#c94f55" },
 };
 
 function dataRoot(assetId = state.assetId) {
@@ -1084,14 +1084,14 @@ function chartApi(container, kind) {
   const chart = window.LightweightCharts.createChart(container, {
     width: container.clientWidth,
     height: container.clientHeight,
-    layout: { background: { color: "transparent" }, textColor: "#65778a", fontFamily: uiFont },
-    grid: { vertLines: { color: "rgba(17,42,67,.08)" }, horzLines: { color: "rgba(17,42,67,.08)" } },
+    layout: { background: { color: "transparent" }, textColor: "#6e8292", fontFamily: uiFont },
+    grid: { vertLines: { color: "rgba(16,40,59,.055)" }, horzLines: { color: "rgba(16,40,59,.055)" } },
     rightPriceScale: {
-      borderColor: "rgba(17,42,67,.14)",
+      borderColor: "rgba(16,40,59,.12)",
       scaleMargins: kind === "daily" ? { top: 0.08, bottom: 0.3 } : { top: 0.14, bottom: 0.1 },
     },
-    timeScale: { borderColor: "rgba(17,42,67,.14)", timeVisible: kind === "daily" },
-    crosshair: { vertLine: { color: "rgba(181,132,45,.45)" }, horzLine: { color: "rgba(181,132,45,.45)" } },
+    timeScale: { borderColor: "rgba(16,40,59,.12)", timeVisible: kind === "daily" },
+    crosshair: { vertLine: { color: "rgba(36,120,165,.36)" }, horzLine: { color: "rgba(36,120,165,.36)" } },
   });
   const addCandle = (options) => chart.addCandlestickSeries
     ? chart.addCandlestickSeries(options)
@@ -1310,8 +1310,8 @@ function installStochRsi(container, chart, addLine, series) {
     crosshairMarkerVisible: true,
     priceFormat: { type: "price", precision: 1, minMove: 0.1 },
   };
-  const kLine = addLine({ ...common, color: "#3f82ad", title: "StochRSI K" });
-  const dLine = addLine({ ...common, color: "#d68428", title: "StochRSI D" });
+  const kLine = addLine({ ...common, color: "#2478a5", title: "StochRSI K" });
+  const dLine = addLine({ ...common, color: "#c98632", title: "StochRSI D" });
   kLine.setData(series.flatMap((bar) => Number.isFinite(Number(bar.stochK)) ? [{ time: bar.date || bar.time, value: Number(bar.stochK) }] : []));
   dLine.setData(series.flatMap((bar) => Number.isFinite(Number(bar.stochD)) ? [{ time: bar.date || bar.time, value: Number(bar.stochD) }] : []));
   chart.priceScale("stoch-rsi").applyOptions({
@@ -1343,7 +1343,7 @@ function renderPriceChart(id, series, movingAverages, kind, options = {}) {
     container.innerHTML = '<p class="muted-copy">图表组件未能加载，状态数据仍可正常阅读。</p>';
     return;
   }
-  const candle = api.addCandle({ upColor: "#16775d", downColor: "#ad4e4d", borderVisible: false, wickUpColor: "#16775d", wickDownColor: "#ad4e4d" });
+  const candle = api.addCandle({ upColor: "#16835d", downColor: "#c94f55", borderVisible: false, wickUpColor: "#16835d", wickDownColor: "#c94f55" });
   candle.setData(series.map((bar) => ({ time: bar.date || bar.time, open: bar.open, high: bar.high, low: bar.low, close: bar.close })));
   movingAverages.forEach(([key, color, title]) => {
     const showLabel = options.movingAverageLabels !== false;
@@ -1396,7 +1396,7 @@ function renderWeeklyChart() {
   renderPriceChart(
     "weekly-chart",
     completedSeries,
-    [["ma30", "#3f82ad", "MA30"]],
+    [["ma30", "#2478a5", "MA30"]],
     "weekly",
     { stageBackground: true, stageTransitions: state.weekly?.stageHistory, movingAverageLabels: false, visibleMonths: 48 },
   );
@@ -1407,7 +1407,7 @@ function renderDailyChart() {
   renderPriceChart(
     "daily-chart",
     series,
-    [["ma20", "#b5842d", "MA20"], ["ma50", "#3f82ad", "MA50"], ["ma200", "#755fa7", "MA200"]],
+    [["ma20", "#a87320", "MA20"], ["ma50", "#2478a5", "MA50"], ["ma200", "#6e5b9e", "MA200"]],
     "daily",
     { bandHistory: state.daily?.bandHistory, movingAverageLabels: false, stochRsi: true, visibleMonths: 4 },
   );

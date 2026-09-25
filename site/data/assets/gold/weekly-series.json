@@ -2,6 +2,8 @@
   "schemaVersion": "weekly-series-v1",
   "asOf": "2026-09-18",
   "inputHash": "77049e13f1c8c7297eb3fee2dabc60508720d95f6bb2a36d7d854b61dac158ee",
+  "availableSeriesBars": 873,
+  "publishedSeriesLimit": 220,
   "series": [
     {
       "time": "2022-07-15",

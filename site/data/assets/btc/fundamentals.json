@@ -1,6 +1,6 @@
 {
   "schemaVersion": "btc-fundamentals-v2",
-  "generatedAt": "2026-09-25T02:18:43+00:00",
+  "generatedAt": "2026-09-25T02:24:33+00:00",
   "asset": "btc",
   "scope": "btc-four-layer-fundamentals",
   "factors": [
@@ -98,19 +98,19 @@
     {
       "id": "STABLECOIN_TOTAL",
       "label": "美元稳定币总供应",
-      "value": 312.29,
+      "value": 312.3,
       "unit": "USD bn",
       "observationDate": "2026-09-25",
       "comparisonDate": "2026-08-26",
       "changes": [
         {
           "label": "7日",
-          "value": 0.896,
+          "value": 0.899,
           "unit": "%"
         },
         {
           "label": "30日",
-          "value": 1.132,
+          "value": 1.134,
           "unit": "%"
         }
       ],
@@ -137,12 +137,12 @@
       "changes": [
         {
           "label": "7日",
-          "value": 1.119,
+          "value": 1.115,
           "unit": "%"
         },
         {
           "label": "30日",
-          "value": 1.211,
+          "value": 1.208,
           "unit": "%"
         }
       ],

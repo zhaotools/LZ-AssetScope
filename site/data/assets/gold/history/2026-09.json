@@ -263,8 +263,8 @@
     },
     {
       "date": "2026-09-24",
-      "generatedAt": "2026-09-25T02:18:43+00:00",
-      "inputHash": "feee4981c7615c30f9d189cf8e61d84d3d60ec49203ef3761bd29a1262c0e7d1",
+      "generatedAt": "2026-09-25T02:24:33+00:00",
+      "inputHash": "4d53a5d0c9ea4579814153e2448083a80f6434e58811d3658b69ba5edd501416",
       "asset": {
         "symbol": "GC=F",
         "name": "COMEX 黄金连续合约"
@@ -380,9 +380,9 @@
           },
           "asOf": "2026-09-18",
           "usesCompletedWeek": true,
-          "latestClose": 4328.5,
-          "latestMa30": 4483.2466796875,
-          "latestDistance": -0.03451665517059754,
+          "latestClose": 4326.2001953125,
+          "latestMa30": 4483.17001953125,
+          "latestDistance": -0.03501313212189128,
           "latestAsOf": "2026-09-24",
           "hasProvisionalBar": true
         },
@@ -392,8 +392,8 @@
         "asOf": "2026-09-24",
         "summary": {
           "ok": true,
-          "snapshotId": "feee4981c7615c30",
-          "snapshotCreatedAt": "2026-09-25T02:18:38+00:00",
+          "snapshotId": "4d53a5d0c9ea4579",
+          "snapshotCreatedAt": "2026-09-25T02:24:29+00:00",
           "symbol": "GC=F",
           "name": "COMEX 黄金连续合约",
           "market": "commodity",
@@ -405,17 +405,17 @@
           "referenceLabel": null,
           "referenceNote": null,
           "splitAdjustments": [],
-          "price": 4328.5,
+          "price": 4326.2001953125,
           "previousClose": 4318.39990234375,
-          "volume": 14103.0,
+          "volume": 14282.0,
           "date": "2026-09-24",
           "quoteDate": "2026-09-24",
-          "updatedAt": "2026-09-25T02:18:38+00:00",
+          "updatedAt": "2026-09-25T02:24:29+00:00",
           "bullBear": {
             "status": "熊市区",
             "score": 5,
             "strength": "中",
-            "gap": -4.986960848717849,
+            "gap": -5.0372031751528255,
             "summary": "当前处于熊市区，趋势环境偏弱。"
           },
           "traffic": {
@@ -426,17 +426,17 @@
               {
                 "label": "MA50 > MA200",
                 "pass": false,
-                "detail": "MA50 4348.58 / MA200 4555.69"
+                "detail": "MA50 4348.53 / MA200 4555.68"
               },
               {
                 "label": "MA200 高于 20 天前",
                 "pass": true,
-                "detail": "MA200 4555.69 / 20天前 4527.99"
+                "detail": "MA200 4555.68 / 20天前 4527.99"
               },
               {
                 "label": "最新收盘价在 MA50 之上",
                 "pass": false,
-                "detail": "收盘 4328.50 / MA50 4348.58"
+                "detail": "收盘 4326.20 / MA50 4348.53"
               },
               {
                 "label": "最近 20 日高点高于前 20 日高点",
@@ -457,13 +457,13 @@
             "status": "下行风险",
             "score": 4,
             "action": "波动信号转弱，注意回撤风险",
-            "k": 12.217061170296352,
-            "d": 22.906865672160524,
+            "k": 11.47158346954768,
+            "d": 22.658373105244298,
             "atr": 96.85707310267857,
-            "atrPct": 2.2376590759542236,
+            "atrPct": 2.2388486137933374,
             "riskLevel": "低",
-            "support": 4307.098323567709,
-            "pressure": 4348.575991210938
+            "support": 4307.059993489584,
+            "pressure": 4348.529995117187
           },
           "fusion": {
             "score": 9,

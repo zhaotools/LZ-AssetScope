@@ -84,6 +84,7 @@ function normalizeRoute() {
   if (location.pathname !== target || location.search || location.hash) {
     history.replaceState({ assetId, route }, "", target);
   }
+  syncRouteShell(route);
   updateRouteLinks();
   return route;
 }
@@ -170,8 +171,19 @@ function clearCharts() {
   }
 }
 
+function syncRouteShell(route) {
+  const methodologyView = route === "methodology";
+  document.body.classList.toggle("methodology-view", methodologyView);
+  if (methodologyView) {
+    document.title = "LZ-AssetScope · 方法与数据";
+  } else if (state.current) {
+    document.title = `LZ-AssetScope · ${assets[state.assetId].name}观察`;
+  }
+}
+
 function activateRoute() {
   const route = routeFromLocation();
+  syncRouteShell(route);
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
   $$('[data-route]').forEach((link) => link.classList.toggle("active", link.dataset.route === route));
   updateRouteLinks();
@@ -570,15 +582,19 @@ function renderFundamentals() {
 }
 
 function renderMethodology() {
-  const current = state.current;
+  const engines = state.current?.engines || {
+    weekly: { name: "LZ-4Stage", version: "LZAS-W-1.0.0" },
+    daily: { name: "LZ-Status-V3", version: "LZAS-D-1.0.0" },
+  };
   $("#provenance-panel").innerHTML = `
     <div class="panel-heading"><span class="panel-kicker">PROVENANCE</span><h2>可追溯信息</h2></div>
     <div class="provenance-grid">
-      <div class="code-block">周线引擎<br>${esc(current.engines.weekly.name)}<br>内部版本: ${esc(current.engines.weekly.version)}</div>
-      <div class="code-block">日线引擎<br>${esc(current.engines.daily.name)}<br>内部版本: ${esc(current.engines.daily.version)}</div>
-      <div class="code-block">统一输入<br>${esc(current.asset.symbol)} · ${esc(current.asset.name)}<br>数据版本: ${esc(current.quality.dataVersion)}</div>
-      <div class="code-block">数据日期<br>日线: ${esc(current.quality.dailyAsOf)}<br>周线: ${esc(current.quality.weeklyAsOf)}</div>
-      <div class="code-block">行情来源<br>${esc(current.quote.source.name)}<br>日线数量: ${esc(current.quality.dailyBars)}</div>
+      <div class="code-block">周线引擎<br>${esc(engines.weekly.name)}<br>内部版本: ${esc(engines.weekly.version)}</div>
+      <div class="code-block">日线引擎<br>${esc(engines.daily.name)}<br>内部版本: ${esc(engines.daily.version)}</div>
+      <div class="code-block">统一输入原则<br>同一份标准化 OHLC<br>日线与周线同源</div>
+      <div class="code-block">周期确认原则<br>只使用完成周线<br>只使用确认收盘日线</div>
+      <div class="code-block">数据状态原则<br>缺失与沿用明确标识<br>不把缺失数据解释为中性</div>
+      <div class="code-block">自动更新机制<br>GitHub 08:08 主更新<br>Cloudflare 08:28 兜底检查</div>
     </div>
   `;
 }
@@ -955,8 +971,12 @@ async function loadAsset(assetId, { historyMode = "none" } = {}) {
 }
 
 async function boot() {
-  normalizeRoute();
+  const route = normalizeRoute();
   renderWatchlist();
+  if (route === "methodology") {
+    renderMethodology();
+    activateRoute();
+  }
   await loadAsset(state.assetId);
 }
 

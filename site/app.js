@@ -6,7 +6,7 @@ import {
   restoreMemberSession,
   signInMember,
   signOutMember,
-} from "./member-auth.js?v=0.9.0";
+} from "./member-auth.js?v=0.9.1";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -30,7 +30,8 @@ const assets = {
   },
 };
 const WATCHLIST_KEY = "lz-assetscope-watchlist-v1";
-const DEFAULT_WATCHLIST = ["gold", "btc"];
+const PUBLIC_WATCHLIST = ["gold"];
+const MEMBER_DEFAULT_WATCHLIST = ["gold", "btc"];
 const state = {
   assetId: "gold",
   current: null,
@@ -151,18 +152,25 @@ function lockMobilePageZoom() {
 }
 
 function readWatchlist() {
+  if (!isMember()) return [...PUBLIC_WATCHLIST];
+  const storageKey = state.memberProfile?.user_id
+    ? `${WATCHLIST_KEY}:${state.memberProfile.user_id}`
+    : null;
+  if (!storageKey) return [...MEMBER_DEFAULT_WATCHLIST];
   try {
-    const saved = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]");
-    const normalized = saved.filter((assetId) => assets[assetId]);
-    return normalized.length ? [...new Set(normalized)] : [...DEFAULT_WATCHLIST];
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    const normalized = saved.filter((assetId) => canAccessAsset(assetId));
+    return normalized.length ? [...new Set(normalized)] : [...MEMBER_DEFAULT_WATCHLIST];
   } catch {
-    return [...DEFAULT_WATCHLIST];
+    return [...MEMBER_DEFAULT_WATCHLIST];
   }
 }
 
 function writeWatchlist(items) {
-  const normalized = [...new Set(items.filter((assetId) => assets[assetId]))];
-  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(normalized.length ? normalized : DEFAULT_WATCHLIST));
+  if (!isMember() || !state.memberProfile?.user_id) return;
+  const storageKey = `${WATCHLIST_KEY}:${state.memberProfile.user_id}`;
+  const normalized = [...new Set(items.filter((assetId) => canAccessAsset(assetId)))];
+  localStorage.setItem(storageKey, JSON.stringify(normalized.length ? normalized : MEMBER_DEFAULT_WATCHLIST));
 }
 
 function ensureActiveAssetInWatchlist() {
@@ -173,27 +181,28 @@ function ensureActiveAssetInWatchlist() {
 function renderWatchlist() {
   ensureActiveAssetInWatchlist();
   const watchlist = readWatchlist();
+  const member = isMember();
+  $("#add-asset-button").hidden = !member;
   $("#asset-watchlist").innerHTML = watchlist.map((assetId) => {
     const asset = assets[assetId];
-    const locked = asset.memberOnly && !isMember();
     return `
-      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${locked ? "locked" : ""}" type="button" data-asset="${esc(assetId)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}${locked ? "，会员专享" : ""}">
+      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""}" type="button" data-asset="${esc(assetId)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}">
         <span class="watchlist-asset-icon">${esc(asset.code)}</span>
         <span class="watchlist-asset-copy"><strong>${esc(asset.shortName)}</strong><small>${esc(asset.code)} / USD</small></span>
-        ${locked ? '<span class="member-access-badge">会员</span>' : ""}
       </button>
     `;
   }).join("");
-  const available = Object.keys(assets).filter((assetId) => !watchlist.includes(assetId));
+  const available = member
+    ? Object.keys(assets).filter((assetId) => canAccessAsset(assetId) && !watchlist.includes(assetId))
+    : [];
   $("#asset-catalog").innerHTML = available.length ? available.map((assetId) => {
     const asset = assets[assetId];
-    const locked = asset.memberOnly && !isMember();
     return `
-      <button class="catalog-asset ${locked ? "locked" : ""}" type="button" data-add-asset="${esc(assetId)}">
-        <span><strong>${esc(asset.name)}</strong>${esc(asset.code)} / USD</span><em>${locked ? "会员专享" : "添加"}</em>
+      <button class="catalog-asset" type="button" data-add-asset="${esc(assetId)}">
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.code)} / USD</span><em>添加</em>
       </button>
     `;
-  }).join("") : '<p class="catalog-empty">当前支持的资产已经全部加入自选。</p>';
+  }).join("") : `<p class="catalog-empty">${member ? "当前支持的资产已经全部加入自选。" : "登录会员账号后管理自选资产。"}</p>`;
 }
 
 function memberExpiryLabel(profile = state.memberProfile) {

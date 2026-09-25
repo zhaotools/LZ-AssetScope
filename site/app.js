@@ -11,7 +11,7 @@ import {
   restoreMemberSession,
   signInMember,
   signOutMember,
-} from "./member-auth.js?v=1.0.2";
+} from "./member-auth.js?v=1.0.3";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -390,16 +390,12 @@ function renderMemberControls() {
   const active = isMember();
   const loginButton = $("#member-login-button");
   const account = $("#member-account");
-  const mobileButton = $("#mobile-member-button");
   loginButton.hidden = active;
   loginButton.disabled = !state.authReady;
   loginButton.textContent = state.authReady ? "会员登录" : "检查登录…";
   account.hidden = !active;
   $("#member-display-name").textContent = state.memberProfile?.display_name || "会员";
   $("#member-expiry").textContent = memberExpiryLabel();
-  mobileButton.disabled = !state.authReady;
-  mobileButton.textContent = state.authReady ? (active ? state.memberProfile?.display_name || "会员" : "登录") : "检查…";
-  mobileButton.classList.toggle("active", active);
 }
 
 function syncMemberSubmit() {
@@ -1410,12 +1406,6 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("#member-account-button")) {
     event.preventDefault();
     openMemberAccount();
-    return;
-  }
-  if (event.target.closest("#mobile-member-button")) {
-    event.preventDefault();
-    if (isMember()) openMemberAccount();
-    else openMemberLogin();
     return;
   }
   if (event.target.closest("#member-logout-button, #member-dialog-logout")) {

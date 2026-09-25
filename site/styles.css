@@ -146,7 +146,6 @@ button { font: inherit; }
 }
 .asset-add-button:hover { border-color: rgba(255, 255, 255, 0.42); background: rgba(255, 255, 255, 0.14); }
 .watchlist-mobile-actions { display: flex; align-items: center; gap: 6px; }
-.mobile-member-button { display: none; }
 .asset-watchlist { display: grid; gap: 7px; margin-top: 13px; }
 .watchlist-asset {
   position: relative;
@@ -172,34 +171,49 @@ button { font: inherit; }
 .watchlist-asset-copy { min-width: 0; }
 .watchlist-asset-copy strong { display: block; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .watchlist-asset-copy small { display: block; overflow: hidden; margin-top: 3px; color: rgba(255, 255, 255, 0.4); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-.sidebar-utility { display: grid; gap: 7px; margin-top: auto; }
-.sidebar-member-controls { display: grid; }
-.sidebar-member-login,
-.sidebar-member-account {
+.top-utility-bar {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 7px;
   min-height: 40px;
-  border: 1px solid rgba(128, 202, 240, 0.34);
-  border-radius: 10px;
-  color: white;
-  background: rgba(70, 153, 198, 0.18);
+  padding-top: 9px;
 }
-.sidebar-member-login { width: 100%; cursor: pointer; font-size: 10px; font-weight: 750; }
-.sidebar-member-login:hover { background: rgba(70, 153, 198, 0.3); }
-.sidebar-member-login:disabled { color: rgba(255, 255, 255, 0.44); cursor: wait; }
-.sidebar-member-account { display: grid; grid-template-columns: minmax(0, 1fr) auto; overflow: hidden; }
-.sidebar-member-account button { border: 0; color: inherit; background: transparent; cursor: pointer; }
-.sidebar-member-account > button:first-child { min-width: 0; padding: 7px 8px; text-align: left; }
-.sidebar-member-account > button:last-child { padding: 0 8px; border-left: 1px solid rgba(255, 255, 255, 0.13); color: rgba(255, 255, 255, 0.6); font-size: 8px; }
-.sidebar-member-account button:hover { background: rgba(255, 255, 255, 0.08); }
-.sidebar-member-account span,
-.sidebar-member-account small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sidebar-member-account span { font-size: 9px; font-weight: 800; }
-.sidebar-member-account small { margin-top: 2px; color: rgba(255, 255, 255, 0.48); font-size: 7px; }
-.sidebar-method-link,
-.sidebar-install-button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 9px 11px; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; color: rgba(255, 255, 255, 0.72); background: rgba(255, 255, 255, 0.06); font-size: 10px; cursor: pointer; }
-.sidebar-method-link:hover,
-.sidebar-install-button:hover { color: white; background: rgba(255, 255, 255, 0.11); }
-.sidebar-method-link.active { color: white; border-color: rgba(128, 202, 240, 0.56); background: rgba(70, 153, 198, 0.38); box-shadow: inset 3px 0 0 #70b9df; font-weight: 750; }
-.sidebar-install-button:disabled { color: rgba(255, 255, 255, 0.44); cursor: default; }
+.top-member-controls { display: grid; }
+.top-member-login,
+.top-member-account,
+.top-method-link,
+.top-install-button {
+  min-height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.top-member-login,
+.top-method-link,
+.top-install-button { display: flex; align-items: center; justify-content: center; padding: 8px 13px; cursor: pointer; }
+.top-member-login { color: var(--navy); font-weight: 750; }
+.top-member-login:hover,
+.top-method-link:hover,
+.top-install-button:hover { color: var(--navy); border-color: rgba(63, 130, 173, 0.4); background: var(--surface-blue); }
+.top-member-login:disabled { color: var(--muted-light); cursor: wait; }
+.top-member-account { display: grid; grid-template-columns: minmax(0, 1fr) auto; overflow: hidden; }
+.top-member-account button { border: 0; color: inherit; background: transparent; cursor: pointer; }
+.top-member-account > button:first-child { min-width: 88px; max-width: 150px; padding: 5px 10px; text-align: left; }
+.top-member-account > button:last-child { padding: 0 11px; border-left: 1px solid var(--line); color: var(--muted); font-size: 9px; }
+.top-member-account button:hover { color: var(--navy); background: var(--surface-blue); }
+.top-member-account span,
+.top-member-account small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-member-account span { color: var(--ink-strong); font-size: 10px; font-weight: 800; }
+.top-member-account small { margin-top: 1px; color: var(--muted-light); font-size: 7px; }
+.top-method-link.active { color: var(--navy); border-color: rgba(63, 130, 173, 0.42); background: rgba(63, 130, 173, 0.18); font-weight: 750; }
+.top-install-button:disabled { color: var(--muted-light); background: var(--surface-muted); cursor: default; }
 
 .asset-picker { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; }
 body.picker-open { overflow: hidden; }
@@ -1163,10 +1177,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .asset-sidebar .brand strong { font-size: 12px; }
   .asset-sidebar .brand small { display: none; }
   .watchlist-heading { margin: 0; padding: 0; }
-  .watchlist-heading > div { display: none; }
-  .mobile-member-button { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; height: 34px; padding: 0 9px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9px; color: rgba(255, 255, 255, 0.82); background: rgba(255, 255, 255, 0.08); font-size: 9px; font-weight: 750; cursor: pointer; }
-  .mobile-member-button.active { color: #d8effb; border-color: rgba(128, 202, 240, 0.44); background: rgba(70, 153, 198, 0.28); }
-  .mobile-member-button:disabled { color: rgba(255, 255, 255, 0.44); cursor: wait; }
+  .watchlist-heading > div:first-child { display: none; }
   .asset-add-button { width: 34px; height: 34px; }
   .asset-watchlist { grid-column: 1 / -1; display: flex; gap: 7px; margin-top: 9px; overflow-x: auto; scrollbar-width: none; }
   .asset-watchlist::-webkit-scrollbar { display: none; }
@@ -1174,12 +1185,19 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .watchlist-asset-icon { width: 28px; height: 28px; border-radius: 8px; font-size: 8px; }
   .watchlist-asset-copy strong { font-size: 10px; }
   .watchlist-asset-copy small { display: none; }
-  .sidebar-utility { display: none; }
+  .top-utility-bar { padding-top: 8px; }
   .module-tabs { top: 106px; }
 }
 
 @media (max-width: 640px) {
   .shell { width: min(100% - 24px, 1180px); }
+  .top-utility-bar { gap: 5px; overflow-x: auto; scrollbar-width: none; }
+  .top-utility-bar::-webkit-scrollbar { display: none; }
+  .top-member-login,
+  .top-method-link,
+  .top-install-button { padding-inline: 9px; }
+  .top-member-account > button:first-child { min-width: 74px; max-width: 112px; padding-inline: 8px; }
+  .top-member-account > button:last-child { padding-inline: 8px; }
   .asset-hero { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; padding: 14px 16px; border-radius: 16px; }
   .asset-symbol { width: 48px; height: 42px; border-radius: 12px; font-size: 14px; }
   .quote-block { padding: 9px 0 0; border-top: 1px solid rgba(143, 100, 26, 0.18); border-left: 0; }

@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.14";
+} from "./member-auth.js?v=1.0.15";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -936,7 +936,6 @@ function updateHeader() {
   document.body.dataset.asset = state.assetId;
   document.title = `LZ-AssetScope · ${presentation.name}观察`;
   $("#asset-symbol").textContent = presentation.code;
-  $("#asset-eyebrow").textContent = presentation.eyebrow;
   $("#asset-name").textContent = presentation.name;
   $("#overview-title").textContent = `${presentation.name}状态总览`;
   $("#footer-label").textContent = `LZ-AssetScope · ${presentation.name}观察`;

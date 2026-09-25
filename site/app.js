@@ -14,7 +14,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.8";
+} from "./member-auth.js?v=1.0.9";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -984,20 +984,23 @@ function renderFundamentals() {
   };
   const factorRow = (item) => {
     const pending = item.status === "pending";
+    const notApplicable = item.status === "not_applicable";
+    const unavailable = pending || notApplicable;
     const stale = item.status === "stale";
     const sourceId = item.source?.seriesId ? ` · ${esc(item.source.seriesId)}` : "";
+    const statusLabel = notApplicable ? "不适用" : pending ? "待接入" : stale ? "沿用旧值" : impactLabel[item.impact] || "暂不明确";
     return `
-      <div class="fundamental-factor ${pending ? "pending-factor" : ""}">
+      <div class="fundamental-factor ${unavailable ? "pending-factor" : ""} ${notApplicable ? "not-applicable-factor" : ""}">
         <div class="fundamental-factor-heading">
           <h4>${esc(item.label)}</h4>
-          <span class="tag ${esc(item.impact || "unavailable")}">${esc(stale ? "沿用旧值" : impactLabel[item.impact] || "暂不明确")}</span>
+          <span class="tag ${esc(item.impact || "unavailable")}">${esc(statusLabel)}</span>
         </div>
         <div class="fundamental-factor-reading">
-          <strong>${pending ? "待接入" : `${fmt(item.value, 2)} <small>${esc(item.unit || "")}</small>`}</strong>
+          <strong>${unavailable ? statusLabel : `${fmt(item.value, 2)} <small>${esc(item.unit || "")}</small>`}</strong>
           <div class="factor-change-list">${factorChanges(item)}</div>
         </div>
         <p>${esc(item.explanation)}</p>
-        <div class="factor-source"><span>${esc(item.source?.name || "来源待确认")}${sourceId}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
+        <div class="factor-source"><span>${esc(item.source?.name || "来源待确认")}${sourceId}</span><span>${esc(item.reportedPeriod ? `报告期 ${fmtDate(item.reportedPeriod)}` : fmtDate(item.observationDate))}</span></div>
       </div>
     `;
   };
@@ -1041,12 +1044,14 @@ function renderFundamentals() {
     "exchange-balance": "交易所余额",
     "exchange-netflow": "交易所净流量",
   };
-  const coverage = state.fundamentals.coverage;
+  const coverage = state.fundamentals.coverage || {};
+  const implemented = coverage.implemented || [];
+  const planned = coverage.planned || [];
   $("#coverage-panel").innerHTML = `
     <div class="panel-heading"><span class="panel-kicker">COVERAGE</span><h2>基本面覆盖进度</h2></div>
     <div class="coverage-columns">
-      <div><h3>已经接入</h3><ul>${coverage.implemented.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("")}</ul></div>
-      <div><h3>待接入 · 不参与当前判断</h3><ul>${coverage.planned.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("")}</ul></div>
+      <div><h3>已经接入</h3><ul>${implemented.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("") || "<li>暂无已接入数据</li>"}</ul></div>
+      <div><h3>待接入 · 不参与当前判断</h3><ul>${planned.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("") || "<li>暂无待接入数据</li>"}</ul></div>
     </div>
   `;
 }

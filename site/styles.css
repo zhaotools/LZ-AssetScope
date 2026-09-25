@@ -1109,6 +1109,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
 .fundamental-factor { padding: 17px 22px; border-bottom: 1px solid var(--line); }
 .fundamental-factor:last-child { border-bottom: 0; }
 .fundamental-factor.pending-factor { background: #fafbfc; }
+.fundamental-factor.not-applicable-factor { background: #f6f8fa; opacity: .84; }
 .fundamental-factor-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
 .fundamental-factor-heading h4 { margin: 0; color: var(--ink); font-size: 13px; line-height: 1.45; }
 .fundamental-factor-reading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 12px; }

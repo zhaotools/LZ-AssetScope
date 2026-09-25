@@ -98,7 +98,8 @@ button { font: inherit; }
 .watchlist-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 0; padding: 0 3px 10px; }
 .watchlist-heading span { display: block; color: rgba(255, 255, 255, 0.38); font-size: 9px; font-weight: 800; letter-spacing: 0.16em; }
 .watchlist-heading strong { display: block; margin-top: 3px; color: rgba(255, 255, 255, 0.86); font-size: 13px; }
-.asset-add-button {
+.asset-add-button,
+.watchlist-sort-button {
   display: grid;
   place-items: center;
   width: 28px;
@@ -112,7 +113,12 @@ button { font: inherit; }
   line-height: 1;
   cursor: pointer;
 }
-.asset-add-button:hover { border-color: rgba(255, 255, 255, 0.42); background: rgba(255, 255, 255, 0.14); }
+.asset-add-button:hover,
+.watchlist-sort-button:hover { border-color: rgba(255, 255, 255, 0.42); background: rgba(255, 255, 255, 0.14); }
+.asset-add-button:disabled,
+.watchlist-sort-button:disabled { opacity: 0.42; cursor: default; }
+.watchlist-sort-button { font-size: 16px; font-weight: 850; }
+.watchlist-sort-button.active { color: #082d43; border-color: #8bd0ee; background: #dff3fb; }
 .watchlist-mobile-actions { display: flex; align-items: center; gap: 6px; }
 .watchlist-table-header {
   display: grid;
@@ -128,6 +134,35 @@ button { font: inherit; }
 }
 .watchlist-table-header span:not(:first-child) { text-align: right; }
 .asset-watchlist { display: grid; gap: 4px; margin-top: 5px; }
+.asset-watchlist.sorting .watchlist-asset {
+  padding-left: 23px;
+  border-color: rgba(128, 202, 240, 0.17);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.asset-watchlist.sorting .watchlist-asset::before {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  content: "⋮⋮";
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 13px;
+  letter-spacing: -4px;
+  transform: translateY(-50%);
+}
+.asset-watchlist.sorting .watchlist-asset:hover { background: rgba(255, 255, 255, 0.09); }
+.asset-watchlist.sorting .watchlist-remove { display: none !important; }
+.asset-watchlist .watchlist-asset.dragging {
+  z-index: 2;
+  color: white;
+  border-color: rgba(139, 208, 238, 0.7);
+  background: #1c5b79;
+  box-shadow: 0 12px 26px rgba(0, 12, 25, 0.34);
+  cursor: grabbing;
+  opacity: 0.84;
+}
+body.watchlist-dragging { cursor: grabbing; }
 .watchlist-asset {
   position: relative;
   display: grid;
@@ -1207,7 +1242,8 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
     box-shadow: 0 8px 24px rgba(7, 29, 50, 0.15);
   }
   .watchlist-heading { margin: 0; padding: 0; }
-  .asset-add-button { width: 34px; height: 34px; }
+  .asset-add-button,
+  .watchlist-sort-button { width: 34px; height: 34px; }
   .watchlist-table-header { grid-column: 1 / -1; margin-top: 8px; }
   .asset-watchlist { grid-column: 1 / -1; display: flex; gap: 7px; margin-top: 9px; overflow-x: auto; scrollbar-width: none; }
   .asset-watchlist::-webkit-scrollbar { display: none; }

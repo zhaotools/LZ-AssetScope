@@ -1,4 +1,4 @@
-import { MEMBER_CONFIG } from "./member-config.js?v=1.0.12";
+import { MEMBER_CONFIG } from "./member-config.js?v=1.0.13";
 
 export { MEMBER_CONFIG };
 
@@ -205,7 +205,19 @@ export async function loadMemberAssets() {
     cache: "no-store",
   });
   const rows = await readResponse(response);
-  return Array.isArray(rows) ? rows : [];
+  if (!Array.isArray(rows)) return [];
+  const savedOrder = Array.isArray(session.user.userMetadata?.asset_order)
+    ? session.user.userMetadata.asset_order.map((assetId) => String(assetId || "").trim()).filter(Boolean)
+    : [];
+  if (!savedOrder.length) return rows;
+  const savedPosition = new Map(savedOrder.map((assetId, index) => [assetId, index]));
+  return [...rows].sort((left, right) => {
+    const leftId = left?.asset?.asset_id;
+    const rightId = right?.asset?.asset_id;
+    const leftPosition = savedPosition.has(leftId) ? savedPosition.get(leftId) : savedOrder.length + Number(left?.position || 0);
+    const rightPosition = savedPosition.has(rightId) ? savedPosition.get(rightId) : savedOrder.length + Number(right?.position || 0);
+    return leftPosition - rightPosition;
+  });
 }
 
 export async function loadMemberInitializationJobs() {
@@ -271,6 +283,22 @@ export async function addMemberAsset(candidate) {
 
 export async function removeMemberAsset(assetId) {
   return callAssetApi({ action: "remove", assetId });
+}
+
+export async function reorderMemberAssets(assetIds) {
+  requireMemberConfig();
+  const normalized = [...new Set((Array.isArray(assetIds) ? assetIds : [])
+    .map((assetId) => String(assetId || "").trim())
+    .filter(Boolean))];
+  if (!normalized.length || normalized.length > 30) {
+    throw new MemberAuthError("资产顺序无效", "asset_order_invalid");
+  }
+  const session = await currentSession();
+  if (!session) throw new MemberAuthError("会员登录已失效", "session_expired");
+  await updateAuthenticatedUser(session, {
+    data: { ...session.user.userMetadata, asset_order: normalized },
+  });
+  return normalized;
 }
 
 async function updateAuthenticatedUser(session, attributes) {
@@ -362,6 +390,7 @@ export function memberErrorMessage(error) {
   if (error?.code === "reauthentication_needed") return "登录时间过久，请退出后重新登录再修改密码。";
   if (error?.code === "asset_api_not_configured") return "资产初始化服务尚未发布，请稍后再试。";
   if (error?.code === "asset_limit_reached") return "个人资产已达到 30 个上限，请先移除一个资产。";
+  if (error?.code === "asset_order_invalid") return "资产顺序无效，请刷新页面后重试。";
   if (error?.code === "market_source_rate_limited") return "行情数据源当前查询繁忙，请稍后重试。";
   if (error?.code === "asset_history_insufficient") return "该资产的有效历史日线不足 260 条，暂时不能初始化。";
   if (error?.code === "asset_category_mismatch") return "资产与所选分类不一致，请重新选择。";

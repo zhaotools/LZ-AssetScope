@@ -8,13 +8,14 @@ import {
   loadMemberInitializationJobs,
   memberErrorMessage,
   removeMemberAsset,
+  reorderMemberAssets,
   resolveMemberAssets,
   restoreMemberSession,
   signInMember,
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.12";
+} from "./member-auth.js?v=1.0.13";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -55,6 +56,9 @@ const state = {
   assetSearchResults: [],
   assetSearchBusy: false,
   assetPollTimer: null,
+  watchlistSorting: false,
+  watchlistOrderBeforeEdit: [],
+  watchlistOrderSaving: false,
   pendingAssetId: null,
   pendingRoute: "overview",
 };
@@ -63,6 +67,7 @@ let memberCaptchaToken = "";
 let turnstileWidgetId = null;
 let accountCaptchaToken = "";
 let accountTurnstileWidgetId = null;
+let watchlistDrag = null;
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -197,6 +202,17 @@ function registerMemberAssets(rows) {
   }
 }
 
+function applyMemberAssetOrder(assetIds) {
+  const position = new Map(assetIds.map((assetId, index) => [assetId, index]));
+  state.memberAssets = [...state.memberAssets].sort((left, right) => {
+    const leftId = left?.asset?.asset_id;
+    const rightId = right?.asset?.asset_id;
+    const leftPosition = position.has(leftId) ? position.get(leftId) : assetIds.length + Number(left?.position || 0);
+    const rightPosition = position.has(rightId) ? position.get(rightId) : assetIds.length + Number(right?.position || 0);
+    return leftPosition - rightPosition;
+  });
+}
+
 function registerMemberSummaries(rows) {
   const summaries = new Map();
   const publicGold = state.assetSummaries.get("gold");
@@ -263,11 +279,24 @@ function renderWatchlist() {
   const watchlist = readWatchlist();
   const member = isMember();
   const addButton = $("#add-asset-button");
+  const sortButton = $("#watchlist-sort-button");
+  const watchlistNode = $("#asset-watchlist");
   addButton.hidden = !member;
-  addButton.disabled = member && watchlist.length >= 30;
-  addButton.title = watchlist.length >= 30 ? "个人资产已达到 30 个上限" : "新增资产";
+  addButton.disabled = member && (watchlist.length >= 30 || state.watchlistSorting);
+  addButton.title = state.watchlistSorting
+    ? "请先完成资产排序"
+    : watchlist.length >= 30 ? "个人资产已达到 30 个上限" : "新增资产";
+  sortButton.hidden = !member;
+  sortButton.disabled = state.watchlistOrderSaving || (!state.watchlistSorting && watchlist.length < 2);
+  sortButton.classList.toggle("active", state.watchlistSorting);
+  sortButton.setAttribute("aria-pressed", String(state.watchlistSorting));
+  sortButton.setAttribute("aria-label", state.watchlistSorting ? "完成资产排序" : "调整资产顺序");
+  sortButton.title = state.watchlistSorting ? "完成并保存排序" : "调整资产顺序";
+  sortButton.querySelector("span").textContent = state.watchlistOrderSaving ? "…" : state.watchlistSorting ? "✓" : "⇅";
   $("#asset-count").textContent = `${watchlist.length} / 30`;
-  $("#asset-watchlist").innerHTML = watchlist.map((assetId) => {
+  watchlistNode.classList.toggle("sorting", state.watchlistSorting);
+  watchlistNode.setAttribute("aria-label", state.watchlistSorting ? "自选资产列表，排序模式" : "自选资产列表");
+  watchlistNode.innerHTML = watchlist.map((assetId) => {
     const asset = assets[assetId];
     if (!asset) return "";
     const row = memberAssetRow(assetId);
@@ -279,7 +308,7 @@ function renderWatchlist() {
     const weekly = watchlistWeekly(snapshot, status);
     const weeklyStage = weekly.match(/^S([1-4])/i)?.[1] || "";
     return `
-      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}">
+      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" ${state.watchlistSorting ? 'aria-grabbed="false"' : ""} aria-label="${esc(asset.shortName)}${state.watchlistSorting ? "，可拖动排序" : ""}">
         <span class="watchlist-asset-copy"><strong>${esc(asset.code)}/${esc(asset.currency || "USD")}</strong><small>${esc(asset.shortName)}</small></span>
         <span class="watchlist-price">${ready ? quote.price : "—"}</span>
         <span class="watchlist-change ${quote.tone}">${ready ? quote.change : "—"}</span>
@@ -289,6 +318,113 @@ function renderWatchlist() {
     `;
   }).join("");
   renderAssetSearchResults();
+}
+
+function watchlistDomOrder() {
+  return $$(".watchlist-asset[data-asset]", $("#asset-watchlist")).map((node) => node.dataset.asset);
+}
+
+function syncWatchlistOrderFromDom() {
+  applyMemberAssetOrder(watchlistDomOrder());
+}
+
+function moveWatchlistAsset(source, target, placeAfter) {
+  if (!source || !target || source === target) return;
+  const list = $("#asset-watchlist");
+  list.insertBefore(source, placeAfter ? target.nextElementSibling : target);
+  syncWatchlistOrderFromDom();
+}
+
+function finishWatchlistDrag() {
+  if (!watchlistDrag) return;
+  watchlistDrag.source.classList.remove("dragging");
+  watchlistDrag.source.setAttribute("aria-grabbed", "false");
+  document.body.classList.remove("watchlist-dragging");
+  watchlistDrag = null;
+}
+
+function handleWatchlistPointerDown(event) {
+  if (!state.watchlistSorting || state.watchlistOrderSaving) return;
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  const source = event.target.closest(".watchlist-asset[data-asset]");
+  if (!source) return;
+  event.preventDefault();
+  source.setPointerCapture?.(event.pointerId);
+  source.classList.add("dragging");
+  source.setAttribute("aria-grabbed", "true");
+  document.body.classList.add("watchlist-dragging");
+  watchlistDrag = { source, pointerId: event.pointerId };
+}
+
+function handleWatchlistPointerMove(event) {
+  if (!watchlistDrag || watchlistDrag.pointerId !== event.pointerId) return;
+  event.preventDefault();
+  const list = $("#asset-watchlist");
+  const mobile = window.matchMedia("(max-width: 760px)").matches;
+  const scrollNode = mobile ? list : $(".asset-sidebar");
+  const scrollRect = scrollNode.getBoundingClientRect();
+  if (mobile) {
+    if (event.clientX < scrollRect.left + 42) list.scrollLeft -= 14;
+    if (event.clientX > scrollRect.right - 42) list.scrollLeft += 14;
+  } else {
+    if (event.clientY < scrollRect.top + 48) scrollNode.scrollTop -= 14;
+    if (event.clientY > scrollRect.bottom - 48) scrollNode.scrollTop += 14;
+  }
+  const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".watchlist-asset[data-asset]");
+  if (!target || target.parentElement !== list || target === watchlistDrag.source) return;
+  const rect = target.getBoundingClientRect();
+  const placeAfter = mobile
+    ? event.clientX > rect.left + rect.width / 2
+    : event.clientY > rect.top + rect.height / 2;
+  moveWatchlistAsset(watchlistDrag.source, target, placeAfter);
+}
+
+function handleWatchlistPointerUp(event) {
+  if (!watchlistDrag || watchlistDrag.pointerId !== event.pointerId) return;
+  finishWatchlistDrag();
+}
+
+function handleWatchlistKeydown(event) {
+  if (!state.watchlistSorting || state.watchlistOrderSaving) return;
+  const source = event.target.closest(".watchlist-asset[data-asset]");
+  if (!source) return;
+  const backward = ["ArrowUp", "ArrowLeft"].includes(event.key);
+  const forward = ["ArrowDown", "ArrowRight"].includes(event.key);
+  if (!backward && !forward) return;
+  const target = backward ? source.previousElementSibling : source.nextElementSibling;
+  if (!target) return;
+  event.preventDefault();
+  moveWatchlistAsset(source, target, forward);
+  source.focus();
+}
+
+async function toggleWatchlistSorting() {
+  if (!isMember() || state.watchlistOrderSaving) return;
+  if (!state.watchlistSorting) {
+    state.watchlistOrderBeforeEdit = readWatchlist();
+    state.watchlistSorting = true;
+    renderWatchlist();
+    $(".watchlist-asset[data-asset]")?.focus();
+    return;
+  }
+  finishWatchlistDrag();
+  const nextOrder = watchlistDomOrder();
+  const memberOrder = nextOrder.filter((assetId) => memberAssetRow(assetId));
+  state.watchlistOrderSaving = true;
+  renderWatchlist();
+  try {
+    await reorderMemberAssets(memberOrder);
+    applyMemberAssetOrder(nextOrder);
+    state.watchlistSorting = false;
+    state.watchlistOrderBeforeEdit = [];
+  } catch (error) {
+    applyMemberAssetOrder(state.watchlistOrderBeforeEdit);
+    state.watchlistSorting = false;
+    window.alert(`资产排序保存失败：${memberErrorMessage(error)}`);
+  } finally {
+    state.watchlistOrderSaving = false;
+    renderWatchlist();
+  }
 }
 
 function setAssetPickerMessage(message, tone = "") {
@@ -328,12 +464,14 @@ async function refreshMemberLibrary({ quiet = false } = {}) {
     return;
   }
   try {
+    const draftOrder = state.watchlistSorting ? watchlistDomOrder() : [];
     const [rows, jobs, summaries] = await Promise.all([
       loadMemberAssets(),
       loadMemberInitializationJobs(),
       loadMemberAssetSummaries(),
     ]);
     registerMemberAssets(rows);
+    if (draftOrder.length) applyMemberAssetOrder(draftOrder);
     registerMemberSummaries(summaries);
     state.memberJobs = jobs;
     renderWatchlist();
@@ -1453,11 +1591,15 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
 }
 
 async function handleMemberLogout() {
+  finishWatchlistDrag();
   await signOutMember().catch(() => undefined);
   state.memberProfile = null;
   state.memberAssets = [];
   state.assetSummaries = new Map(state.assetSummaries.has("gold") ? [["gold", state.assetSummaries.get("gold")]] : []);
   state.memberJobs = [];
+  state.watchlistSorting = false;
+  state.watchlistOrderBeforeEdit = [];
+  state.watchlistOrderSaving = false;
   if (state.assetPollTimer) window.clearTimeout(state.assetPollTimer);
   state.authReady = true;
   closeMemberDialog();
@@ -1610,6 +1752,11 @@ document.addEventListener("click", (event) => {
     setAssetPicker(true);
     return;
   }
+  if (event.target.closest("#watchlist-sort-button")) {
+    event.preventDefault();
+    void toggleWatchlistSorting();
+    return;
+  }
   if (event.target.closest("[data-close-asset-picker]")) {
     event.preventDefault();
     setAssetPicker(false);
@@ -1631,6 +1778,7 @@ document.addEventListener("click", (event) => {
   const assetButton = event.target.closest(".watchlist-asset[data-asset]");
   if (assetButton) {
     event.preventDefault();
+    if (state.watchlistSorting) return;
     const assetId = assetButton.dataset.asset;
     const status = assetButton.dataset.status;
     if (status !== "ready") {
@@ -1691,6 +1839,11 @@ $("#member-display-name-form").addEventListener("submit", handleDisplayNameUpdat
 $("#member-password-form").addEventListener("submit", handlePasswordUpdate);
 $("#member-password-form").addEventListener("input", syncAccountPasswordSubmit);
 $("#asset-search-form").addEventListener("submit", handleAssetSearch);
+$("#asset-watchlist").addEventListener("pointerdown", handleWatchlistPointerDown);
+$("#asset-watchlist").addEventListener("pointermove", handleWatchlistPointerMove);
+$("#asset-watchlist").addEventListener("pointerup", handleWatchlistPointerUp);
+$("#asset-watchlist").addEventListener("pointercancel", handleWatchlistPointerUp);
+$("#asset-watchlist").addEventListener("keydown", handleWatchlistKeydown);
 
 let deferredInstall;
 const installButton = $("#install-button");

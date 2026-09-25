@@ -11,7 +11,7 @@ import {
   restoreMemberSession,
   signInMember,
   signOutMember,
-} from "./member-auth.js?v=1.0.1";
+} from "./member-auth.js?v=1.0.2";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -253,6 +253,18 @@ function initializationStageLabel(stage) {
     complete: "初始化完成",
     failed: "初始化失败",
   })[stage] || "正在执行初始化";
+}
+
+function initializationFailureMessage(job) {
+  return ({
+    market_history_failed: "历史行情暂时无法获取，请稍后移除并重新添加。",
+    daily_analysis_failed: "日线状态分析未完成，请稍后重试。",
+    weekly_analysis_failed: "周线阶段分析未完成，请稍后重试。",
+    fundamentals_build_failed: "基本面初始状态生成未完成，请稍后重试。",
+    snapshot_build_failed: "分析快照生成未完成，请稍后重试。",
+    snapshot_validation_failed: "分析快照校验未通过，请稍后重试。",
+    snapshot_publish_failed: "分析快照发布未完成，请稍后重试。",
+  })[job?.error_code] || "初始化未完成，请稍后移除并重新添加。";
 }
 
 async function refreshMemberLibrary({ quiet = false } = {}) {
@@ -1454,7 +1466,7 @@ document.addEventListener("click", (event) => {
       const row = memberAssetRow(assetId);
       const job = state.memberJobs.find((item) => item.asset_id === assetId);
       window.alert(status === "failed"
-        ? `${row?.asset?.name || "该资产"}初始化失败：${job?.error_message || row?.asset?.last_error || "请稍后重试。"}`
+        ? `${row?.asset?.name || "该资产"}初始化失败：${initializationFailureMessage(job)}`
         : `${row?.asset?.name || "该资产"}${initializationStageLabel(job?.progress_stage)}，完成后即可打开。`);
       return;
     }

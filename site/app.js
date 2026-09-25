@@ -14,7 +14,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.9";
+} from "./member-auth.js?v=1.0.10";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -237,6 +237,10 @@ function assetStatusLabel(status) {
   return ({ ready: "数据就绪", initializing: "正在初始化", failed: "初始化失败" })[status] || "等待处理";
 }
 
+function instrumentTypeLabel(value) {
+  return ({ EQUITY: "个股", ETF: "ETF", INDEX: "指数" })[String(value || "").toUpperCase()] || "资产";
+}
+
 function renderAssetSearchResults() {
   const catalog = $("#asset-catalog");
   if (!isMember()) {
@@ -248,7 +252,7 @@ function renderAssetSearchResults() {
     const added = existing.has(asset.assetId);
     return `
       <button class="catalog-asset" type="button" data-add-result="${index}" ${added || state.assetSearchBusy ? "disabled" : ""}>
-        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>Yahoo Finance · 已确认分类</small></span>
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>Yahoo Finance · ${esc(instrumentTypeLabel(asset.quoteType))} · 已确认分类</small></span>
         <em>${added ? "已添加" : "添加并初始化"}</em>
       </button>
     `;

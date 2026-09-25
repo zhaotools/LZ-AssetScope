@@ -3,6 +3,7 @@ import {
   addMemberAsset,
   isProfileActive,
   loadMemberAssetResource,
+  loadMemberAssetSummaries,
   loadMemberAssets,
   loadMemberInitializationJobs,
   memberErrorMessage,
@@ -13,7 +14,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.4";
+} from "./member-auth.js?v=1.0.5";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -49,6 +50,7 @@ const state = {
   authReady: false,
   memberProfile: null,
   memberAssets: [],
+  assetSummaries: new Map(),
   memberJobs: [],
   assetSearchResults: [],
   assetSearchBusy: false,
@@ -195,6 +197,42 @@ function registerMemberAssets(rows) {
   }
 }
 
+function registerMemberSummaries(rows) {
+  const summaries = new Map();
+  const publicGold = state.assetSummaries.get("gold");
+  if (publicGold) summaries.set("gold", publicGold);
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (row?.asset_id && row?.payload) summaries.set(row.asset_id, row.payload);
+  }
+  state.assetSummaries = summaries;
+}
+
+function watchlistSnapshot(assetId) {
+  if (assetId === state.assetId && state.current) return state.current;
+  return state.assetSummaries.get(assetId) || null;
+}
+
+function watchlistQuote(snapshot) {
+  const price = Number(snapshot?.quote?.price);
+  const previousClose = Number(snapshot?.quote?.previousClose);
+  const validPrice = Number.isFinite(price);
+  const validPrevious = Number.isFinite(previousClose) && previousClose !== 0;
+  const change = validPrice && validPrevious ? ((price - previousClose) / previousClose) * 100 : null;
+  return {
+    price: validPrice ? price.toLocaleString("zh-CN", { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—",
+    change: Number.isFinite(change) ? `${change >= 0 ? "+" : ""}${change.toFixed(2)}%` : "—",
+    tone: Number.isFinite(change) ? (change >= 0 ? "positive" : "negative") : "",
+  };
+}
+
+function watchlistWeekly(snapshot, fallbackStatus) {
+  const confirmed = snapshot?.weekly?.current?.confirmed;
+  const code = confirmed?.code || snapshot?.weekly?.current?.observation?.code;
+  const weeks = Number(confirmed?.weeks);
+  if (code) return `${code}${Number.isFinite(weeks) ? ` · ${weeks}周` : ""}`;
+  return fallbackStatus === "initializing" ? "初始化中" : fallbackStatus === "failed" ? "失败" : "—";
+}
+
 function assetStatusLabel(status) {
   return ({ ready: "数据就绪", initializing: "正在初始化", failed: "初始化失败" })[status] || "等待处理";
 }
@@ -232,10 +270,15 @@ function renderWatchlist() {
     const status = assetId === "gold" ? "ready" : row?.status || asset.status || "initializing";
     const ready = status === "ready";
     const removable = member && assetId !== "gold";
+    const snapshot = ready ? watchlistSnapshot(assetId) : null;
+    const quote = watchlistQuote(snapshot);
+    const weekly = watchlistWeekly(snapshot, status);
     return `
       <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}">
-        <span class="watchlist-asset-icon">${esc(asset.code)}</span>
-        <span class="watchlist-asset-copy"><strong>${esc(asset.shortName)}</strong><small>${ready ? `${esc(asset.code)} / ${esc(asset.currency || "USD")}` : `<span class="watchlist-asset-status">${assetStatusLabel(status)}</span>`}</small></span>
+        <span class="watchlist-asset-copy"><strong>${esc(asset.code)}/${esc(asset.currency || "USD")}</strong><small>${esc(asset.shortName)}</small></span>
+        <span class="watchlist-price">${ready ? quote.price : "—"}</span>
+        <span class="watchlist-change ${quote.tone}">${ready ? quote.change : "—"}</span>
+        <span class="watchlist-stage">${weekly}</span>
         ${removable ? `<span class="watchlist-remove" role="button" tabindex="0" data-remove-asset="${esc(assetId)}" aria-label="从自选移除">×</span>` : ""}
       </button>
     `;
@@ -274,13 +317,19 @@ function initializationFailureMessage(job) {
 async function refreshMemberLibrary({ quiet = false } = {}) {
   if (!isMember()) {
     registerMemberAssets([]);
+    registerMemberSummaries([]);
     state.memberJobs = [];
     renderWatchlist();
     return;
   }
   try {
-    const [rows, jobs] = await Promise.all([loadMemberAssets(), loadMemberInitializationJobs()]);
+    const [rows, jobs, summaries] = await Promise.all([
+      loadMemberAssets(),
+      loadMemberInitializationJobs(),
+      loadMemberAssetSummaries(),
+    ]);
     registerMemberAssets(rows);
+    registerMemberSummaries(summaries);
     state.memberJobs = jobs;
     renderWatchlist();
     const activeJobs = jobs.filter((job) => ["queued", "running"].includes(job.status));
@@ -1377,7 +1426,9 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
     const current = await loadAssetResource(assetId, "current.json", { attempts: 3, timeoutMs: 9000 });
     if (token !== state.loadToken || assetId !== state.assetId) return;
     state.current = current;
+    state.assetSummaries.set(assetId, current);
     updateHeader();
+    renderWatchlist();
     renderOverview();
     renderMethodology();
     $("#loading-state").hidden = true;
@@ -1395,6 +1446,7 @@ async function handleMemberLogout() {
   await signOutMember().catch(() => undefined);
   state.memberProfile = null;
   state.memberAssets = [];
+  state.assetSummaries = new Map(state.assetSummaries.has("gold") ? [["gold", state.assetSummaries.get("gold")]] : []);
   state.memberJobs = [];
   if (state.assetPollTimer) window.clearTimeout(state.assetPollTimer);
   state.authReady = true;

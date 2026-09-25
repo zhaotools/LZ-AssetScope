@@ -1,4 +1,4 @@
-import { MEMBER_CONFIG } from "./member-config.js?v=1.0.4";
+import { MEMBER_CONFIG } from "./member-config.js?v=1.0.5";
 
 export { MEMBER_CONFIG };
 
@@ -218,6 +218,24 @@ export async function loadMemberInitializationJobs() {
     limit: "30",
   });
   const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/rest/v1/asset_initialization_jobs?${query}`, {
+    headers: authHeaders(session.accessToken),
+    credentials: "omit",
+    cache: "no-store",
+  });
+  const rows = await readResponse(response);
+  return Array.isArray(rows) ? rows : [];
+}
+
+export async function loadMemberAssetSummaries() {
+  requireMemberConfig();
+  const session = await currentSession();
+  if (!session) throw new MemberAuthError("会员登录已失效", "session_expired");
+  const query = new URLSearchParams({
+    select: "asset_id,payload",
+    resource: "eq.current.json",
+    order: "asset_id.asc",
+  });
+  const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/rest/v1/asset_snapshots?${query}`, {
     headers: authHeaders(session.accessToken),
     credentials: "omit",
     cache: "no-store",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-25T02:46:46+00:00",
+  "generatedAt": "2026-09-25T03:06:14+00:00",
   "productionReady": true,
   "asset": {
     "id": "btc",
@@ -33,7 +33,7 @@
       "dailyBoundary": "Yahoo Finance provider-defined BTC-USD UTC daily bar; current UTC day excluded",
       "volumeSemantics": "Yahoo Finance provider-reported BTC-USD aggregate volume; not a single-exchange volume",
       "volumeRuleStatus": "provider-volume-available",
-      "fetchedAt": "2026-09-25T02:46:42+00:00",
+      "fetchedAt": "2026-09-25T03:06:09+00:00",
       "observationDate": "2026-09-23"
     }
   },
@@ -156,7 +156,7 @@
     "summary": {
       "ok": true,
       "snapshotId": "fd690abf0d6cb3da",
-      "snapshotCreatedAt": "2026-09-25T02:46:42+00:00",
+      "snapshotCreatedAt": "2026-09-25T03:06:10+00:00",
       "symbol": "BTC-USD",
       "name": "比特币 / 美元",
       "market": "crypto",
@@ -173,7 +173,7 @@
       "volume": 46088463341.0,
       "date": "2026-09-23",
       "quoteDate": "2026-09-23",
-      "updatedAt": "2026-09-25T02:46:42+00:00",
+      "updatedAt": "2026-09-25T03:06:10+00:00",
       "bullBear": {
         "status": "牛市区",
         "score": 40,

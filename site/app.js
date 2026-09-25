@@ -185,7 +185,12 @@ function activateRoute() {
   const route = routeFromLocation();
   syncRouteShell(route);
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
-  $$('[data-route]').forEach((link) => link.classList.toggle("active", link.dataset.route === route));
+  $$('[data-route]').forEach((link) => {
+    const active = link.dataset.route === route;
+    link.classList.toggle("active", active);
+    if (active) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
   updateRouteLinks();
   renderWatchlist();
   if (state.current) void ensureRouteData(route);
@@ -934,9 +939,9 @@ function renderDailyChart() {
   );
 }
 
-async function loadAsset(assetId, { historyMode = "none" } = {}) {
+async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFromLocation() } = {}) {
   if (!assets[assetId]) return;
-  const route = routeFromLocation();
+  const route = routes.has(targetRoute) ? targetRoute : "overview";
   if (historyMode === "push") history.pushState({ assetId, route }, "", routePath(route, assetId));
   if (historyMode === "replace") history.replaceState({ assetId, route }, "", routePath(route, assetId));
   const token = state.loadToken + 1;
@@ -1000,14 +1005,19 @@ document.addEventListener("click", (event) => {
     const assetId = addAsset.dataset.addAsset;
     writeWatchlist([...readWatchlist(), assetId]);
     setAssetPicker(false);
-    void loadAsset(assetId, { historyMode: "push" });
+    const targetRoute = routeFromLocation() === "methodology" ? "overview" : routeFromLocation();
+    void loadAsset(assetId, { historyMode: "push", targetRoute });
     return;
   }
   const assetButton = event.target.closest(".watchlist-asset[data-asset]");
   if (assetButton) {
     event.preventDefault();
     const assetId = assetButton.dataset.asset;
-    if (assetId !== state.assetId) void loadAsset(assetId, { historyMode: "push" });
+    const currentRoute = routeFromLocation();
+    const targetRoute = currentRoute === "methodology" ? "overview" : currentRoute;
+    if (assetId !== state.assetId || targetRoute !== currentRoute) {
+      void loadAsset(assetId, { historyMode: "push", targetRoute });
+    }
     return;
   }
   const retry = event.target.closest("[data-retry-route]");

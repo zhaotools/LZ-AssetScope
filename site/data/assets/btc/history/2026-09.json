@@ -4,7 +4,7 @@
   "snapshots": [
     {
       "date": "2026-09-23",
-      "generatedAt": "2026-09-25T02:46:46+00:00",
+      "generatedAt": "2026-09-25T03:06:14+00:00",
       "inputHash": "fd690abf0d6cb3dafe0e056113924643c89de94d9e0401f21da37d5e0d432f2b",
       "asset": {
         "symbol": "BTC-USD",
@@ -129,7 +129,7 @@
         "summary": {
           "ok": true,
           "snapshotId": "fd690abf0d6cb3da",
-          "snapshotCreatedAt": "2026-09-25T02:46:42+00:00",
+          "snapshotCreatedAt": "2026-09-25T03:06:10+00:00",
           "symbol": "BTC-USD",
           "name": "比特币 / 美元",
           "market": "crypto",
@@ -146,7 +146,7 @@
           "volume": 46088463341.0,
           "date": "2026-09-23",
           "quoteDate": "2026-09-23",
-          "updatedAt": "2026-09-25T02:46:42+00:00",
+          "updatedAt": "2026-09-25T03:06:10+00:00",
           "bullBear": {
             "status": "牛市区",
             "score": 40,

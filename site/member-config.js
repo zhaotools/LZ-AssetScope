@@ -3,6 +3,7 @@
 export const MEMBER_CONFIG = Object.freeze({
   supabaseUrl: "https://sqfxyzigygfaherffthu.supabase.co",
   publishableKey: "sb_publishable_g5Kt8rkt40axa1DWRBS_QA_JjYMZG3a",
+  assetApiUrl: "https://lz-assetscope-github-dispatcher.lz-meme-radar-v1.workers.dev/api/assets",
   turnstileSiteKey: "",
   storageKey: "lz-assetscope-auth-v1",
 });

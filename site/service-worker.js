@@ -1,18 +1,18 @@
-const CACHE = "lz-assetscope-v0.9.1";
+const CACHE = "lz-assetscope-v1.0.0";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=0.9.1",
-  "./app.js?v=0.9.1",
-  "./member-auth.js?v=0.9.1",
-  "./member-config.js?v=0.9.1",
+  "./styles.css?v=1.0.0",
+  "./app.js?v=1.0.0",
+  "./member-auth.js?v=1.0.0",
+  "./member-config.js?v=1.0.0",
   "./manifest.webmanifest",
   "./favicon.ico",
   "./icons/favicon-v3.ico",
   "./icons/favicon-32-v3.png",
   "./icons/safari-pinned-tab.svg",
   "./icons/icon-180.png",
-  "./icons/icon-192.png?v=0.9.1",
+  "./icons/icon-192.png?v=1.0.0",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
@@ -60,7 +60,9 @@ async function navigationFirst(request) {
   const relativePath = requestUrl.pathname.startsWith(scopeUrl.pathname)
     ? requestUrl.pathname.slice(scopeUrl.pathname.length).replace(/\/$/, "")
     : "";
-  const route = /^(gold|btc)\//.test(relativePath) ? `/${relativePath}` : "/gold/overview";
+  const route = /^[a-z0-9-]+\/(overview|weekly|daily|fundamentals|methodology)$/.test(relativePath)
+    ? `/${relativePath}`
+    : "/gold/overview";
   const shellUrl = new URL("./", scopeUrl);
   shellUrl.searchParams.set("route", route);
   return Response.redirect(shellUrl, 302);

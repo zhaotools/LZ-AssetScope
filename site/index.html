@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; img-src 'self' data: https://challenges.cloudflare.com; style-src 'self'; script-src 'self' https://challenges.cloudflare.com; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co https://*.workers.dev https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; img-src 'self' data: https://challenges.cloudflare.com; style-src 'self'; script-src 'self' https://challenges.cloudflare.com; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
     <meta name="theme-color" content="#f7f8f8">
     <meta name="description" content="LZ-AssetScope 多资产周线、日线与基本面观察系统">
     <meta name="robots" content="index,follow">
@@ -14,7 +14,7 @@
     <link rel="icon" href="/LZ-AssetScope/icons/favicon-32-v3.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/LZ-AssetScope/icons/icon-180.png">
     <link rel="mask-icon" href="/LZ-AssetScope/icons/safari-pinned-tab.svg" color="#168eea">
-    <link rel="stylesheet" href="./styles.css?v=0.9.1">
+    <link rel="stylesheet" href="./styles.css?v=1.0.0">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -24,7 +24,7 @@
     <div class="application-shell">
       <aside class="asset-sidebar" aria-label="我的自选资产">
         <a class="brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
-          <img src="./icons/icon-192.png?v=0.9.1" alt="" width="44" height="44">
+          <img src="./icons/icon-192.png?v=1.0.0" alt="" width="44" height="44">
           <span><strong>LZ-AssetScope</strong><small>资产观察框架</small></span>
         </a>
         <div class="watchlist-heading">
@@ -259,8 +259,30 @@
       <button class="asset-picker-backdrop" type="button" data-close-asset-picker aria-label="关闭资产选择"></button>
       <section class="asset-picker-panel" role="dialog" aria-modal="true" aria-labelledby="asset-picker-title">
         <div class="asset-picker-header"><div><span>ASSET LIBRARY</span><h2 id="asset-picker-title">添加资产</h2></div><button type="button" data-close-asset-picker aria-label="关闭">×</button></div>
-        <p>选择系统已经完成数据接入与分析验证的资产。</p>
+        <p>先选择资产分类，再查询数据源。个人自选最多 30 个，黄金计入数量。</p>
+        <div class="asset-limit-line"><span>我的自选</span><strong id="asset-count">— / 30</strong></div>
+        <form class="asset-search-form" id="asset-search-form">
+          <label for="asset-category">资产分类 <em>必选</em></label>
+          <select id="asset-category" required>
+            <option value="">请选择分类</option>
+            <option value="us_equity">美股</option>
+            <option value="cn_equity">A股</option>
+            <option value="hk_equity">港股</option>
+            <option value="crypto">加密</option>
+            <option value="commodity">大宗商品</option>
+          </select>
+          <label for="asset-query">名称或代码</label>
+          <div class="asset-query-row">
+            <input id="asset-query" type="search" maxlength="80" placeholder="例如 AAPL、600519、腾讯、ETH、原油" required>
+            <button id="asset-search-submit" type="submit">查询</button>
+          </div>
+        </form>
+        <div class="asset-picker-message" id="asset-picker-message" role="status">请选择分类并输入资产名称或代码。</div>
         <div class="asset-catalog" id="asset-catalog"></div>
+        <div class="asset-initialization-note">
+          <strong>首次添加需要初始化</strong>
+          <span>系统将依次验证代码、获取历史行情、生成周线与日线分析并发布快照。通常需要数分钟，关闭窗口不会中断任务。</span>
+        </div>
       </section>
     </div>
 
@@ -293,6 +315,6 @@
     </div>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script type="module" src="./app.js?v=0.9.1"></script>
+    <script type="module" src="./app.js?v=1.0.0"></script>
   </body>
 </html>

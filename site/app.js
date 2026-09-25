@@ -1,12 +1,17 @@
 import {
   MEMBER_CONFIG,
+  addMemberAsset,
   isProfileActive,
   loadMemberAssetResource,
+  loadMemberAssets,
+  loadMemberInitializationJobs,
   memberErrorMessage,
+  removeMemberAsset,
+  resolveMemberAssets,
   restoreMemberSession,
   signInMember,
   signOutMember,
-} from "./member-auth.js?v=0.9.1";
+} from "./member-auth.js?v=1.0.0";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -29,9 +34,7 @@ const assets = {
     memberOnly: true,
   },
 };
-const WATCHLIST_KEY = "lz-assetscope-watchlist-v1";
 const PUBLIC_WATCHLIST = ["gold"];
-const MEMBER_DEFAULT_WATCHLIST = ["gold", "btc"];
 const state = {
   assetId: "gold",
   current: null,
@@ -43,6 +46,11 @@ const state = {
   loadToken: 0,
   authReady: false,
   memberProfile: null,
+  memberAssets: [],
+  memberJobs: [],
+  assetSearchResults: [],
+  assetSearchBusy: false,
+  assetPollTimer: null,
   pendingAssetId: null,
   pendingRoute: "overview",
 };
@@ -91,7 +99,9 @@ function isMember() {
 }
 
 function canAccessAsset(assetId) {
-  return Boolean(assets[assetId] && (!assets[assetId].memberOnly || isMember()));
+  if (assetId === "gold") return true;
+  const row = memberAssetRow(assetId);
+  return Boolean(isMember() && assets[assetId] && row?.status === "ready");
 }
 
 function locationContext() {
@@ -151,58 +161,211 @@ function lockMobilePageZoom() {
   }, { passive: false });
 }
 
+function memberAssetRow(assetId) {
+  return state.memberAssets.find((row) => row.asset?.asset_id === assetId) || null;
+}
+
 function readWatchlist() {
   if (!isMember()) return [...PUBLIC_WATCHLIST];
-  const storageKey = state.memberProfile?.user_id
-    ? `${WATCHLIST_KEY}:${state.memberProfile.user_id}`
-    : null;
-  if (!storageKey) return [...MEMBER_DEFAULT_WATCHLIST];
-  try {
-    const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    const normalized = saved.filter((assetId) => canAccessAsset(assetId));
-    return normalized.length ? [...new Set(normalized)] : [...MEMBER_DEFAULT_WATCHLIST];
-  } catch {
-    return [...MEMBER_DEFAULT_WATCHLIST];
+  const ids = state.memberAssets.map((row) => row.asset?.asset_id).filter(Boolean);
+  return ids.includes("gold") ? [...new Set(ids)] : ["gold", ...new Set(ids)];
+}
+
+function registerMemberAssets(rows) {
+  state.memberAssets = Array.isArray(rows) ? rows : [];
+  for (const row of state.memberAssets) {
+    const item = row.asset;
+    if (!item?.asset_id) continue;
+    assets[item.asset_id] = {
+      id: item.asset_id,
+      code: item.display_symbol || item.provider_symbol,
+      name: item.name,
+      shortName: item.name,
+      eyebrow: `${item.display_symbol || item.provider_symbol} · ${String(item.category || "ASSET").replaceAll("_", " ").toUpperCase()} OBSERVATORY`,
+      memberOnly: item.asset_id !== "gold",
+      category: item.category,
+      currency: item.currency,
+      exchange: item.exchange,
+      status: row.status,
+    };
   }
 }
 
-function writeWatchlist(items) {
-  if (!isMember() || !state.memberProfile?.user_id) return;
-  const storageKey = `${WATCHLIST_KEY}:${state.memberProfile.user_id}`;
-  const normalized = [...new Set(items.filter((assetId) => canAccessAsset(assetId)))];
-  localStorage.setItem(storageKey, JSON.stringify(normalized.length ? normalized : MEMBER_DEFAULT_WATCHLIST));
+function assetStatusLabel(status) {
+  return ({ ready: "数据就绪", initializing: "正在初始化", failed: "初始化失败" })[status] || "等待处理";
 }
 
-function ensureActiveAssetInWatchlist() {
-  const current = readWatchlist();
-  if (!current.includes(state.assetId)) writeWatchlist([...current, state.assetId]);
+function renderAssetSearchResults() {
+  const catalog = $("#asset-catalog");
+  if (!isMember()) {
+    catalog.innerHTML = '<p class="catalog-empty">登录会员账号后管理自选资产。</p>';
+    return;
+  }
+  const existing = new Set(readWatchlist());
+  catalog.innerHTML = state.assetSearchResults.length ? state.assetSearchResults.map((asset, index) => {
+    const added = existing.has(asset.assetId);
+    return `
+      <button class="catalog-asset" type="button" data-add-result="${index}" ${added || state.assetSearchBusy ? "disabled" : ""}>
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>Yahoo Finance · 已确认分类</small></span>
+        <em>${added ? "已添加" : "添加并初始化"}</em>
+      </button>
+    `;
+  }).join("") : "";
 }
 
 function renderWatchlist() {
-  ensureActiveAssetInWatchlist();
   const watchlist = readWatchlist();
   const member = isMember();
-  $("#add-asset-button").hidden = !member;
+  const addButton = $("#add-asset-button");
+  addButton.hidden = !member;
+  addButton.disabled = member && watchlist.length >= 30;
+  addButton.title = watchlist.length >= 30 ? "个人资产已达到 30 个上限" : "新增资产";
+  $("#asset-count").textContent = `${watchlist.length} / 30`;
   $("#asset-watchlist").innerHTML = watchlist.map((assetId) => {
     const asset = assets[assetId];
+    if (!asset) return "";
+    const row = memberAssetRow(assetId);
+    const status = assetId === "gold" ? "ready" : row?.status || asset.status || "initializing";
+    const ready = status === "ready";
+    const removable = member && assetId !== "gold";
     return `
-      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""}" type="button" data-asset="${esc(assetId)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}">
+      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}">
         <span class="watchlist-asset-icon">${esc(asset.code)}</span>
-        <span class="watchlist-asset-copy"><strong>${esc(asset.shortName)}</strong><small>${esc(asset.code)} / USD</small></span>
+        <span class="watchlist-asset-copy"><strong>${esc(asset.shortName)}</strong><small>${ready ? `${esc(asset.code)} / ${esc(asset.currency || "USD")}` : `<span class="watchlist-asset-status">${assetStatusLabel(status)}</span>`}</small></span>
+        ${removable ? `<span class="watchlist-remove" role="button" tabindex="0" data-remove-asset="${esc(assetId)}" aria-label="从自选移除">×</span>` : ""}
       </button>
     `;
   }).join("");
-  const available = member
-    ? Object.keys(assets).filter((assetId) => canAccessAsset(assetId) && !watchlist.includes(assetId))
-    : [];
-  $("#asset-catalog").innerHTML = available.length ? available.map((assetId) => {
-    const asset = assets[assetId];
-    return `
-      <button class="catalog-asset" type="button" data-add-asset="${esc(assetId)}">
-        <span><strong>${esc(asset.name)}</strong>${esc(asset.code)} / USD</span><em>添加</em>
-      </button>
-    `;
-  }).join("") : `<p class="catalog-empty">${member ? "当前支持的资产已经全部加入自选。" : "登录会员账号后管理自选资产。"}</p>`;
+  renderAssetSearchResults();
+}
+
+function setAssetPickerMessage(message, tone = "") {
+  const node = $("#asset-picker-message");
+  node.textContent = message;
+  node.className = `asset-picker-message${tone ? ` ${tone}` : ""}`;
+}
+
+function initializationStageLabel(stage) {
+  return ({
+    queued: "已加入初始化队列",
+    fetching_history: "正在获取历史行情",
+    publishing: "正在发布分析快照",
+    complete: "初始化完成",
+    failed: "初始化失败",
+  })[stage] || "正在执行初始化";
+}
+
+async function refreshMemberLibrary({ quiet = false } = {}) {
+  if (!isMember()) {
+    registerMemberAssets([]);
+    state.memberJobs = [];
+    renderWatchlist();
+    return;
+  }
+  try {
+    const [rows, jobs] = await Promise.all([loadMemberAssets(), loadMemberInitializationJobs()]);
+    registerMemberAssets(rows);
+    state.memberJobs = jobs;
+    renderWatchlist();
+    const activeJobs = jobs.filter((job) => ["queued", "running"].includes(job.status));
+    if (activeJobs.length && !quiet) {
+      const latest = activeJobs[0];
+      setAssetPickerMessage(`${initializationStageLabel(latest.progress_stage)}，完成后会自动出现在自选中。`);
+    }
+    scheduleMemberAssetPoll(activeJobs.length > 0);
+  } catch (error) {
+    if (!quiet) setAssetPickerMessage("暂时无法读取会员自选，请稍后重试。", "error");
+    console.error(error);
+  }
+}
+
+function scheduleMemberAssetPoll(active) {
+  if (state.assetPollTimer) window.clearTimeout(state.assetPollTimer);
+  state.assetPollTimer = active && isMember()
+    ? window.setTimeout(async () => {
+      const before = new Map(state.memberAssets.map((row) => [row.asset?.asset_id, row.status]));
+      await refreshMemberLibrary({ quiet: true });
+      const completed = state.memberAssets.find((row) => before.get(row.asset?.asset_id) === "initializing" && row.status === "ready");
+      if (completed) setAssetPickerMessage(`${completed.asset.name}初始化完成，已可以打开。`, "success");
+    }, 7000)
+    : null;
+}
+
+async function handleAssetSearch(event) {
+  event.preventDefault();
+  const category = $("#asset-category").value;
+  const query = $("#asset-query").value.trim();
+  if (!category) {
+    setAssetPickerMessage("请先选择资产分类。", "error");
+    $("#asset-category").focus();
+    return;
+  }
+  if (!query) {
+    setAssetPickerMessage("请输入资产名称或代码。", "error");
+    $("#asset-query").focus();
+    return;
+  }
+  state.assetSearchBusy = true;
+  state.assetSearchResults = [];
+  $("#asset-search-submit").disabled = true;
+  $("#asset-search-submit").textContent = "查询中…";
+  setAssetPickerMessage("正在查询对应数据源并核对资产分类…");
+  renderAssetSearchResults();
+  try {
+    const result = await resolveMemberAssets(category, query);
+    state.assetSearchResults = result.assets || [];
+    setAssetPickerMessage(
+      state.assetSearchResults.length ? `找到 ${state.assetSearchResults.length} 个可核验资产，请选择。` : "数据源中没有找到符合该分类的资产。",
+      state.assetSearchResults.length ? "success" : "error",
+    );
+  } catch (error) {
+    setAssetPickerMessage(memberErrorMessage(error), "error");
+  } finally {
+    state.assetSearchBusy = false;
+    $("#asset-search-submit").disabled = false;
+    $("#asset-search-submit").textContent = "查询";
+    renderAssetSearchResults();
+  }
+}
+
+async function handleAddAsset(index) {
+  if (readWatchlist().length >= 30) {
+    setAssetPickerMessage("个人资产已达到 30 个上限，请先移除一个资产。", "error");
+    return;
+  }
+  const candidate = state.assetSearchResults[index];
+  if (!candidate || state.assetSearchBusy) return;
+  state.assetSearchBusy = true;
+  renderAssetSearchResults();
+  setAssetPickerMessage(`正在确认 ${candidate.name} 的历史数据并创建初始化任务…`);
+  try {
+    const result = await addMemberAsset(candidate);
+    await refreshMemberLibrary({ quiet: true });
+    if (result.memberStatus === "ready") {
+      setAssetPickerMessage(`${candidate.name}已有可用数据，已加入自选。`, "success");
+    } else {
+      setAssetPickerMessage(`${candidate.name}已加入初始化队列，通常需要数分钟。关闭窗口不会中断任务。`, "success");
+      scheduleMemberAssetPoll(true);
+    }
+  } catch (error) {
+    setAssetPickerMessage(memberErrorMessage(error), "error");
+  } finally {
+    state.assetSearchBusy = false;
+    renderAssetSearchResults();
+  }
+}
+
+async function handleRemoveAsset(assetId) {
+  const asset = assets[assetId];
+  if (!asset || assetId === "gold") return;
+  if (!window.confirm(`从“我的自选”移除${asset.name}？共享行情数据不会被删除。`)) return;
+  try {
+    await removeMemberAsset(assetId);
+    await refreshMemberLibrary({ quiet: true });
+    if (state.assetId === assetId) await loadAsset("gold", { historyMode: "push", targetRoute: "overview" });
+  } catch (error) {
+    window.alert(memberErrorMessage(error));
+  }
 }
 
 function memberExpiryLabel(profile = state.memberProfile) {
@@ -330,7 +493,12 @@ function requestAssetAccess(assetId, route = "overview") {
 function setAssetPicker(open) {
   $("#asset-picker").hidden = !open;
   document.body.classList.toggle("picker-open", open);
-  if (open) $("#asset-picker-title").focus?.();
+  if (open) {
+    $("#asset-count").textContent = `${readWatchlist().length} / 30`;
+    setAssetPickerMessage("请选择分类并输入资产名称或代码。");
+    renderAssetSearchResults();
+    $("#asset-category").focus();
+  }
 }
 
 function clearCharts() {
@@ -1152,6 +1320,9 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
 async function handleMemberLogout() {
   await signOutMember().catch(() => undefined);
   state.memberProfile = null;
+  state.memberAssets = [];
+  state.memberJobs = [];
+  if (state.assetPollTimer) window.clearTimeout(state.assetPollTimer);
   state.authReady = true;
   closeMemberDialog();
   renderMemberControls();
@@ -1180,6 +1351,7 @@ async function handleMemberLogin(event) {
     const pendingRoute = state.pendingRoute;
     state.memberProfile = profile;
     state.authReady = true;
+    await refreshMemberLibrary({ quiet: true });
     renderMemberControls();
     renderWatchlist();
     closeMemberDialog({ preservePending: true });
@@ -1205,6 +1377,7 @@ async function boot() {
   state.memberProfile = await restoreMemberSession();
   state.authReady = true;
   renderMemberControls();
+  if (isMember()) await refreshMemberLibrary({ quiet: true });
   const route = normalizeRoute();
   renderWatchlist();
   if (route === "methodology") {
@@ -1246,6 +1419,10 @@ document.addEventListener("click", (event) => {
   const addButton = event.target.closest("#add-asset-button");
   if (addButton) {
     event.preventDefault();
+    if (readWatchlist().length >= 30) {
+      window.alert("个人资产已达到 30 个上限，请先移除一个资产。");
+      return;
+    }
     renderWatchlist();
     setAssetPicker(true);
     return;
@@ -1255,20 +1432,32 @@ document.addEventListener("click", (event) => {
     setAssetPicker(false);
     return;
   }
-  const addAsset = event.target.closest("[data-add-asset]");
+  const addAsset = event.target.closest("[data-add-result]");
   if (addAsset) {
     event.preventDefault();
-    const assetId = addAsset.dataset.addAsset;
-    writeWatchlist([...readWatchlist(), assetId]);
-    setAssetPicker(false);
-    const targetRoute = routeFromLocation() === "methodology" ? "overview" : routeFromLocation();
-    void loadAsset(assetId, { historyMode: "push", targetRoute });
+    void handleAddAsset(Number(addAsset.dataset.addResult));
+    return;
+  }
+  const removeAsset = event.target.closest("[data-remove-asset]");
+  if (removeAsset) {
+    event.preventDefault();
+    event.stopPropagation();
+    void handleRemoveAsset(removeAsset.dataset.removeAsset);
     return;
   }
   const assetButton = event.target.closest(".watchlist-asset[data-asset]");
   if (assetButton) {
     event.preventDefault();
     const assetId = assetButton.dataset.asset;
+    const status = assetButton.dataset.status;
+    if (status !== "ready") {
+      const row = memberAssetRow(assetId);
+      const job = state.memberJobs.find((item) => item.asset_id === assetId);
+      window.alert(status === "failed"
+        ? `${row?.asset?.name || "该资产"}初始化失败：${job?.error_message || row?.asset?.last_error || "请稍后重试。"}`
+        : `${row?.asset?.name || "该资产"}${initializationStageLabel(job?.progress_stage)}，完成后即可打开。`);
+      return;
+    }
     const currentRoute = routeFromLocation();
     const targetRoute = currentRoute === "methodology" ? "overview" : currentRoute;
     if (assetId !== state.assetId || targetRoute !== currentRoute) {
@@ -1315,6 +1504,7 @@ window.addEventListener("popstate", () => {
 
 $("#member-login-form").addEventListener("submit", handleMemberLogin);
 $("#member-login-form").addEventListener("input", syncMemberSubmit);
+$("#asset-search-form").addEventListener("submit", handleAssetSearch);
 
 let deferredInstall;
 const installButton = $("#install-button");

@@ -406,13 +406,25 @@ main { position: relative; z-index: 1; }
   box-shadow: var(--shadow-sm);
 }
 .site-header, .header-actions, .asset-hero > *, .hero-meta { min-width: 0; }
-.asset-heading { position: relative; z-index: 1; display: flex; gap: 8px; align-items: center; }
+.asset-heading {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+.asset-heading > div:last-child { min-width: 0; }
 .asset-symbol {
   display: grid;
   place-items: center;
-  width: 46px;
+  width: auto;
+  min-width: 46px;
+  max-width: 84px;
   height: 40px;
+  padding: 0 8px;
   flex: none;
+  box-sizing: border-box;
   border: 1px solid #d8bd80;
   border-radius: 12px;
   color: var(--gold-deep);
@@ -437,8 +449,8 @@ h1 {
   font-weight: 750;
   letter-spacing: -0.025em;
 }
-.asset-heading h1 { font-size: clamp(18px, 1.82vw, 21px); line-height: 1.08; }
-.asset-benchmark { margin: 0; color: var(--muted); font-size: 10px; }
+.asset-heading h1 { overflow: hidden; font-size: clamp(18px, 1.82vw, 21px); line-height: 1.08; text-overflow: ellipsis; white-space: nowrap; }
+.asset-benchmark { overflow: hidden; margin: 0; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .quote-block {
   position: relative;
   z-index: 1;
@@ -1269,7 +1281,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .top-member-account > button:first-child { min-width: 74px; max-width: 112px; padding-inline: 8px; }
   .top-member-account > button:last-child { padding-inline: 8px; }
   .asset-hero { grid-template-columns: 1fr; gap: 7px; margin-top: 10px; padding: 10px 14px; border-radius: 16px; }
-  .asset-symbol { width: 44px; height: 38px; border-radius: 12px; font-size: 13px; }
+  .asset-symbol { width: auto; min-width: 44px; max-width: 82px; height: 38px; padding-inline: 8px; border-radius: 12px; font-size: 13px; }
   .quote-block { padding: 9px 0 0; border-top: 1px solid rgba(143, 100, 26, 0.18); border-left: 0; }
   .hero-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-top: 11px; }
   .hero-meta div { padding: 2px 8px; }

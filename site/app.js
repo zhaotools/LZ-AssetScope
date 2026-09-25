@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.16";
+} from "./member-auth.js?v=1.0.17";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -91,6 +91,43 @@ const stagePresentation = {
   3: { code: "S3", title: "高位整理", phase: "顶部阶段", arrow: "◆", color: "#c98632" },
   4: { code: "S4", title: "下降趋势", phase: "下降阶段", arrow: "▼", color: "#c94f55" },
 };
+const knownChineseAssetNames = {
+  "600519.SS": "贵州茅台",
+  "300285.SZ": "国瓷材料",
+  "399006.SZ": "创业板指",
+  "000001.SS": "上证指数",
+  "000300.SS": "沪深300",
+  "0700.HK": "腾讯控股",
+  "1810.HK": "小米集团-W",
+  "9988.HK": "阿里巴巴-W",
+};
+
+function localizedMarketName(category, code, symbol, ...candidates) {
+  if (!["cn_equity", "hk_equity"].includes(category)) {
+    return candidates.find((value) => String(value || "").trim()) || code;
+  }
+  const normalizedSymbol = String(symbol || "").toUpperCase();
+  if (knownChineseAssetNames[normalizedSymbol]) return knownChineseAssetNames[normalizedSymbol];
+  const localized = candidates.find((value) => /[\u3400-\u9fff\uf900-\ufaff]/.test(String(value || "")));
+  return localized || `${category === "cn_equity" ? "A股" : "港股"} ${code}`;
+}
+
+function updateAssetPresentationFromSnapshot(assetId, snapshot) {
+  const presentation = assets[assetId];
+  const item = snapshot?.asset;
+  if (!presentation || !item) return;
+  const category = item.categoryId || presentation.category;
+  const name = localizedMarketName(
+    category,
+    presentation.code,
+    item.symbol,
+    item.name,
+    presentation.name,
+  );
+  presentation.name = name;
+  presentation.shortName = name;
+  presentation.category = category;
+}
 
 function dataRoot(assetId = state.assetId) {
   return new URL(`data/assets/${assetId}/`, SITE_ROOT);
@@ -187,12 +224,14 @@ function registerMemberAssets(rows) {
   for (const row of state.memberAssets) {
     const item = row.asset;
     if (!item?.asset_id) continue;
+    const code = item.display_symbol || item.provider_symbol;
+    const name = localizedMarketName(item.category, code, item.provider_symbol, item.name);
     assets[item.asset_id] = {
       id: item.asset_id,
-      code: item.display_symbol || item.provider_symbol,
-      name: item.name,
-      shortName: item.name,
-      eyebrow: `${item.display_symbol || item.provider_symbol} · ${String(item.category || "ASSET").replaceAll("_", " ").toUpperCase()} OBSERVATORY`,
+      code,
+      name,
+      shortName: name,
+      eyebrow: `${code} · ${String(item.category || "ASSET").replaceAll("_", " ").toUpperCase()} OBSERVATORY`,
       memberOnly: item.asset_id !== "gold",
       category: item.category,
       currency: item.currency,
@@ -218,7 +257,10 @@ function registerMemberSummaries(rows) {
   const publicGold = state.assetSummaries.get("gold");
   if (publicGold) summaries.set("gold", publicGold);
   for (const row of Array.isArray(rows) ? rows : []) {
-    if (row?.asset_id && row?.payload) summaries.set(row.asset_id, row.payload);
+    if (row?.asset_id && row?.payload) {
+      summaries.set(row.asset_id, row.payload);
+      updateAssetPresentationFromSnapshot(row.asset_id, row.payload);
+    }
   }
   state.assetSummaries = summaries;
 }
@@ -944,7 +986,9 @@ function updateHeader() {
   $("#daily-chart").setAttribute("aria-label", `${presentation.name}日线价格图`);
   const delta = Number(quote.price) - Number(quote.previousClose);
   const percent = Number(quote.previousClose) ? (delta / Number(quote.previousClose)) * 100 : 0;
-  $("#asset-benchmark").textContent = current.asset.technicalBenchmark;
+  $("#asset-benchmark").textContent = ["cn_equity", "hk_equity"].includes(presentation.category)
+    ? `${current.asset.symbol} · ${presentation.category === "cn_equity" ? "A股" : "港股"}`
+    : current.asset.technicalBenchmark;
   $("#quote-price").textContent = fmt(quote.price, 1);
   $("#quote-currency").textContent = quote.currency;
   const change = $("#quote-change");
@@ -1569,6 +1613,7 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
   try {
     const current = await loadAssetResource(assetId, "current.json", { attempts: 3, timeoutMs: 9000 });
     if (token !== state.loadToken || assetId !== state.assetId) return;
+    updateAssetPresentationFromSnapshot(assetId, current);
     state.current = current;
     state.assetSummaries.set(assetId, current);
     updateHeader();

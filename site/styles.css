@@ -261,7 +261,7 @@ body.picker-open { overflow: hidden; }
 .member-dialog { position: fixed; inset: 0; z-index: 110; display: grid; place-items: center; padding: 20px; }
 body.member-dialog-open { overflow: hidden; }
 .member-dialog-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: rgba(7, 29, 50, 0.54); backdrop-filter: blur(6px); cursor: default; }
-.member-dialog-panel { position: relative; width: min(410px, 100%); padding: 27px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-raised); }
+.member-dialog-panel { position: relative; width: min(460px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; padding: 27px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-raised); }
 .member-dialog-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); background: var(--surface-muted); font-size: 20px; cursor: pointer; }
 .member-dialog-icon { display: grid; width: 44px; height: 44px; margin-bottom: 14px; place-items: center; border-radius: 13px; color: white; background: var(--navy); box-shadow: 0 10px 25px rgba(18, 53, 83, 0.18); font-size: 12px; font-weight: 850; letter-spacing: 0.05em; }
 .member-dialog-kicker { color: var(--gold-deep); font-size: 9px; font-weight: 850; letter-spacing: 0.18em; }
@@ -273,15 +273,28 @@ body.member-dialog-open { overflow: hidden; }
 .member-dialog-panel input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(63, 130, 173, 0.12); }
 .member-turnstile { min-height: 65px; margin-top: 5px; overflow: hidden; }
 .member-login-submit,
-.member-dialog-logout { min-height: 42px; border: 0; border-radius: 10px; color: white; background: var(--navy); font-size: 11px; font-weight: 800; cursor: pointer; }
+.member-dialog-logout,
+.account-save-button { min-height: 42px; border: 0; border-radius: 10px; color: white; background: var(--navy); font-size: 11px; font-weight: 800; cursor: pointer; }
 .member-login-submit:hover,
-.member-dialog-logout:hover { background: #174766; }
-.member-login-submit:disabled { color: rgba(255, 255, 255, 0.6); background: #8b9ba7; cursor: wait; }
+.member-dialog-logout:hover,
+.account-save-button:hover { background: #174766; }
+.member-login-submit:disabled,
+.account-save-button:disabled { color: rgba(255, 255, 255, 0.6); background: #8b9ba7; cursor: wait; }
 .member-login-error { padding: 9px 11px; border: 1px solid #ecc4c4; border-radius: 9px; color: var(--red); background: var(--red-soft); font-size: 10px; line-height: 1.55; }
 .member-login-note { display: block; margin-top: 13px; color: var(--muted-light); font-size: 9px; line-height: 1.6; }
-#member-account-view p { display: grid; gap: 4px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-muted); }
-#member-account-view p strong { color: var(--ink-strong); font-size: 14px; }
-#member-account-view p span { color: var(--muted); font-size: 10px; }
+.member-account-summary { display: grid; gap: 4px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-muted); }
+.member-account-summary strong { color: var(--ink-strong); font-size: 14px; }
+.member-account-summary span { color: var(--muted); font-size: 10px; }
+.member-account-settings { display: grid; gap: 12px; margin: 14px 0; }
+.member-account-settings form { padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+.account-form-heading { display: grid; gap: 2px; margin-bottom: 5px; }
+.account-form-heading strong { color: var(--ink-strong); font-size: 12px; }
+.account-form-heading span { color: var(--muted-light); font-size: 9px; }
+.account-turnstile { min-height: 0; }
+.account-feedback { padding: 9px 10px; border-radius: 9px; font-size: 10px; line-height: 1.5; }
+.account-feedback.error { color: var(--red); border: 1px solid #ecc4c4; background: var(--red-soft); }
+.account-feedback.success { color: #197754; border: 1px solid #bae2d1; background: #eaf7f1; }
+.account-save-button { width: 100%; }
 .member-dialog-logout { width: 100%; color: var(--red); border: 1px solid #ecc4c4; background: var(--red-soft); }
 .member-dialog-logout:hover { background: #f7dede; }
 

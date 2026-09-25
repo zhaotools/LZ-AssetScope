@@ -1,4 +1,4 @@
-import { MEMBER_CONFIG } from "./member-config.js?v=1.0.3";
+import { MEMBER_CONFIG } from "./member-config.js?v=1.0.4";
 
 export { MEMBER_CONFIG };
 
@@ -57,7 +57,11 @@ function normalizeSession(payload, previousRefreshToken = "") {
     accessToken: payload.access_token,
     refreshToken: payload.refresh_token || previousRefreshToken,
     expiresAt,
-    user: { id: payload.user.id, email: payload.user.email || "" },
+    user: {
+      id: payload.user.id,
+      email: payload.user.email || "",
+      userMetadata: payload.user.user_metadata || {},
+    },
   };
 }
 
@@ -114,7 +118,9 @@ async function fetchMemberProfile(session) {
   if (!Array.isArray(rows) || !rows[0]) {
     throw new MemberAuthError("没有找到有效会员资料", "profile_not_found");
   }
-  return rows[0];
+  const profile = rows[0];
+  const metadataName = String(session.user.userMetadata?.display_name || "").trim();
+  return metadataName ? { ...profile, display_name: metadataName } : profile;
 }
 
 export function isProfileActive(profile, now = new Date()) {
@@ -249,6 +255,66 @@ export async function removeMemberAsset(assetId) {
   return callAssetApi({ action: "remove", assetId });
 }
 
+async function updateAuthenticatedUser(session, attributes) {
+  const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/auth/v1/user`, {
+    method: "PUT",
+    headers: authHeaders(session.accessToken),
+    credentials: "omit",
+    body: JSON.stringify(attributes),
+  });
+  const user = await readResponse(response);
+  session.user = {
+    id: user?.id || session.user.id,
+    email: user?.email || session.user.email,
+    userMetadata: user?.user_metadata || session.user.userMetadata || {},
+  };
+  saveSession(session);
+  return user;
+}
+
+export async function updateMemberDisplayName(displayName) {
+  requireMemberConfig();
+  const name = String(displayName || "").trim();
+  if (name.length < 1 || name.length > 30) {
+    throw new MemberAuthError("用户名需为 1–30 个字符", "display_name_invalid");
+  }
+  const session = await currentSession();
+  if (!session) throw new MemberAuthError("会员登录已失效", "session_expired");
+  await updateAuthenticatedUser(session, { data: { display_name: name } });
+  return fetchMemberProfile(session);
+}
+
+export async function updateMemberPassword(currentPassword, newPassword, captchaToken = "") {
+  requireMemberConfig();
+  if (!currentPassword) throw new MemberAuthError("请输入当前密码", "current_password_required");
+  if (String(newPassword || "").length < 8) {
+    throw new MemberAuthError("新密码至少需要 8 个字符", "weak_password");
+  }
+  if (currentPassword === newPassword) {
+    throw new MemberAuthError("新密码不能与当前密码相同", "same_password");
+  }
+  const session = await currentSession();
+  if (!session?.user?.email) throw new MemberAuthError("会员登录已失效", "session_expired");
+
+  const verifyResponse = await fetch(`${MEMBER_CONFIG.supabaseUrl}/auth/v1/token?grant_type=password`, {
+    method: "POST",
+    headers: authHeaders(),
+    credentials: "omit",
+    body: JSON.stringify({
+      email: session.user.email,
+      password: currentPassword,
+      ...(captchaToken && captchaToken !== "not-required"
+        ? { gotrue_meta_security: { captcha_token: captchaToken } }
+        : {}),
+    }),
+  });
+  const verifiedSession = normalizeSession(await readResponse(verifyResponse));
+  await updateAuthenticatedUser(verifiedSession, {
+    password: newPassword,
+    current_password: currentPassword,
+  });
+}
+
 export async function signOutMember() {
   const session = readStoredSession();
   try {
@@ -270,6 +336,12 @@ export function memberErrorMessage(error) {
     return "会员账号尚未激活、已暂停或已到期，请联系管理员。";
   }
   if (error?.code === "captcha_failed") return "安全验证已失效，请重新验证。";
+  if (error?.code === "display_name_invalid") return "用户名需为 1–30 个字符。";
+  if (error?.code === "invalid_credentials" || error?.code === "current_password_mismatch") return "当前密码不正确。";
+  if (error?.code === "current_password_required") return "请输入当前密码。";
+  if (error?.code === "same_password") return "新密码不能与当前密码相同。";
+  if (error?.code === "weak_password") return error.message || "新密码强度不足，请使用至少 8 个字符。";
+  if (error?.code === "reauthentication_needed") return "登录时间过久，请退出后重新登录再修改密码。";
   if (error?.code === "asset_api_not_configured") return "资产初始化服务尚未发布，请稍后再试。";
   if (error?.code === "asset_limit_reached") return "个人资产已达到 30 个上限，请先移除一个资产。";
   if (error?.code === "market_source_rate_limited") return "行情数据源当前查询繁忙，请稍后重试。";

@@ -11,7 +11,9 @@ import {
   restoreMemberSession,
   signInMember,
   signOutMember,
-} from "./member-auth.js?v=1.0.3";
+  updateMemberDisplayName,
+  updateMemberPassword,
+} from "./member-auth.js?v=1.0.4";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -57,6 +59,8 @@ const state = {
 let chartLibraryPromise;
 let memberCaptchaToken = "";
 let turnstileWidgetId = null;
+let accountCaptchaToken = "";
+let accountTurnstileWidgetId = null;
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -418,6 +422,59 @@ function removeTurnstileWidget() {
   syncMemberSubmit();
 }
 
+function setAccountFeedback(selector, message = "", tone = "") {
+  const node = $(selector);
+  node.hidden = !message;
+  node.textContent = message;
+  node.className = `account-feedback${tone ? ` ${tone}` : ""}`;
+}
+
+function syncAccountPasswordSubmit() {
+  const button = $("#password-submit");
+  if (button.dataset.loading === "true") return;
+  const currentPassword = $("#account-current-password").value;
+  const newPassword = $("#account-new-password").value;
+  const confirmPassword = $("#account-confirm-password").value;
+  const captchaReady = !MEMBER_CONFIG.turnstileSiteKey || Boolean(accountCaptchaToken);
+  button.disabled = !currentPassword || newPassword.length < 8 || newPassword !== confirmPassword || !captchaReady;
+}
+
+function removeAccountTurnstileWidget() {
+  if (accountTurnstileWidgetId !== null && window.turnstile) {
+    window.turnstile.remove(accountTurnstileWidgetId);
+  }
+  accountTurnstileWidgetId = null;
+  accountCaptchaToken = "";
+  $("#account-password-turnstile").replaceChildren();
+  syncAccountPasswordSubmit();
+}
+
+async function renderAccountTurnstileWidget() {
+  removeAccountTurnstileWidget();
+  if (!MEMBER_CONFIG.turnstileSiteKey) {
+    accountCaptchaToken = "not-required";
+    $("#account-password-turnstile").hidden = true;
+    syncAccountPasswordSubmit();
+    return;
+  }
+  $("#account-password-turnstile").hidden = false;
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    if ($("#member-dialog").hidden || $("#member-account-view").hidden) return;
+    if (window.turnstile) {
+      accountTurnstileWidgetId = window.turnstile.render("#account-password-turnstile", {
+        sitekey: MEMBER_CONFIG.turnstileSiteKey,
+        action: "member-password-update",
+        callback: (token) => { accountCaptchaToken = token; syncAccountPasswordSubmit(); },
+        "expired-callback": () => { accountCaptchaToken = ""; syncAccountPasswordSubmit(); },
+        "error-callback": () => { accountCaptchaToken = ""; syncAccountPasswordSubmit(); },
+      });
+      return;
+    }
+    await wait(100);
+  }
+  setAccountFeedback("#password-feedback", "安全验证组件未能加载，请检查网络后重试。", "error");
+}
+
 async function renderTurnstileWidget() {
   removeTurnstileWidget();
   if (!MEMBER_CONFIG.turnstileSiteKey) {
@@ -446,6 +503,7 @@ async function renderTurnstileWidget() {
 }
 
 function openMemberLogin(assetId = null, route = "overview") {
+  removeAccountTurnstileWidget();
   if (assetId) {
     state.pendingAssetId = assetId;
     state.pendingRoute = routes.has(route) ? route : "overview";
@@ -477,12 +535,20 @@ function openMemberAccount() {
   $(".member-dialog-panel").setAttribute("aria-labelledby", "member-account-title");
   $("#member-dialog-name").textContent = state.memberProfile.display_name || "会员";
   $("#member-dialog-expiry").textContent = memberExpiryLabel();
+  $("#account-display-name").value = state.memberProfile.display_name || "";
+  $("#account-current-password").value = "";
+  $("#account-new-password").value = "";
+  $("#account-confirm-password").value = "";
+  setAccountFeedback("#display-name-feedback");
+  setAccountFeedback("#password-feedback");
   $("#member-dialog").hidden = false;
   document.body.classList.add("member-dialog-open");
+  void renderAccountTurnstileWidget();
 }
 
 function closeMemberDialog({ preservePending = false } = {}) {
   removeTurnstileWidget();
+  removeAccountTurnstileWidget();
   $("#member-dialog").hidden = true;
   document.body.classList.remove("member-dialog-open");
   if (!preservePending) {
@@ -1380,6 +1446,59 @@ async function handleMemberLogin(event) {
   }
 }
 
+async function handleDisplayNameUpdate(event) {
+  event.preventDefault();
+  const submit = $("#display-name-submit");
+  submit.dataset.loading = "true";
+  submit.disabled = true;
+  submit.textContent = "正在保存…";
+  setAccountFeedback("#display-name-feedback");
+  try {
+    state.memberProfile = await updateMemberDisplayName($("#account-display-name").value);
+    renderMemberControls();
+    $("#member-dialog-name").textContent = state.memberProfile.display_name || "会员";
+    $("#account-display-name").value = state.memberProfile.display_name || "";
+    setAccountFeedback("#display-name-feedback", "用户名已更新。", "success");
+  } catch (error) {
+    setAccountFeedback("#display-name-feedback", memberErrorMessage(error), "error");
+  } finally {
+    submit.dataset.loading = "false";
+    submit.disabled = false;
+    submit.textContent = "保存用户名";
+  }
+}
+
+async function handlePasswordUpdate(event) {
+  event.preventDefault();
+  const submit = $("#password-submit");
+  const currentPassword = $("#account-current-password").value;
+  const newPassword = $("#account-new-password").value;
+  const confirmPassword = $("#account-confirm-password").value;
+  if (newPassword !== confirmPassword) {
+    setAccountFeedback("#password-feedback", "两次输入的新密码不一致。", "error");
+    return;
+  }
+  submit.dataset.loading = "true";
+  submit.disabled = true;
+  submit.textContent = "正在修改…";
+  setAccountFeedback("#password-feedback");
+  try {
+    await updateMemberPassword(currentPassword, newPassword, accountCaptchaToken);
+    $("#account-current-password").value = "";
+    $("#account-new-password").value = "";
+    $("#account-confirm-password").value = "";
+    setAccountFeedback("#password-feedback", "密码已修改，下次登录请使用新密码。", "success");
+    await renderAccountTurnstileWidget();
+  } catch (error) {
+    setAccountFeedback("#password-feedback", memberErrorMessage(error), "error");
+    await renderAccountTurnstileWidget();
+  } finally {
+    submit.dataset.loading = "false";
+    submit.textContent = "确认修改密码";
+    syncAccountPasswordSubmit();
+  }
+}
+
 async function boot() {
   renderMemberControls();
   state.memberProfile = await restoreMemberSession();
@@ -1506,6 +1625,9 @@ window.addEventListener("popstate", () => {
 
 $("#member-login-form").addEventListener("submit", handleMemberLogin);
 $("#member-login-form").addEventListener("input", syncMemberSubmit);
+$("#member-display-name-form").addEventListener("submit", handleDisplayNameUpdate);
+$("#member-password-form").addEventListener("submit", handlePasswordUpdate);
+$("#member-password-form").addEventListener("input", syncAccountPasswordSubmit);
 $("#asset-search-form").addEventListener("submit", handleAssetSearch);
 
 let deferredInstall;

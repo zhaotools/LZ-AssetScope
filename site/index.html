@@ -14,7 +14,7 @@
     <link rel="icon" href="/LZ-AssetScope/icons/favicon-32-v3.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/LZ-AssetScope/icons/icon-180.png">
     <link rel="mask-icon" href="/LZ-AssetScope/icons/safari-pinned-tab.svg" color="#168eea">
-    <link rel="stylesheet" href="./styles.css?v=1.0.3">
+    <link rel="stylesheet" href="./styles.css?v=1.0.4">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -24,7 +24,7 @@
     <div class="application-shell">
       <aside class="asset-sidebar" aria-label="我的自选资产">
         <a class="brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
-          <img src="./icons/icon-192.png?v=1.0.3" alt="" width="44" height="44">
+          <img src="./icons/icon-192.png?v=1.0.4" alt="" width="44" height="44">
           <span><strong>LZ-AssetScope</strong><small>资产观察框架</small></span>
         </a>
         <div class="watchlist-heading">
@@ -307,13 +307,34 @@
         </div>
         <div id="member-account-view" hidden>
           <h2 id="member-account-title">会员账号</h2>
-          <p><strong id="member-dialog-name">会员</strong><span id="member-dialog-expiry">账号有效</span></p>
+          <p class="member-account-summary"><strong id="member-dialog-name">会员</strong><span id="member-dialog-expiry">账号有效</span></p>
+          <div class="member-account-settings">
+            <form id="member-display-name-form">
+              <div class="account-form-heading"><strong>修改用户名</strong><span>用于网页中的账号显示</span></div>
+              <label for="account-display-name">用户名</label>
+              <input id="account-display-name" name="displayName" type="text" minlength="1" maxlength="30" autocomplete="nickname" required>
+              <span class="account-feedback" id="display-name-feedback" role="status" hidden></span>
+              <button class="account-save-button" id="display-name-submit" type="submit">保存用户名</button>
+            </form>
+            <form id="member-password-form">
+              <div class="account-form-heading"><strong>修改密码</strong><span>修改前需要验证当前密码</span></div>
+              <label for="account-current-password">当前密码</label>
+              <input id="account-current-password" name="currentPassword" type="password" autocomplete="current-password" required>
+              <label for="account-new-password">新密码</label>
+              <input id="account-new-password" name="newPassword" type="password" minlength="8" autocomplete="new-password" placeholder="至少 8 个字符" required>
+              <label for="account-confirm-password">确认新密码</label>
+              <input id="account-confirm-password" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required>
+              <div class="member-turnstile account-turnstile" id="account-password-turnstile" aria-label="修改密码安全验证"></div>
+              <span class="account-feedback" id="password-feedback" role="status" hidden></span>
+              <button class="account-save-button" id="password-submit" type="submit" disabled>确认修改密码</button>
+            </form>
+          </div>
           <button class="member-dialog-logout" id="member-dialog-logout" type="button">退出登录</button>
         </div>
       </section>
     </div>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script type="module" src="./app.js?v=1.0.3"></script>
+    <script type="module" src="./app.js?v=1.0.4"></script>
   </body>
 </html>

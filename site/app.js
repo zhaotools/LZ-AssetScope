@@ -11,7 +11,7 @@ import {
   restoreMemberSession,
   signInMember,
   signOutMember,
-} from "./member-auth.js?v=1.0.0";
+} from "./member-auth.js?v=1.0.1";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");

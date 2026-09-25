@@ -1,4 +1,4 @@
-import { MEMBER_CONFIG } from "./member-config.js?v=1.0.0";
+import { MEMBER_CONFIG } from "./member-config.js?v=1.0.1";
 
 export { MEMBER_CONFIG };
 
@@ -221,21 +221,20 @@ export async function loadMemberInitializationJobs() {
 }
 
 async function callAssetApi(payload) {
-  if (!MEMBER_CONFIG.assetApiUrl) {
+  if (!MEMBER_CONFIG.assetProxyRpc) {
     throw new MemberAuthError("资产初始化服务尚未发布", "asset_api_not_configured");
   }
   const session = await currentSession();
   if (!session) throw new MemberAuthError("会员登录已失效", "session_expired");
-  const response = await fetch(MEMBER_CONFIG.assetApiUrl, {
+  const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/rest/v1/rpc/${MEMBER_CONFIG.assetProxyRpc}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.accessToken}`,
-    },
+    headers: authHeaders(session.accessToken),
     credentials: "omit",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ request_payload: payload }),
   });
-  return readResponse(response);
+  const result = await readResponse(response);
+  if (result?.error) throw new MemberAuthError(result.error, result.error);
+  return result;
 }
 
 export async function resolveMemberAssets(category, query) {

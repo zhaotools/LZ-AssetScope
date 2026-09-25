@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-25T03:06:14+00:00",
+  "generatedAt": "2026-09-25T04:57:25+00:00",
   "productionReady": true,
   "asset": {
     "id": "gold",
@@ -15,7 +15,7 @@
     "priceBasis": "continuous-futures-ohlcv"
   },
   "quote": {
-    "price": 4318.2998046875,
+    "price": 4298.0,
     "previousClose": 4318.39990234375,
     "date": "2026-09-24",
     "currency": "USD",
@@ -33,7 +33,7 @@
       "dailyBoundary": "Yahoo Finance provider-defined GC=F daily bar; accepted after 18:00 America/New_York",
       "volumeSemantics": "provider-reported COMEX gold-futures volume; contract rolls can change comparability",
       "volumeRuleStatus": "exchange-volume-available",
-      "fetchedAt": "2026-09-25T03:06:08+00:00",
+      "fetchedAt": "2026-09-25T04:57:20+00:00",
       "observationDate": "2026-09-24"
     }
   },
@@ -148,9 +148,9 @@
       },
       "asOf": "2026-09-18",
       "usesCompletedWeek": true,
-      "latestClose": 4318.2998046875,
-      "latestMa30": 4482.906673177084,
-      "latestDistance": -0.0367187810253754,
+      "latestClose": 4298,
+      "latestMa30": 4482.230013020833,
+      "latestDistance": -0.041102311234730626,
       "latestAsOf": "2026-09-24",
       "hasProvisionalBar": true
     },
@@ -160,8 +160,8 @@
     "asOf": "2026-09-24",
     "summary": {
       "ok": true,
-      "snapshotId": "08d56719605b3ae1",
-      "snapshotCreatedAt": "2026-09-25T03:06:09+00:00",
+      "snapshotId": "77049e13f1c8c729",
+      "snapshotCreatedAt": "2026-09-25T04:57:22+00:00",
       "symbol": "GC=F",
       "name": "COMEX 黄金连续合约",
       "market": "commodity",
@@ -173,17 +173,17 @@
       "referenceLabel": null,
       "referenceNote": null,
       "splitAdjustments": [],
-      "price": 4318.2998046875,
+      "price": 4298.0,
       "previousClose": 4318.39990234375,
-      "volume": 16293.0,
+      "volume": 143873.0,
       "date": "2026-09-24",
       "quoteDate": "2026-09-24",
-      "updatedAt": "2026-09-25T03:06:09+00:00",
+      "updatedAt": "2026-09-25T04:57:22+00:00",
       "bullBear": {
         "status": "熊市区",
         "score": 5,
         "strength": "中",
-        "gap": -5.209799765911329,
+        "gap": -5.653294991993716,
         "summary": "当前处于熊市区，趋势环境偏弱。"
       },
       "traffic": {
@@ -194,17 +194,17 @@
           {
             "label": "MA50 > MA200",
             "pass": false,
-            "detail": "MA50 4348.37 / MA200 4555.64"
+            "detail": "MA50 4347.97 / MA200 4555.54"
           },
           {
             "label": "MA200 高于 20 天前",
             "pass": true,
-            "detail": "MA200 4555.64 / 20天前 4527.99"
+            "detail": "MA200 4555.54 / 20天前 4527.99"
           },
           {
             "label": "最新收盘价在 MA50 之上",
             "pass": false,
-            "detail": "收盘 4318.30 / MA50 4348.37"
+            "detail": "收盘 4298.00 / MA50 4347.97"
           },
           {
             "label": "最近 20 日高点高于前 20 日高点",
@@ -227,11 +227,11 @@
         "action": "波动信号转弱，注意回撤风险",
         "k": 8.896599749774001,
         "d": 21.800045198653077,
-        "atr": 96.85707310267857,
-        "atrPct": 2.242944619026695,
+        "atr": 98.85707310267857,
+        "atrPct": 2.3000715007603203,
         "riskLevel": "低",
-        "support": 4306.9283203125,
-        "pressure": 4348.3719873046875
+        "support": 4273.2998046875,
+        "pressure": 4306.589990234375
       },
       "fusion": {
         "score": 9,
@@ -418,15 +418,15 @@
       "key": "daily-repair",
       "tone": "repair",
       "label": "日线修复",
-      "value": 4348.3719873046875,
-      "condition": "确认收盘重新站上 MA50 4,348.4"
+      "value": 4347.965991210937,
+      "condition": "确认收盘重新站上 MA50 4,348.0"
     },
     {
       "key": "daily-risk",
       "tone": "risk",
       "label": "日线风险",
-      "value": 4306.9283203125,
-      "condition": "确认收盘跌破结构支撑 4,306.9"
+      "value": 4273.2998046875,
+      "condition": "确认收盘跌破结构支撑 4,273.3"
     },
     {
       "key": "weekly-confirmation",
@@ -450,7 +450,7 @@
       "pendingFundamentals": [],
       "pendingFundamentalGroups": []
     },
-    "inputHash": "08d56719605b3ae11f67b6019628ade7f7debef8e872749d9814b4154a4cb320",
+    "inputHash": "77049e13f1c8c7297eb3fee2dabc60508720d95f6bb2a36d7d854b61dac158ee",
     "dataVersion": "LZAS-GOLD-20260924",
     "dailyBars": 4182,
     "dailyAsOf": "2026-09-24",

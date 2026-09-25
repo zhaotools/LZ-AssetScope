@@ -1,3 +1,13 @@
+import {
+  MEMBER_CONFIG,
+  isProfileActive,
+  loadMemberAssetResource,
+  memberErrorMessage,
+  restoreMemberSession,
+  signInMember,
+  signOutMember,
+} from "./member-auth.js?v=0.9.0";
+
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
 const routes = new Set(["overview", "weekly", "daily", "fundamentals", "methodology"]);
@@ -8,6 +18,7 @@ const assets = {
     name: "黄金",
     shortName: "黄金",
     eyebrow: "GOLD · DAILY OBSERVATORY",
+    memberOnly: false,
   },
   btc: {
     id: "btc",
@@ -15,6 +26,7 @@ const assets = {
     name: "比特币",
     shortName: "比特币",
     eyebrow: "BTC · DIGITAL ASSET OBSERVATORY",
+    memberOnly: true,
   },
 };
 const WATCHLIST_KEY = "lz-assetscope-watchlist-v1";
@@ -28,8 +40,14 @@ const state = {
   charts: new Map(),
   routeLoads: new Map(),
   loadToken: 0,
+  authReady: false,
+  memberProfile: null,
+  pendingAssetId: null,
+  pendingRoute: "overview",
 };
 let chartLibraryPromise;
+let memberCaptchaToken = "";
+let turnstileWidgetId = null;
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -58,8 +76,21 @@ function dataRoot(assetId = state.assetId) {
   return new URL(`data/assets/${assetId}/`, SITE_ROOT);
 }
 
+function loadAssetResource(assetId, resource, options) {
+  if (assets[assetId]?.memberOnly) return loadMemberAssetResource(assetId, resource);
+  return loadJson(new URL(resource, dataRoot(assetId)), options);
+}
+
 function routePath(route, assetId = state.assetId) {
   return `${SITE_BASE_PATH}/${assetId}/${route}`;
+}
+
+function isMember() {
+  return isProfileActive(state.memberProfile);
+}
+
+function canAccessAsset(assetId) {
+  return Boolean(assets[assetId] && (!assets[assetId].memberOnly || isMember()));
 }
 
 function locationContext() {
@@ -78,7 +109,16 @@ function routeFromLocation() {
 }
 
 function normalizeRoute() {
-  const { assetId, route } = locationContext();
+  const context = locationContext();
+  let { assetId, route } = context;
+  if (!canAccessAsset(assetId)) {
+    if (route !== "methodology") {
+      state.pendingAssetId = assetId;
+      state.pendingRoute = route;
+      route = "overview";
+    }
+    assetId = "gold";
+  }
   state.assetId = assetId;
   const target = routePath(route, assetId);
   if (location.pathname !== target || location.search || location.hash) {
@@ -135,22 +175,147 @@ function renderWatchlist() {
   const watchlist = readWatchlist();
   $("#asset-watchlist").innerHTML = watchlist.map((assetId) => {
     const asset = assets[assetId];
+    const locked = asset.memberOnly && !isMember();
     return `
-      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""}" type="button" data-asset="${esc(assetId)}" aria-pressed="${assetId === state.assetId}">
+      <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${locked ? "locked" : ""}" type="button" data-asset="${esc(assetId)}" aria-pressed="${assetId === state.assetId}" aria-label="${esc(asset.shortName)}${locked ? "，会员专享" : ""}">
         <span class="watchlist-asset-icon">${esc(asset.code)}</span>
         <span class="watchlist-asset-copy"><strong>${esc(asset.shortName)}</strong><small>${esc(asset.code)} / USD</small></span>
+        ${locked ? '<span class="member-access-badge">会员</span>' : ""}
       </button>
     `;
   }).join("");
   const available = Object.keys(assets).filter((assetId) => !watchlist.includes(assetId));
   $("#asset-catalog").innerHTML = available.length ? available.map((assetId) => {
     const asset = assets[assetId];
+    const locked = asset.memberOnly && !isMember();
     return `
-      <button class="catalog-asset" type="button" data-add-asset="${esc(assetId)}">
-        <span><strong>${esc(asset.name)}</strong>${esc(asset.code)} / USD</span><em>添加</em>
+      <button class="catalog-asset ${locked ? "locked" : ""}" type="button" data-add-asset="${esc(assetId)}">
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.code)} / USD</span><em>${locked ? "会员专享" : "添加"}</em>
       </button>
     `;
   }).join("") : '<p class="catalog-empty">当前支持的资产已经全部加入自选。</p>';
+}
+
+function memberExpiryLabel(profile = state.memberProfile) {
+  if (!profile) return "访客模式";
+  if (profile.role === "admin") return "管理员账号";
+  return profile.expires_at ? `有效至 ${fmtDate(profile.expires_at)}` : "会员账号";
+}
+
+function renderMemberControls() {
+  const active = isMember();
+  const loginButton = $("#member-login-button");
+  const account = $("#member-account");
+  const mobileButton = $("#mobile-member-button");
+  loginButton.hidden = active;
+  loginButton.disabled = !state.authReady;
+  loginButton.textContent = state.authReady ? "会员登录" : "检查登录…";
+  account.hidden = !active;
+  $("#member-display-name").textContent = state.memberProfile?.display_name || "会员";
+  $("#member-expiry").textContent = memberExpiryLabel();
+  mobileButton.disabled = !state.authReady;
+  mobileButton.textContent = state.authReady ? (active ? state.memberProfile?.display_name || "会员" : "登录") : "检查…";
+  mobileButton.classList.toggle("active", active);
+}
+
+function syncMemberSubmit() {
+  const email = $("#member-email").value.trim();
+  const password = $("#member-password").value;
+  const button = $("#member-login-submit");
+  if (button.dataset.loading === "true") return;
+  const captchaReady = !MEMBER_CONFIG.turnstileSiteKey || Boolean(memberCaptchaToken);
+  button.disabled = !email || !password || !captchaReady;
+  button.textContent = captchaReady ? "登录并查看" : "完成安全验证后登录";
+}
+
+function removeTurnstileWidget() {
+  if (turnstileWidgetId !== null && window.turnstile) {
+    window.turnstile.remove(turnstileWidgetId);
+  }
+  turnstileWidgetId = null;
+  memberCaptchaToken = "";
+  $("#member-turnstile").replaceChildren();
+  syncMemberSubmit();
+}
+
+async function renderTurnstileWidget() {
+  removeTurnstileWidget();
+  if (!MEMBER_CONFIG.turnstileSiteKey) {
+    memberCaptchaToken = "not-required";
+    $("#member-turnstile").hidden = true;
+    syncMemberSubmit();
+    return;
+  }
+  $("#member-turnstile").hidden = false;
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    if ($("#member-dialog").hidden || $("#member-login-view").hidden) return;
+    if (window.turnstile) {
+      turnstileWidgetId = window.turnstile.render("#member-turnstile", {
+        sitekey: MEMBER_CONFIG.turnstileSiteKey,
+        action: "member-login",
+        callback: (token) => { memberCaptchaToken = token; syncMemberSubmit(); },
+        "expired-callback": () => { memberCaptchaToken = ""; syncMemberSubmit(); },
+        "error-callback": () => { memberCaptchaToken = ""; syncMemberSubmit(); },
+      });
+      return;
+    }
+    await wait(100);
+  }
+  $("#member-login-error").hidden = false;
+  $("#member-login-error").textContent = "安全验证组件未能加载，请检查网络后重试。";
+}
+
+function openMemberLogin(assetId = null, route = "overview") {
+  if (assetId) {
+    state.pendingAssetId = assetId;
+    state.pendingRoute = routes.has(route) ? route : "overview";
+  }
+  $("#member-login-view").hidden = false;
+  $("#member-account-view").hidden = true;
+  $(".member-dialog-panel").setAttribute("aria-labelledby", "member-dialog-title");
+  $("#member-dialog-title").textContent = assetId ? "LZ会员专享" : "会员登录";
+  $("#member-dialog-copy").textContent = assetId
+    ? `登录会员账号后查看${assets[assetId]?.name || "全部资产"}的完整观察数据。`
+    : "登录会员账号后查看全部资产。";
+  $("#member-login-error").hidden = true;
+  $("#member-login-error").textContent = "";
+  $("#member-password").value = "";
+  $("#member-dialog").hidden = false;
+  document.body.classList.add("member-dialog-open");
+  $("#member-email").focus();
+  void renderTurnstileWidget();
+}
+
+function openMemberAccount() {
+  if (!isMember()) {
+    openMemberLogin();
+    return;
+  }
+  removeTurnstileWidget();
+  $("#member-login-view").hidden = true;
+  $("#member-account-view").hidden = false;
+  $(".member-dialog-panel").setAttribute("aria-labelledby", "member-account-title");
+  $("#member-dialog-name").textContent = state.memberProfile.display_name || "会员";
+  $("#member-dialog-expiry").textContent = memberExpiryLabel();
+  $("#member-dialog").hidden = false;
+  document.body.classList.add("member-dialog-open");
+}
+
+function closeMemberDialog({ preservePending = false } = {}) {
+  removeTurnstileWidget();
+  $("#member-dialog").hidden = true;
+  document.body.classList.remove("member-dialog-open");
+  if (!preservePending) {
+    state.pendingAssetId = null;
+    state.pendingRoute = "overview";
+  }
+}
+
+function requestAssetAccess(assetId, route = "overview") {
+  if (canAccessAsset(assetId)) return true;
+  setAssetPicker(false);
+  openMemberLogin(assetId, route);
+  return false;
 }
 
 function setAssetPicker(open) {
@@ -250,14 +415,13 @@ function setRouteState(route, status, message = "") {
 async function ensureRouteData(route, { force = false } = {}) {
   if (["overview", "methodology"].includes(route)) return;
   const assetId = state.assetId;
-  const root = dataRoot(assetId);
   if (force) state.routeLoads.delete(route);
   if (state.routeLoads.has(route)) return state.routeLoads.get(route);
   const load = (async () => {
     setRouteState(route, "loading");
     if (route === "weekly") {
       state.weekly = force || !state.weekly
-        ? await loadJson(new URL("weekly-series.json", root))
+        ? await loadAssetResource(assetId, "weekly-series.json")
         : state.weekly;
       if (assetId !== state.assetId) return;
       renderWeekly();
@@ -266,7 +430,7 @@ async function ensureRouteData(route, { force = false } = {}) {
     }
     if (route === "daily") {
       state.daily = force || !state.daily
-        ? await loadJson(new URL("daily-series.json", root))
+        ? await loadAssetResource(assetId, "daily-series.json")
         : state.daily;
       if (assetId !== state.assetId) return;
       renderDaily();
@@ -275,7 +439,7 @@ async function ensureRouteData(route, { force = false } = {}) {
     }
     if (route === "fundamentals") {
       state.fundamentals = force || !state.fundamentals
-        ? await loadJson(new URL("fundamentals.json", root))
+        ? await loadAssetResource(assetId, "fundamentals.json")
         : state.fundamentals;
       if (assetId !== state.assetId) return;
       renderFundamentals();
@@ -942,6 +1106,7 @@ function renderDailyChart() {
 async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFromLocation() } = {}) {
   if (!assets[assetId]) return;
   const route = routes.has(targetRoute) ? targetRoute : "overview";
+  if (!requestAssetAccess(assetId, route)) return;
   if (historyMode === "push") history.pushState({ assetId, route }, "", routePath(route, assetId));
   if (historyMode === "replace") history.replaceState({ assetId, route }, "", routePath(route, assetId));
   const token = state.loadToken + 1;
@@ -958,7 +1123,7 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
   $("#loading-state").hidden = false;
   $("#error-state").hidden = true;
   try {
-    const current = await loadJson(new URL("current.json", dataRoot(assetId)), { attempts: 3, timeoutMs: 9000 });
+    const current = await loadAssetResource(assetId, "current.json", { attempts: 3, timeoutMs: 9000 });
     if (token !== state.loadToken || assetId !== state.assetId) return;
     state.current = current;
     updateHeader();
@@ -975,7 +1140,62 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
   }
 }
 
+async function handleMemberLogout() {
+  await signOutMember().catch(() => undefined);
+  state.memberProfile = null;
+  state.authReady = true;
+  closeMemberDialog();
+  renderMemberControls();
+  renderWatchlist();
+  if (assets[state.assetId]?.memberOnly) {
+    const targetRoute = routeFromLocation() === "methodology" ? "methodology" : "overview";
+    await loadAsset("gold", { historyMode: "push", targetRoute });
+  }
+}
+
+async function handleMemberLogin(event) {
+  event.preventDefault();
+  const submit = $("#member-login-submit");
+  const errorNode = $("#member-login-error");
+  submit.dataset.loading = "true";
+  submit.disabled = true;
+  submit.textContent = "正在登录…";
+  errorNode.hidden = true;
+  try {
+    const profile = await signInMember(
+      $("#member-email").value,
+      $("#member-password").value,
+      memberCaptchaToken,
+    );
+    const pendingAssetId = state.pendingAssetId;
+    const pendingRoute = state.pendingRoute;
+    state.memberProfile = profile;
+    state.authReady = true;
+    renderMemberControls();
+    renderWatchlist();
+    closeMemberDialog({ preservePending: true });
+    state.pendingAssetId = null;
+    state.pendingRoute = "overview";
+    if (pendingAssetId) {
+      await loadAsset(pendingAssetId, { historyMode: "push", targetRoute: pendingRoute });
+    }
+  } catch (error) {
+    errorNode.textContent = memberErrorMessage(error);
+    errorNode.hidden = false;
+    $("#member-password").value = "";
+    memberCaptchaToken = "";
+    if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
+  } finally {
+    submit.dataset.loading = "false";
+    syncMemberSubmit();
+  }
+}
+
 async function boot() {
+  renderMemberControls();
+  state.memberProfile = await restoreMemberSession();
+  state.authReady = true;
+  renderMemberControls();
   const route = normalizeRoute();
   renderWatchlist();
   if (route === "methodology") {
@@ -983,10 +1203,37 @@ async function boot() {
     activateRoute();
   }
   await loadAsset(state.assetId);
+  if (state.pendingAssetId) openMemberLogin(state.pendingAssetId, state.pendingRoute);
 }
 
 lockMobilePageZoom();
 document.addEventListener("click", (event) => {
+  if (event.target.closest("#member-login-button")) {
+    event.preventDefault();
+    openMemberLogin();
+    return;
+  }
+  if (event.target.closest("#member-account-button")) {
+    event.preventDefault();
+    openMemberAccount();
+    return;
+  }
+  if (event.target.closest("#mobile-member-button")) {
+    event.preventDefault();
+    if (isMember()) openMemberAccount();
+    else openMemberLogin();
+    return;
+  }
+  if (event.target.closest("#member-logout-button, #member-dialog-logout")) {
+    event.preventDefault();
+    void handleMemberLogout();
+    return;
+  }
+  if (event.target.closest("[data-close-member-dialog]")) {
+    event.preventDefault();
+    closeMemberDialog();
+    return;
+  }
   const addButton = event.target.closest("#add-asset-button");
   if (addButton) {
     event.preventDefault();
@@ -1035,15 +1282,30 @@ document.addEventListener("click", (event) => {
 });
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !$("#asset-picker").hidden) setAssetPicker(false);
+  if (event.key === "Escape" && !$("#member-dialog").hidden) closeMemberDialog();
 });
 window.addEventListener("popstate", () => {
-  const context = locationContext();
+  let context = locationContext();
+  if (!canAccessAsset(context.assetId)) {
+    if (context.route === "methodology") {
+      history.replaceState({ assetId: "gold", route: context.route }, "", routePath(context.route, "gold"));
+      context = { assetId: "gold", route: context.route };
+    } else {
+      const blocked = context;
+      history.replaceState({ assetId: "gold", route: "overview" }, "", routePath("overview", "gold"));
+      openMemberLogin(blocked.assetId, blocked.route);
+      context = { assetId: "gold", route: "overview" };
+    }
+  }
   if (context.assetId !== state.assetId) {
-    void loadAsset(context.assetId);
+    void loadAsset(context.assetId, { targetRoute: context.route });
   } else {
     activateRoute();
   }
 });
+
+$("#member-login-form").addEventListener("submit", handleMemberLogin);
+$("#member-login-form").addEventListener("input", syncMemberSubmit);
 
 let deferredInstall;
 const installButton = $("#install-button");

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; img-src 'self' data: https://challenges.cloudflare.com; style-src 'self'; script-src 'self' https://challenges.cloudflare.com; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'">
     <meta name="theme-color" content="#f7f8f8">
     <meta name="description" content="LZ-AssetScope 多资产周线、日线与基本面观察系统">
     <meta name="robots" content="index,follow">
@@ -14,7 +14,7 @@
     <link rel="icon" href="/LZ-AssetScope/icons/favicon-32-v3.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/LZ-AssetScope/icons/icon-180.png">
     <link rel="mask-icon" href="/LZ-AssetScope/icons/safari-pinned-tab.svg" color="#168eea">
-    <link rel="stylesheet" href="./styles.css?v=0.8.5">
+    <link rel="stylesheet" href="./styles.css?v=0.9.0">
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -24,15 +24,25 @@
     <div class="application-shell">
       <aside class="asset-sidebar" aria-label="我的自选资产">
         <a class="brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
-          <img src="./icons/icon-192.png?v=0.8.5" alt="" width="44" height="44">
+          <img src="./icons/icon-192.png?v=0.9.0" alt="" width="44" height="44">
           <span><strong>LZ-AssetScope</strong><small>资产观察框架</small></span>
         </a>
         <div class="watchlist-heading">
           <div><span>WATCHLIST</span><strong>我的自选</strong></div>
-          <button class="asset-add-button" id="add-asset-button" type="button" aria-label="新增自选资产" title="新增资产">+</button>
+          <div class="watchlist-mobile-actions">
+            <button class="mobile-member-button" id="mobile-member-button" type="button" disabled>检查登录…</button>
+            <button class="asset-add-button" id="add-asset-button" type="button" aria-label="新增自选资产" title="新增资产">+</button>
+          </div>
         </div>
         <nav class="asset-watchlist" id="asset-watchlist" aria-label="自选资产列表"></nav>
         <div class="sidebar-utility">
+          <div class="sidebar-member-controls" aria-live="polite">
+            <button class="sidebar-member-login" id="member-login-button" type="button" disabled>检查登录…</button>
+            <div class="sidebar-member-account" id="member-account" hidden>
+              <button id="member-account-button" type="button"><span id="member-display-name">会员</span><small id="member-expiry">账号有效</small></button>
+              <button id="member-logout-button" type="button">退出</button>
+            </div>
+          </div>
           <a class="sidebar-method-link" href="./gold/methodology" data-route="methodology">方法与数据</a>
           <button class="sidebar-install-button" id="install-button" type="button">安装应用</button>
         </div>
@@ -254,6 +264,35 @@
       </section>
     </div>
 
-    <script type="module" src="./app.js?v=0.8.5"></script>
+    <div class="member-dialog" id="member-dialog" hidden>
+      <button class="member-dialog-backdrop" type="button" data-close-member-dialog aria-label="关闭会员窗口"></button>
+      <section class="member-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="member-dialog-title">
+        <button class="member-dialog-close" type="button" data-close-member-dialog aria-label="关闭">×</button>
+        <div class="member-dialog-icon" aria-hidden="true">LZ</div>
+        <span class="member-dialog-kicker">LZ MEMBER</span>
+        <div id="member-login-view">
+          <h2 id="member-dialog-title">会员登录</h2>
+          <p id="member-dialog-copy">登录会员账号后查看全部资产。</p>
+          <form id="member-login-form">
+            <label for="member-email">会员邮箱</label>
+            <input id="member-email" name="email" type="email" autocomplete="username" placeholder="请输入会员邮箱" required>
+            <label for="member-password">密码</label>
+            <input id="member-password" name="password" type="password" autocomplete="current-password" placeholder="请输入密码" required>
+            <div class="member-turnstile" id="member-turnstile" aria-label="安全验证"></div>
+            <span class="member-login-error" id="member-login-error" role="alert" hidden></span>
+            <button class="member-login-submit" id="member-login-submit" type="submit" disabled>完成安全验证后登录</button>
+          </form>
+          <small class="member-login-note">AssetScope 使用独立会员项目；登录状态只保存在当前浏览器。</small>
+        </div>
+        <div id="member-account-view" hidden>
+          <h2 id="member-account-title">会员账号</h2>
+          <p><strong id="member-dialog-name">会员</strong><span id="member-dialog-expiry">账号有效</span></p>
+          <button class="member-dialog-logout" id="member-dialog-logout" type="button">退出登录</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script type="module" src="./app.js?v=0.9.0"></script>
   </body>
 </html>

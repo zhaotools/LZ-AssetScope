@@ -1,4 +1,4 @@
-const CACHE = "lz-stagescope-v1.1.10";
+const CACHE = "lz-stagescope-v1.1.11";
 const SHELL = [
   "./",
   "./index.html",

@@ -1337,7 +1337,6 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
 
 @media (max-width: 340px) {
   .mobile-watchlist-topbar { align-items: flex-start; }
-  .mobile-watchlist-brand small { display: none; }
   .mobile-watchlist-utilities { gap: 3px; }
   .mobile-watchlist-utilities a,
   .mobile-watchlist-utilities button { padding-inline: 6px; }

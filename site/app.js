@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.24";
+} from "./member-auth.js?v=1.0.25";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -2087,7 +2087,10 @@ if ("serviceWorker" in navigator) {
       await Promise.all(registrations.map((registration) => registration.unregister()));
       return;
     }
-    navigator.serviceWorker.register(new URL("service-worker.js", SITE_ROOT)).catch(console.warn);
+    navigator.serviceWorker
+      .register(new URL("service-worker.js?v=1.0.25", SITE_ROOT), { updateViaCache: "none" })
+      .then((registration) => registration.update())
+      .catch(console.warn);
   });
 }
 

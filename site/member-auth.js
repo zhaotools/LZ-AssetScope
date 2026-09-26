@@ -82,24 +82,39 @@ export function clearMemberSession() {
   sessionStorage().removeItem(MEMBER_CONFIG.storageKey);
 }
 
+let sessionRefreshInFlight = null;
+
 async function refreshMemberSession(session) {
   requireMemberConfig();
-  const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
-    method: "POST",
-    headers: authHeaders(),
-    credentials: "omit",
-    body: JSON.stringify({ refresh_token: session.refreshToken }),
-  });
-  const refreshed = normalizeSession(await readResponse(response), session.refreshToken);
-  saveSession(refreshed);
-  return refreshed;
+  if (!sessionRefreshInFlight) {
+    sessionRefreshInFlight = (async () => {
+      const latest = readStoredSession() || session;
+      let response;
+      try {
+        response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
+          method: "POST",
+          headers: authHeaders(),
+          credentials: "omit",
+          body: JSON.stringify({ refresh_token: latest.refreshToken }),
+        });
+      } catch (error) {
+        throw new MemberAuthError(error?.message || "网络连接失败", "network_error");
+      }
+      const refreshed = normalizeSession(await readResponse(response), latest.refreshToken);
+      saveSession(refreshed);
+      return refreshed;
+    })().finally(() => {
+      sessionRefreshInFlight = null;
+    });
+  }
+  return sessionRefreshInFlight;
 }
 
-async function currentSession() {
+async function currentSession({ forceRefresh = false } = {}) {
   const stored = readStoredSession();
   if (!stored) return null;
   const expiresSoon = Number(stored.expiresAt) * 1000 <= Date.now() + 60_000;
-  return expiresSoon ? refreshMemberSession(stored) : stored;
+  return forceRefresh || expiresSoon ? refreshMemberSession(stored) : stored;
 }
 
 async function fetchMemberProfile(session) {
@@ -293,7 +308,7 @@ export async function reorderMemberAssets(assetIds) {
   if (!normalized.length || normalized.length > 30) {
     throw new MemberAuthError("资产顺序无效", "asset_order_invalid");
   }
-  const session = await currentSession();
+  const session = await currentSession({ forceRefresh: true });
   if (!session) throw new MemberAuthError("会员登录已失效", "session_expired");
   await updateAuthenticatedUser(session, {
     data: { ...session.user.userMetadata, asset_order: normalized },
@@ -301,13 +316,23 @@ export async function reorderMemberAssets(assetIds) {
   return normalized;
 }
 
-async function updateAuthenticatedUser(session, attributes) {
-  const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/auth/v1/user`, {
-    method: "PUT",
-    headers: authHeaders(session.accessToken),
-    credentials: "omit",
-    body: JSON.stringify(attributes),
-  });
+async function updateAuthenticatedUser(session, attributes, allowRetry = true) {
+  let response;
+  try {
+    response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/auth/v1/user`, {
+      method: "PUT",
+      headers: authHeaders(session.accessToken),
+      credentials: "omit",
+      body: JSON.stringify(attributes),
+    });
+  } catch (error) {
+    if (allowRetry) return updateAuthenticatedUser(session, attributes, false);
+    throw new MemberAuthError(error?.message || "网络连接失败", "network_error");
+  }
+  if (response.status === 401 && allowRetry) {
+    const refreshed = await refreshMemberSession(session);
+    return updateAuthenticatedUser(refreshed, attributes, false);
+  }
   const user = await readResponse(response);
   session.user = {
     id: user?.id || session.user.id,
@@ -392,6 +417,7 @@ export function memberErrorMessage(error) {
   if (error?.code === "asset_limit_reached") return "个人资产已达到 30 个上限，请先移除一个资产。";
   if (error?.code === "asset_order_invalid") return "资产顺序无效，请刷新页面后重试。";
   if (error?.code === "invalid_asset_query") return "仅支持按资产代码查询，请检查代码格式。";
+  if (error?.code === "network_error") return "网络连接不稳定，资产顺序尚未保存，请稍后重试。";
   if (error?.code === "market_source_rate_limited") return "行情数据源当前查询繁忙，请稍后重试。";
   if (error?.code === "asset_history_insufficient") return "该资产的有效历史日线不足 260 条，暂时不能初始化。";
   if (error?.code === "asset_category_mismatch") return "资产与所选分类不一致，请重新选择。";

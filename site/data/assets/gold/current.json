@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-26T01:46:03+00:00",
+  "generatedAt": "2026-09-26T02:08:12+00:00",
   "productionReady": true,
   "asset": {
     "id": "gold",
@@ -33,7 +33,7 @@
       "dailyBoundary": "Yahoo Finance provider-defined GC=F daily bar; accepted after 18:00 America/New_York",
       "volumeSemantics": "provider-reported COMEX gold-futures volume; contract rolls can change comparability",
       "volumeRuleStatus": "exchange-volume-available",
-      "fetchedAt": "2026-09-26T01:45:51+00:00",
+      "fetchedAt": "2026-09-26T02:08:02+00:00",
       "observationDate": "2026-09-25"
     }
   },
@@ -68,7 +68,7 @@
       "recentSlope": -0.006848484828598456,
       "distance": -0.036243751377188715,
       "position52": 0.29710664850966717,
-      "volumeRatio": 1.109628448012336,
+      "volumeRatio": 1.1166256693058618,
       "scores": {
         "1": 6,
         "2": 0,
@@ -161,8 +161,8 @@
     "asOf": "2026-09-25",
     "summary": {
       "ok": true,
-      "snapshotId": "8816c95149f84a5f",
-      "snapshotCreatedAt": "2026-09-26T01:45:58+00:00",
+      "snapshotId": "e57dde072750ce02",
+      "snapshotCreatedAt": "2026-09-26T02:08:08+00:00",
       "symbol": "GC=F",
       "name": "COMEX 黄金连续合约",
       "market": "commodity",
@@ -179,7 +179,7 @@
       "volume": 137070.0,
       "date": "2026-09-25",
       "quoteDate": "2026-09-25",
-      "updatedAt": "2026-09-26T01:45:58+00:00",
+      "updatedAt": "2026-09-26T02:08:08+00:00",
       "bullBear": {
         "status": "熊市区",
         "score": 5,
@@ -467,7 +467,7 @@
       "pendingFundamentals": [],
       "pendingFundamentalGroups": []
     },
-    "inputHash": "8816c95149f84a5f8e54464e3207c70f65bf13e03052b5e91060423e36879cfd",
+    "inputHash": "e57dde072750ce026f0c4d09473bdfb00961b5f8d8b0817880fcb69dc09e1f40",
     "dataVersion": "LZAS-GOLD-20260925",
     "dailyBars": 4183,
     "dailyAsOf": "2026-09-25",

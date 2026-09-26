@@ -163,22 +163,28 @@ button { font: inherit; }
 .watchlist-table-header span:not(:first-child) { text-align: right; }
 .asset-watchlist { display: grid; gap: 4px; margin-top: 5px; }
 .asset-watchlist.sorting .watchlist-asset {
-  padding-left: 23px;
+  padding-left: 28px;
   border-color: rgba(128, 202, 240, 0.17);
-  cursor: grab;
-  touch-action: none;
+  cursor: default;
+  touch-action: pan-y;
   user-select: none;
 }
-.asset-watchlist.sorting .watchlist-asset::before {
+.watchlist-drag-handle {
   position: absolute;
-  left: 6px;
-  top: 50%;
-  content: "⋮⋮";
+  inset: 0 auto 0 0;
+  display: grid;
+  width: 26px;
+  place-items: center;
   color: rgba(255, 255, 255, 0.42);
-  font-size: 13px;
-  letter-spacing: -4px;
-  transform: translateY(-50%);
+  cursor: grab;
+  touch-action: none;
 }
+.watchlist-drag-handle > span {
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+.watchlist-drag-handle:focus-visible { color: white; outline: 1px solid #c99a3b; outline-offset: -4px; border-radius: 8px; }
 .asset-watchlist.sorting .watchlist-asset:hover { background: rgba(255, 255, 255, 0.09); }
 .asset-watchlist.sorting .watchlist-remove { display: none !important; }
 .asset-watchlist .watchlist-asset.dragging {
@@ -187,9 +193,9 @@ button { font: inherit; }
   border-color: rgba(139, 208, 238, 0.7);
   background: #1c5b79;
   box-shadow: 0 12px 26px rgba(0, 12, 25, 0.34);
-  cursor: grabbing;
   opacity: 0.84;
 }
+.asset-watchlist .watchlist-asset.dragging .watchlist-drag-handle { color: white; cursor: grabbing; }
 body.watchlist-dragging { cursor: grabbing; }
 .watchlist-asset {
   position: relative;

@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.21";
+} from "./member-auth.js?v=1.0.22";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -334,6 +334,13 @@ function instrumentTypeLabel(value) {
   return ({ EQUITY: "个股", ETF: "ETF", INDEX: "指数" })[String(value || "").toUpperCase()] || "资产";
 }
 
+function catalogMarketSource(asset) {
+  if (asset.category !== "crypto") return "Yahoo Finance";
+  return String(asset.providerSymbol || "").toUpperCase() === "HYPE-USD"
+    ? "Hyperliquid 现货"
+    : "Binance 现货";
+}
+
 function renderAssetSearchResults() {
   const catalog = $("#asset-catalog");
   if (!isMember()) {
@@ -345,7 +352,7 @@ function renderAssetSearchResults() {
     const added = existing.has(asset.assetId);
     return `
       <button class="catalog-asset" type="button" data-add-result="${index}" ${added || state.assetSearchBusy ? "disabled" : ""}>
-        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>${asset.category === "crypto" ? "Binance 现货" : "Yahoo Finance"} · ${esc(instrumentTypeLabel(asset.quoteType))} · 已确认分类</small></span>
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>${esc(catalogMarketSource(asset))} · ${esc(instrumentTypeLabel(asset.quoteType))} · 已确认分类</small></span>
         <em>${added ? "已添加" : "添加并初始化"}</em>
       </button>
     `;
@@ -386,6 +393,7 @@ function renderWatchlist() {
     const weeklyStage = weekly.match(/^S([1-4])/i)?.[1] || "";
     return `
       <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" ${state.watchlistSorting ? 'aria-grabbed="false"' : ""} aria-label="${esc(asset.shortName)}${state.watchlistSorting ? "，可拖动排序" : ""}">
+        ${state.watchlistSorting ? '<span class="watchlist-drag-handle" role="button" tabindex="0" aria-label="按住拖动资产排序" aria-grabbed="false" title="按住拖动排序"><span aria-hidden="true">⋮</span></span>' : ""}
         <span class="watchlist-asset-copy"><strong>${esc(asset.code)}/${esc(asset.currency || "USD")}</strong><small>${esc(asset.shortName)}</small></span>
         <span class="watchlist-price ${quote.delayed ? "delayed" : ""}" ${quote.delayed ? `title="${esc(`行情延迟，最近可用 ${fmtDate(quote.date)}`)}"` : ""}>${ready ? quote.price : "—"}</span>
         <span class="watchlist-change ${quote.tone}">${ready ? quote.change : "—"}</span>
@@ -416,6 +424,7 @@ function finishWatchlistDrag() {
   if (!watchlistDrag) return;
   watchlistDrag.source.classList.remove("dragging");
   watchlistDrag.source.setAttribute("aria-grabbed", "false");
+  watchlistDrag.handle.setAttribute("aria-grabbed", "false");
   document.body.classList.remove("watchlist-dragging");
   watchlistDrag = null;
 }
@@ -423,14 +432,17 @@ function finishWatchlistDrag() {
 function handleWatchlistPointerDown(event) {
   if (!state.watchlistSorting || state.watchlistOrderSaving) return;
   if (event.pointerType === "mouse" && event.button !== 0) return;
-  const source = event.target.closest(".watchlist-asset[data-asset]");
+  const handle = event.target.closest(".watchlist-drag-handle");
+  if (!handle) return;
+  const source = handle.closest(".watchlist-asset[data-asset]");
   if (!source) return;
   event.preventDefault();
-  source.setPointerCapture?.(event.pointerId);
+  handle.setPointerCapture?.(event.pointerId);
   source.classList.add("dragging");
   source.setAttribute("aria-grabbed", "true");
+  handle.setAttribute("aria-grabbed", "true");
   document.body.classList.add("watchlist-dragging");
-  watchlistDrag = { source, pointerId: event.pointerId };
+  watchlistDrag = { source, handle, pointerId: event.pointerId };
 }
 
 function handleWatchlistPointerMove(event) {
@@ -465,7 +477,9 @@ function handleWatchlistPointerUp(event) {
 
 function handleWatchlistKeydown(event) {
   if (!state.watchlistSorting || state.watchlistOrderSaving) return;
-  const source = event.target.closest(".watchlist-asset[data-asset]");
+  const handle = event.target.closest(".watchlist-drag-handle");
+  if (!handle) return;
+  const source = handle.closest(".watchlist-asset[data-asset]");
   if (!source) return;
   const backward = ["ArrowUp", "ArrowLeft"].includes(event.key);
   const forward = ["ArrowDown", "ArrowRight"].includes(event.key);
@@ -474,7 +488,7 @@ function handleWatchlistKeydown(event) {
   if (!target) return;
   event.preventDefault();
   moveWatchlistAsset(source, target, forward);
-  source.focus();
+  handle.focus();
 }
 
 async function toggleWatchlistSorting() {
@@ -483,7 +497,7 @@ async function toggleWatchlistSorting() {
     state.watchlistOrderBeforeEdit = readWatchlist();
     state.watchlistSorting = true;
     renderWatchlist();
-    $(".watchlist-asset[data-asset]")?.focus();
+    $(".watchlist-drag-handle")?.focus();
     return;
   }
   finishWatchlistDrag();

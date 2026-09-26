@@ -1,7 +1,7 @@
 {
   "schemaVersion": "weekly-series-v1",
   "asOf": "2026-09-25",
-  "inputHash": "8816c95149f84a5f8e54464e3207c70f65bf13e03052b5e91060423e36879cfd",
+  "inputHash": "e57dde072750ce026f0c4d09473bdfb00961b5f8d8b0817880fcb69dc09e1f40",
   "availableSeriesBars": 873,
   "publishedSeriesLimit": 220,
   "series": [
@@ -2639,7 +2639,7 @@
       "high": 4422.10009765625,
       "low": 4278.2998046875,
       "close": 4320.5,
-      "volume": 741151,
+      "volume": 762092,
       "ma10": 4385.6199951171875,
       "ma30": 4482.980013020833,
       "stage": 4,

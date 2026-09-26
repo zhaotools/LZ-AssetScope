@@ -1359,7 +1359,8 @@ function renderFundamentals() {
   }
   const columns = [[], []];
   cards.forEach((card, index) => columns[index % 2].push(card));
-  columns[1].push(coverageCard);
+  const coverageColumn = columns[0].length <= columns[1].length ? 0 : 1;
+  columns[coverageColumn].push(coverageCard);
   factorGrid.innerHTML = columns.map((column) => `<div class="fundamental-column">${column.join("")}</div>`).join("");
 }
 
@@ -2097,7 +2098,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.1", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.2", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

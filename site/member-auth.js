@@ -16,7 +16,7 @@ function sessionStorage() {
 
 function requireMemberConfig() {
   if (!MEMBER_CONFIG.supabaseUrl || !MEMBER_CONFIG.publishableKey) {
-    throw new MemberAuthError("AssetScope 会员服务尚未完成独立配置", "member_not_configured");
+    throw new MemberAuthError("LZ-StageScope 会员服务尚未完成独立配置", "member_not_configured");
   }
 }
 
@@ -443,7 +443,7 @@ export async function signOutMember() {
 }
 
 export function memberErrorMessage(error) {
-  if (error?.code === "member_not_configured") return "AssetScope 会员服务尚未完成独立配置。";
+  if (error?.code === "member_not_configured") return "LZ-StageScope 会员服务尚未完成独立配置。";
   if (error?.code === "inactive_profile" || error?.code === "profile_not_found") {
     return "会员账号尚未激活、已暂停或已到期，请联系管理员。";
   }
@@ -455,7 +455,7 @@ export function memberErrorMessage(error) {
   if (error?.code === "weak_password") return error.message || "新密码强度不足，请使用至少 8 个字符。";
   if (error?.code === "reauthentication_needed") return "登录时间过久，请退出后重新登录再修改密码。";
   if (error?.code === "asset_api_not_configured") return "资产初始化服务尚未发布，请稍后再试。";
-  if (error?.code === "asset_limit_reached") return "个人资产已达到 30 个上限，请先移除一个资产。";
+  if (error?.code === "asset_limit_reached") return "观察标的已达到 30 个上限，请先移除一个标的。";
   if (error?.code === "asset_order_invalid") return "资产顺序无效，请刷新页面后重试。";
   if (error?.code === "invalid_asset_query") return "仅支持按资产代码查询，请检查代码格式。";
   if (error?.code === "network_error") return "网络连接不稳定，资产顺序尚未保存，请稍后重试。";

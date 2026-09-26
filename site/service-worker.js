@@ -1,10 +1,10 @@
-const CACHE = "lz-assetscope-v1.0.26";
+const CACHE = "lz-assetscope-v1.0.28";
 const SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=1.0.26",
-  "./app.js?v=1.0.26",
-  "./member-auth.js?v=1.0.26",
+  "./app.js?v=1.0.28",
+  "./member-auth.js?v=1.0.28",
   "./member-config.js?v=1.0.17",
   "./manifest.webmanifest",
   "./favicon.ico",

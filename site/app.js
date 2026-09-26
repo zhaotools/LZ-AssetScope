@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.26";
+} from "./member-auth.js?v=1.0.28";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -392,18 +392,18 @@ function renderWatchlist() {
   addButton.hidden = !member;
   addButton.disabled = member && (watchlist.length >= 30 || state.watchlistSorting);
   addButton.title = state.watchlistSorting
-    ? "请先完成资产排序"
-    : watchlist.length >= 30 ? "个人资产已达到 30 个上限" : "新增资产";
+    ? "请先完成标的排序"
+    : watchlist.length >= 30 ? "观察标的已达到 30 个上限" : "新增标的";
   sortButton.hidden = !member;
   sortButton.disabled = state.watchlistOrderSaving || (!state.watchlistSorting && watchlist.length < 2);
   sortButton.classList.toggle("active", state.watchlistSorting);
   sortButton.setAttribute("aria-pressed", String(state.watchlistSorting));
-  sortButton.setAttribute("aria-label", state.watchlistSorting ? "完成资产排序" : "调整资产顺序");
+  sortButton.setAttribute("aria-label", state.watchlistSorting ? "完成标的排序" : "调整标的顺序");
   sortButton.title = state.watchlistSorting ? "完成并保存排序" : "调整资产顺序";
   sortButton.querySelector("span").textContent = state.watchlistOrderSaving ? "…" : state.watchlistSorting ? "✓" : "⇅";
   $("#asset-count").textContent = `${watchlist.length} / 30`;
   watchlistNode.classList.toggle("sorting", state.watchlistSorting);
-  watchlistNode.setAttribute("aria-label", state.watchlistSorting ? "自选资产列表，排序模式" : "自选资产列表");
+  watchlistNode.setAttribute("aria-label", state.watchlistSorting ? "自选标的列表，排序模式" : "自选标的列表");
   watchlistNode.innerHTML = watchlist.map((assetId) => {
     const asset = assets[assetId];
     if (!asset) return "";
@@ -417,7 +417,7 @@ function renderWatchlist() {
     const weeklyStage = weekly.match(/^S([1-4])/i)?.[1] || "";
     return `
       <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" ${state.watchlistSorting ? 'aria-grabbed="false"' : ""} aria-label="${esc(asset.shortName)}${state.watchlistSorting ? "，可拖动排序" : ""}">
-        ${state.watchlistSorting ? '<span class="watchlist-drag-handle" role="button" tabindex="0" aria-label="按住拖动资产排序" aria-grabbed="false" title="按住拖动排序"><span aria-hidden="true">⋮</span></span>' : ""}
+        ${state.watchlistSorting ? '<span class="watchlist-drag-handle" role="button" tabindex="0" aria-label="按住拖动标的排序" aria-grabbed="false" title="按住拖动排序"><span aria-hidden="true">⋮</span></span>' : ""}
         <span class="watchlist-asset-copy"><strong>${esc(asset.code)}/${esc(asset.currency || "USD")}</strong><small>${esc(asset.shortName)}</small></span>
         <span class="watchlist-price ${quote.delayed ? "delayed" : ""}" ${quote.delayed ? `title="${esc(`行情延迟，最近可用 ${fmtDate(quote.date)}`)}"` : ""}>${ready ? quote.price : "—"}</span>
         <span class="watchlist-change ${quote.tone}">${ready ? quote.change : "—"}</span>
@@ -537,7 +537,7 @@ async function toggleWatchlistSorting() {
   } catch (error) {
     applyMemberAssetOrder(state.watchlistOrderBeforeEdit);
     state.watchlistSorting = false;
-    window.alert(`资产排序保存失败：${memberErrorMessage(error)}`);
+    window.alert(`标的排序保存失败：${memberErrorMessage(error)}`);
   } finally {
     state.watchlistOrderSaving = false;
     renderWatchlist();
@@ -661,7 +661,7 @@ async function handleAssetSearch(event) {
 
 async function handleAddAsset(index) {
   if (readWatchlist().length >= 30) {
-    setAssetPickerMessage("个人资产已达到 30 个上限，请先移除一个资产。", "error");
+    setAssetPickerMessage("观察标的已达到 30 个上限，请先移除一个标的。", "error");
     return;
   }
   const candidate = state.assetSearchResults[index];
@@ -914,7 +914,7 @@ function syncPageMode() {
   $('meta[name="theme-color"]').content = watchlistView ? "#082d43" : "#f4f7fa";
   if (watchlistView) {
     document.body.classList.remove("methodology-view");
-    document.title = "LZ-AssetScope · 资产列表";
+    document.title = "标的列表 · 我的趋势观察";
     $$('[data-route]').forEach((link) => {
       link.classList.remove("active");
       link.removeAttribute("aria-current");
@@ -931,9 +931,9 @@ function syncRouteShell(route) {
   const methodologyView = route === "methodology";
   document.body.classList.toggle("methodology-view", methodologyView);
   if (methodologyView) {
-    document.title = "LZ-AssetScope · 方法与数据";
+    document.title = "方法与数据 · 我的趋势观察";
   } else if (state.current) {
-    document.title = `LZ-AssetScope · ${assets[state.assetId].name}观察`;
+    document.title = `${assets[state.assetId].name}观察 · 我的趋势观察`;
   }
 }
 
@@ -1089,12 +1089,12 @@ function updateHeader() {
   const quote = current.quote;
   const marketFreshness = current.quality?.marketFreshness;
   document.body.dataset.asset = state.assetId;
-  document.title = `LZ-AssetScope · ${presentation.name}观察`;
+  document.title = `${presentation.name}观察 · 我的趋势观察`;
   $("#asset-symbol").textContent = presentation.code;
   $("#asset-name").textContent = presentation.name;
   $("#mobile-detail-title").textContent = `${presentation.code}/${presentation.currency || quote.currency || "USD"} · ${presentation.name}`;
   $("#overview-title").textContent = `${presentation.name}状态总览`;
-  $("#footer-label").textContent = `LZ-AssetScope · ${presentation.name}观察`;
+  $("#footer-label").textContent = `LZ-StageScope · ${presentation.name}观察`;
   $("#module-tabs").setAttribute("aria-label", `${presentation.name}分析模块`);
   $("#weekly-chart").setAttribute("aria-label", `${presentation.name}周线价格图`);
   $("#daily-chart").setAttribute("aria-label", `${presentation.name}日线价格图`);
@@ -1912,7 +1912,7 @@ document.addEventListener("click", (event) => {
   if (addButton) {
     event.preventDefault();
     if (readWatchlist().length >= 30) {
-      window.alert("个人资产已达到 30 个上限，请先移除一个资产。");
+      window.alert("观察标的已达到 30 个上限，请先移除一个标的。");
       return;
     }
     renderWatchlist();

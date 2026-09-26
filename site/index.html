@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#082d43">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="LZ-AssetScope 多资产周线、日线与基本面观察系统">
+    <meta name="description" content="我的趋势观察：周线阶段、日线状态与基本面环境">
     <meta name="robots" content="index,follow">
-    <title>LZ-AssetScope · 多资产观察</title>
+    <title>我的趋势观察 · LZ-StageScope</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="/LZ-AssetScope/icons/favicon-v3.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
     <link rel="shortcut icon" href="/LZ-AssetScope/icons/favicon-v3.ico" type="image/x-icon">
@@ -24,11 +24,11 @@
     <link rel="stylesheet" href="./styles.css?v=1.0.26">
   </head>
   <body class="app-booting" aria-busy="true">
-    <div id="app-splash" role="status" aria-live="polite" aria-label="正在加载我的资产观察">
+    <div id="app-splash" role="status" aria-live="polite" aria-label="正在加载我的趋势观察">
       <div class="app-splash-inner">
         <div class="app-splash-mark"><img src="./icons/icon-192.png?v=1.0.26" alt="" width="76" height="76"></div>
-        <p class="app-splash-title">我的资产观察</p>
-        <p class="app-splash-brand">LZ-ASSETSCOPE</p>
+        <p class="app-splash-title">我的趋势观察</p>
+        <p class="app-splash-brand">LZ-STAGESCOPE</p>
         <span class="app-splash-rule" aria-hidden="true"></span>
         <p class="app-splash-status">正在载入资产数据</p>
         <div class="app-splash-progress" aria-hidden="true"><span></span></div>
@@ -40,11 +40,11 @@
     <div class="ambient ambient-two"></div>
 
     <div class="application-shell">
-      <aside class="asset-sidebar" aria-label="我的自选资产">
+      <aside class="asset-sidebar" aria-label="我的观察标的">
         <div class="mobile-watchlist-topbar">
-          <a class="mobile-watchlist-brand" href="./watchlist" data-watchlist-link aria-label="LZ-AssetScope 资产列表">
+          <a class="mobile-watchlist-brand" href="./watchlist" data-watchlist-link aria-label="LZ-StageScope 标的列表">
             <img src="./icons/icon-192.png?v=1.0.26" alt="" width="38" height="38">
-            <span><strong>我的资产观察</strong><small>LZ-AssetScope</small></span>
+            <span><strong>我的趋势观察</strong><small>LZ-StageScope</small></span>
           </a>
           <div class="mobile-watchlist-utilities" aria-label="移动端工具">
             <button type="button" data-install-action>安装</button>
@@ -53,25 +53,25 @@
           </div>
         </div>
         <div class="watchlist-heading">
-          <div><span>WATCHLIST</span><strong>资产列表</strong></div>
+          <div><span>WATCHLIST</span><strong>标的列表</strong></div>
           <div class="watchlist-mobile-actions">
-            <button class="asset-add-button" id="add-asset-button" type="button" aria-label="新增自选资产" title="新增资产">+</button>
-            <button class="watchlist-sort-button" id="watchlist-sort-button" type="button" aria-label="调整资产顺序" aria-pressed="false" title="调整资产顺序" hidden><span aria-hidden="true">⇅</span></button>
+            <button class="asset-add-button" id="add-asset-button" type="button" aria-label="新增观察标的" title="新增标的">+</button>
+            <button class="watchlist-sort-button" id="watchlist-sort-button" type="button" aria-label="调整标的顺序" aria-pressed="false" title="调整标的顺序" hidden><span aria-hidden="true">⇅</span></button>
           </div>
         </div>
         <div class="watchlist-table-header" aria-hidden="true"><span>名称</span><span>日收盘</span><span>涨跌</span><span>周阶段</span></div>
-        <nav class="asset-watchlist" id="asset-watchlist" aria-label="自选资产列表"></nav>
+        <nav class="asset-watchlist" id="asset-watchlist" aria-label="自选标的列表"></nav>
       </aside>
 
       <div class="application-content">
       <div class="mobile-detail-toolbar">
-        <a href="./watchlist" data-watchlist-link aria-label="返回资产列表"><span aria-hidden="true">←</span> 资产列表</a>
+        <a href="./watchlist" data-watchlist-link aria-label="返回标的列表"><span aria-hidden="true">←</span> 标的列表</a>
         <strong id="mobile-detail-title">黄金</strong>
       </div>
       <div class="top-utility-bar shell" aria-label="页面工具">
-        <a class="top-brand" href="./gold/overview" data-route="overview" aria-label="LZ-AssetScope 首页">
+        <a class="top-brand" href="./gold/overview" data-route="overview" aria-label="LZ-StageScope 首页">
           <img src="./icons/icon-192.png?v=1.0.26" alt="" width="38" height="38">
-          <span><strong>我的资产观察</strong><small>LZ-AssetScope</small></span>
+          <span><strong>我的趋势观察</strong><small>LZ-StageScope</small></span>
         </a>
         <div class="top-utility-actions">
           <button class="top-install-button" id="install-button" type="button">安装应用</button>
@@ -265,7 +265,7 @@
       </main>
 
       <footer class="site-footer shell">
-      <span id="footer-label">LZ-AssetScope · 黄金观察</span>
+      <span id="footer-label">LZ-StageScope · 黄金观察</span>
       <a href="./gold/methodology" data-route="methodology">基于完成周期 · 查看方法与数据</a>
       </footer>
 
@@ -279,9 +279,9 @@
     </div>
 
     <div class="asset-picker" id="asset-picker" hidden>
-      <button class="asset-picker-backdrop" type="button" data-close-asset-picker aria-label="关闭资产选择"></button>
+      <button class="asset-picker-backdrop" type="button" data-close-asset-picker aria-label="关闭标的选择"></button>
       <section class="asset-picker-panel" role="dialog" aria-modal="true" aria-labelledby="asset-picker-title">
-        <div class="asset-picker-header"><div><span>ASSET LIBRARY</span><h2 id="asset-picker-title">添加资产</h2></div><button type="button" data-close-asset-picker aria-label="关闭">×</button></div>
+        <div class="asset-picker-header"><div><span>ASSET LIBRARY</span><h2 id="asset-picker-title">添加标的</h2></div><button type="button" data-close-asset-picker aria-label="关闭">×</button></div>
         <p>先选择资产分类，再查询数据源。个人自选最多 30 个，黄金计入数量。</p>
         <div class="asset-limit-line"><span>我的自选</span><strong id="asset-count">— / 30</strong></div>
         <form class="asset-search-form" id="asset-search-form">
@@ -327,7 +327,7 @@
             <span class="member-login-error" id="member-login-error" role="alert" hidden></span>
             <button class="member-login-submit" id="member-login-submit" type="submit" disabled>完成安全验证后登录</button>
           </form>
-          <small class="member-login-note">AssetScope 使用独立会员项目；登录状态只保存在当前浏览器。</small>
+          <small class="member-login-note">LZ-StageScope 使用独立会员项目；登录状态只保存在当前浏览器。</small>
         </div>
         <div id="member-account-view" hidden>
           <h2 id="member-account-title">会员账号</h2>
@@ -359,6 +359,6 @@
     </div>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script type="module" src="./app.js?v=1.0.26"></script>
+    <script type="module" src="./app.js?v=1.0.28"></script>
   </body>
 </html>

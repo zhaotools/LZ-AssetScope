@@ -47,7 +47,7 @@ async function readResponse(response) {
   return body;
 }
 
-function normalizeSession(payload, previousRefreshToken = "") {
+function normalizeSession(payload, previousRefreshToken = "", previousProfile = null) {
   if (!payload?.access_token || !payload?.user?.id) {
     throw new MemberAuthError("登录会话无效", "invalid_session");
   }
@@ -62,6 +62,7 @@ function normalizeSession(payload, previousRefreshToken = "") {
       email: payload.user.email || "",
       userMetadata: payload.user.user_metadata || {},
     },
+    profile: previousProfile,
   };
 }
 
@@ -100,7 +101,7 @@ async function refreshMemberSession(session) {
       } catch (error) {
         throw new MemberAuthError(error?.message || "网络连接失败", "network_error");
       }
-      const refreshed = normalizeSession(await readResponse(response), latest.refreshToken);
+      const refreshed = normalizeSession(await readResponse(response), latest.refreshToken, latest.profile || null);
       saveSession(refreshed);
       return refreshed;
     })().finally(() => {
@@ -117,18 +118,27 @@ async function currentSession({ forceRefresh = false } = {}) {
   return forceRefresh || expiresSoon ? refreshMemberSession(stored) : stored;
 }
 
-async function fetchMemberProfile(session) {
+async function fetchMemberProfile(session, allowRetry = true) {
   requireMemberConfig();
   const query = new URLSearchParams({
     select: "user_id,display_name,role,status,expires_at",
     user_id: `eq.${session.user.id}`,
     limit: "1",
   });
-  const response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/rest/v1/member_profiles?${query}`, {
-    headers: authHeaders(session.accessToken),
-    credentials: "omit",
-    cache: "no-store",
-  });
+  let response;
+  try {
+    response = await fetch(`${MEMBER_CONFIG.supabaseUrl}/rest/v1/member_profiles?${query}`, {
+      headers: authHeaders(session.accessToken),
+      credentials: "omit",
+      cache: "no-store",
+    });
+  } catch (error) {
+    throw new MemberAuthError(error?.message || "网络连接失败", "network_error");
+  }
+  if (response.status === 401 && allowRetry) {
+    const refreshed = await refreshMemberSession(session);
+    return fetchMemberProfile(refreshed, false);
+  }
   const rows = await readResponse(response);
   if (!Array.isArray(rows) || !rows[0]) {
     throw new MemberAuthError("没有找到有效会员资料", "profile_not_found");
@@ -136,6 +146,26 @@ async function fetchMemberProfile(session) {
   const profile = rows[0];
   const metadataName = String(session.user.userMetadata?.display_name || "").trim();
   return metadataName ? { ...profile, display_name: metadataName } : profile;
+}
+
+function cacheMemberProfile(profile) {
+  const session = readStoredSession();
+  if (!session) return;
+  session.profile = profile;
+  saveSession(session);
+}
+
+function invalidStoredSession(error) {
+  return new Set([
+    "bad_jwt",
+    "invalid_jwt",
+    "invalid_grant",
+    "invalid_session",
+    "profile_not_found",
+    "refresh_token_not_found",
+    "user_not_found",
+    "http_401",
+  ]).has(String(error?.code || ""));
 }
 
 export function isProfileActive(profile, now = new Date()) {
@@ -146,6 +176,8 @@ export function isProfileActive(profile, now = new Date()) {
 
 export async function restoreMemberSession() {
   if (!MEMBER_CONFIG.supabaseUrl || !MEMBER_CONFIG.publishableKey) return null;
+  const stored = readStoredSession();
+  if (!stored) return null;
   try {
     const session = await currentSession();
     if (!session) return null;
@@ -154,9 +186,15 @@ export async function restoreMemberSession() {
       clearMemberSession();
       return null;
     }
+    cacheMemberProfile(profile);
     return profile;
-  } catch {
-    clearMemberSession();
+  } catch (error) {
+    if (invalidStoredSession(error)) {
+      clearMemberSession();
+      return null;
+    }
+    const cachedProfile = readStoredSession()?.profile || stored.profile;
+    if (isProfileActive(cachedProfile)) return cachedProfile;
     return null;
   }
 }
@@ -180,6 +218,7 @@ export async function signInMember(email, password, captchaToken) {
   if (!isProfileActive(profile)) {
     throw new MemberAuthError("会员账号尚未激活、已暂停或已到期", "inactive_profile");
   }
+  session.profile = profile;
   saveSession(session);
   return profile;
 }
@@ -352,7 +391,9 @@ export async function updateMemberDisplayName(displayName) {
   const session = await currentSession();
   if (!session) throw new MemberAuthError("会员登录已失效", "session_expired");
   await updateAuthenticatedUser(session, { data: { display_name: name } });
-  return fetchMemberProfile(session);
+  const profile = await fetchMemberProfile(readStoredSession() || session);
+  cacheMemberProfile(profile);
+  return profile;
 }
 
 export async function updateMemberPassword(currentPassword, newPassword, captchaToken = "") {

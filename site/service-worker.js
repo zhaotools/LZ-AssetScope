@@ -1,10 +1,10 @@
-const CACHE = "lz-assetscope-v1.0.25";
+const CACHE = "lz-assetscope-v1.0.26";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=1.0.25",
-  "./app.js?v=1.0.25",
-  "./member-auth.js?v=1.0.25",
+  "./styles.css?v=1.0.26",
+  "./app.js?v=1.0.26",
+  "./member-auth.js?v=1.0.26",
   "./member-config.js?v=1.0.17",
   "./manifest.webmanifest",
   "./favicon.ico",
@@ -12,7 +12,7 @@ const SHELL = [
   "./icons/favicon-32-v3.png",
   "./icons/safari-pinned-tab.svg",
   "./icons/icon-180.png",
-  "./icons/icon-192.png?v=1.0.25",
+  "./icons/icon-192.png?v=1.0.26",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];

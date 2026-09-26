@@ -359,6 +359,9 @@ function instrumentTypeLabel(value) {
 }
 
 function catalogMarketSource(asset) {
+  if (asset.category === "cn_equity" && String(asset.quoteType || "").toUpperCase() === "INDEX") {
+    return "腾讯证券";
+  }
   if (asset.category !== "crypto") return "Yahoo Finance";
   return String(asset.providerSymbol || "").toUpperCase() === "HYPE-USD"
     ? "Hyperliquid 现货"
@@ -2098,7 +2101,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.2", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.3", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

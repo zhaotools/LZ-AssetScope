@@ -391,6 +391,7 @@ export function memberErrorMessage(error) {
   if (error?.code === "asset_api_not_configured") return "资产初始化服务尚未发布，请稍后再试。";
   if (error?.code === "asset_limit_reached") return "个人资产已达到 30 个上限，请先移除一个资产。";
   if (error?.code === "asset_order_invalid") return "资产顺序无效，请刷新页面后重试。";
+  if (error?.code === "invalid_asset_query") return "仅支持按资产代码查询，请检查代码格式。";
   if (error?.code === "market_source_rate_limited") return "行情数据源当前查询繁忙，请稍后重试。";
   if (error?.code === "asset_history_insufficient") return "该资产的有效历史日线不足 260 条，暂时不能初始化。";
   if (error?.code === "asset_category_mismatch") return "资产与所选分类不一致，请重新选择。";

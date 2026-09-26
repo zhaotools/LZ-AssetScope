@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.23";
+} from "./member-auth.js?v=1.0.24";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -72,6 +72,18 @@ let turnstileWidgetId = null;
 let accountCaptchaToken = "";
 let accountTurnstileWidgetId = null;
 let watchlistDrag = null;
+
+const ASSET_CODE_PATTERNS = {
+  us_equity: /^[A-Z][A-Z0-9.-]{0,14}$/,
+  cn_equity: /^\d{6}(?:\.(?:SS|SZ|BJ))?$/,
+  hk_equity: /^\d{4,5}(?:\.HK)?$/,
+  crypto: /^[A-Z0-9]{2,20}(?:[-/](?:USD|USDT|USDC))?$/,
+  commodity: /^[A-Z]{1,12}(?:=F)?$/,
+};
+
+function isAssetCodeQuery(category, value) {
+  return Boolean(ASSET_CODE_PATTERNS[category]?.test(String(value || "").trim().toUpperCase()));
+}
 
 function dismissAppSplash() {
   const splash = document.getElementById("app-splash");
@@ -607,17 +619,23 @@ function scheduleMemberAssetPoll(active) {
 async function handleAssetSearch(event) {
   event.preventDefault();
   const category = $("#asset-category").value;
-  const query = $("#asset-query").value.trim();
+  const query = $("#asset-query").value.trim().toUpperCase();
   if (!category) {
     setAssetPickerMessage("请先选择资产分类。", "error");
     $("#asset-category").focus();
     return;
   }
   if (!query) {
-    setAssetPickerMessage("请输入资产名称或代码。", "error");
+    setAssetPickerMessage("请输入资产代码。", "error");
     $("#asset-query").focus();
     return;
   }
+  if (!isAssetCodeQuery(category, query)) {
+    setAssetPickerMessage("仅支持按资产代码查询，请检查代码格式。", "error");
+    $("#asset-query").focus();
+    return;
+  }
+  $("#asset-query").value = query;
   state.assetSearchBusy = true;
   state.assetSearchResults = [];
   $("#asset-search-submit").disabled = true;
@@ -871,7 +889,7 @@ function setAssetPicker(open) {
   document.body.classList.toggle("picker-open", open);
   if (open) {
     $("#asset-count").textContent = `${readWatchlist().length} / 30`;
-    setAssetPickerMessage("请选择分类并输入资产名称或代码。");
+    setAssetPickerMessage("请选择分类并输入资产代码。");
     renderAssetSearchResults();
     $("#asset-category").focus();
   }
@@ -1587,10 +1605,12 @@ function installStochRsi(container, chart, addLine, series) {
     crosshairMarkerVisible: true,
     priceFormat: { type: "price", precision: 1, minMove: 0.1 },
   };
-  const kLine = addLine({ ...common, color: "#2478a5", title: "StochRSI K" });
-  const dLine = addLine({ ...common, color: "#c98632", title: "StochRSI D" });
+  const kLine = addLine({ ...common, color: "#2478a5", title: "" });
+  const dLine = addLine({ ...common, color: "#c98632", title: "" });
   kLine.setData(series.flatMap((bar) => Number.isFinite(Number(bar.stochK)) ? [{ time: bar.date || bar.time, value: Number(bar.stochK) }] : []));
   dLine.setData(series.flatMap((bar) => Number.isFinite(Number(bar.stochD)) ? [{ time: bar.date || bar.time, value: Number(bar.stochD) }] : []));
+  kLine.applyOptions({ title: "", priceLineVisible: false, lastValueVisible: false });
+  dLine.applyOptions({ title: "", priceLineVisible: false, lastValueVisible: false });
   chart.priceScale("stoch-rsi").applyOptions({
     autoScale: true,
     visible: false,

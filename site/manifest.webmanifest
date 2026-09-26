@@ -3,11 +3,11 @@
   "short_name": "AssetScope",
   "description": "黄金与比特币的周线、日线与基本面观察系统",
   "lang": "zh-CN",
-  "start_url": "./gold/overview",
+  "start_url": "./watchlist",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f5f6",
-  "theme_color": "#f7f8f8",
+  "background_color": "#082d43",
+  "theme_color": "#082d43",
   "icons": [
     {
       "src": "./icons/icon-192.png",

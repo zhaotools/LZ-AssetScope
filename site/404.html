@@ -8,11 +8,12 @@
     <link rel="icon" href="/LZ-AssetScope/icons/favicon-v3.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
     <link rel="icon" href="/LZ-AssetScope/icons/favicon-32-v3.png" type="image/png" sizes="32x32">
     <script>
+      const watchlist = /\/watchlist\/?$/.test(location.pathname);
       const match = location.pathname.match(/\/([a-z0-9-]+)\/(overview|weekly|daily|fundamentals|methodology)\/?$/);
       const asset = match ? match[1] : "gold";
       const route = match ? match[2] : "overview";
-      location.replace("/LZ-AssetScope/?route=" + encodeURIComponent(`/${asset}/${route}`));
+      location.replace("/LZ-AssetScope/?route=" + encodeURIComponent(watchlist ? "/watchlist" : `/${asset}/${route}`));
     </script>
   </head>
-  <body><a href="/LZ-AssetScope/">返回 LZ-AssetScope 首页</a></body>
+  <body><a href="/LZ-AssetScope/?route=%2Fwatchlist">返回 LZ-AssetScope 资产列表</a></body>
 </html>

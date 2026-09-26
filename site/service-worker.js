@@ -1,10 +1,10 @@
-const CACHE = "lz-assetscope-v1.0.17";
+const CACHE = "lz-assetscope-v1.0.18";
 const SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=1.0.17",
-  "./app.js?v=1.0.17",
-  "./member-auth.js?v=1.0.17",
+  "./styles.css?v=1.0.18",
+  "./app.js?v=1.0.18",
+  "./member-auth.js?v=1.0.18",
   "./member-config.js?v=1.0.17",
   "./manifest.webmanifest",
   "./favicon.ico",
@@ -12,7 +12,7 @@ const SHELL = [
   "./icons/favicon-32-v3.png",
   "./icons/safari-pinned-tab.svg",
   "./icons/icon-180.png",
-  "./icons/icon-192.png?v=1.0.17",
+  "./icons/icon-192.png?v=1.0.18",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
@@ -60,9 +60,11 @@ async function navigationFirst(request) {
   const relativePath = requestUrl.pathname.startsWith(scopeUrl.pathname)
     ? requestUrl.pathname.slice(scopeUrl.pathname.length).replace(/\/$/, "")
     : "";
-  const route = /^[a-z0-9-]+\/(overview|weekly|daily|fundamentals|methodology)$/.test(relativePath)
-    ? `/${relativePath}`
-    : "/gold/overview";
+  const route = relativePath === "watchlist"
+    ? "/watchlist"
+    : /^[a-z0-9-]+\/(overview|weekly|daily|fundamentals|methodology)$/.test(relativePath)
+      ? `/${relativePath}`
+      : "/watchlist";
   const shellUrl = new URL("./", scopeUrl);
   shellUrl.searchParams.set("route", route);
   return Response.redirect(shellUrl, 302);

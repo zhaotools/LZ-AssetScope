@@ -15,11 +15,12 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.17";
+} from "./member-auth.js?v=1.0.18";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
 const routes = new Set(["overview", "weekly", "daily", "fundamentals", "methodology"]);
+const mobileLayout = window.matchMedia("(max-width: 760px)");
 const assets = {
   gold: {
     id: "gold",
@@ -59,6 +60,8 @@ const state = {
   watchlistSorting: false,
   watchlistOrderBeforeEdit: [],
   watchlistOrderSaving: false,
+  watchlistView: false,
+  watchlistScrollY: 0,
   pendingAssetId: null,
   pendingRoute: "overview",
 };
@@ -142,6 +145,10 @@ function routePath(route, assetId = state.assetId) {
   return `${SITE_BASE_PATH}/${assetId}/${route}`;
 }
 
+function watchlistPath() {
+  return `${SITE_BASE_PATH}/watchlist`;
+}
+
 function isMember() {
   return isProfileActive(state.memberProfile);
 }
@@ -156,11 +163,12 @@ function locationContext() {
   const forwardedPath = new URLSearchParams(location.search).get("route");
   const candidatePath = forwardedPath || location.pathname.slice(SITE_BASE_PATH.length);
   const parts = candidatePath.split("/").filter(Boolean);
+  const watchlist = parts[0] === "watchlist" || (!parts.length && mobileLayout.matches);
   const assetId = assets[parts[0]] ? parts[0] : "gold";
   const pathRoute = parts[1];
   const legacyRoute = location.hash.split("/").filter(Boolean).at(-1);
   const route = pathRoute || legacyRoute || "overview";
-  return { assetId, route: routes.has(route) ? route : "overview" };
+  return { assetId, route: routes.has(route) ? route : "overview", view: watchlist ? "watchlist" : "asset" };
 }
 
 function routeFromLocation() {
@@ -169,7 +177,22 @@ function routeFromLocation() {
 
 function normalizeRoute() {
   const context = locationContext();
-  let { assetId, route } = context;
+  let { assetId, route, view } = context;
+  if (view === "watchlist" && mobileLayout.matches) {
+    state.watchlistView = true;
+    const target = watchlistPath();
+    if (location.pathname !== target || location.search || location.hash) {
+      history.replaceState({ view: "watchlist" }, "", target);
+    }
+    syncPageMode();
+    updateRouteLinks();
+    return "overview";
+  }
+  if (view === "watchlist") {
+    assetId = state.assetId || "gold";
+    route = "overview";
+    view = "asset";
+  }
   if (!canAccessAsset(assetId)) {
     if (route !== "methodology") {
       state.pendingAssetId = assetId;
@@ -178,11 +201,13 @@ function normalizeRoute() {
     }
     assetId = "gold";
   }
+  state.watchlistView = false;
   state.assetId = assetId;
   const target = routePath(route, assetId);
   if (location.pathname !== target || location.search || location.hash) {
     history.replaceState({ assetId, route }, "", target);
   }
+  syncPageMode();
   syncRouteShell(route);
   updateRouteLinks();
   return route;
@@ -190,6 +215,7 @@ function normalizeRoute() {
 
 function updateRouteLinks() {
   $$('[data-route]').forEach((link) => { link.href = routePath(link.dataset.route); });
+  $$('[data-watchlist-link]').forEach((link) => { link.href = watchlistPath(); });
 }
 
 function lockMobilePageZoom() {
@@ -402,10 +428,12 @@ function handleWatchlistPointerMove(event) {
   if (!watchlistDrag || watchlistDrag.pointerId !== event.pointerId) return;
   event.preventDefault();
   const list = $("#asset-watchlist");
-  const mobile = window.matchMedia("(max-width: 760px)").matches;
-  const scrollNode = mobile ? list : $(".asset-sidebar");
-  const scrollRect = scrollNode.getBoundingClientRect();
-  if (mobile) {
+  const horizontal = mobileLayout.matches && !state.watchlistView;
+  const scrollNode = horizontal ? list : state.watchlistView ? document.scrollingElement : $(".asset-sidebar");
+  const scrollRect = state.watchlistView
+    ? { top: 0, bottom: window.innerHeight }
+    : scrollNode.getBoundingClientRect();
+  if (horizontal) {
     if (event.clientX < scrollRect.left + 42) list.scrollLeft -= 14;
     if (event.clientX > scrollRect.right - 42) list.scrollLeft += 14;
   } else {
@@ -415,7 +443,7 @@ function handleWatchlistPointerMove(event) {
   const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".watchlist-asset[data-asset]");
   if (!target || target.parentElement !== list || target === watchlistDrag.source) return;
   const rect = target.getBoundingClientRect();
-  const placeAfter = mobile
+  const placeAfter = horizontal
     ? event.clientX > rect.left + rect.width / 2
     : event.clientY > rect.top + rect.height / 2;
   moveWatchlistAsset(watchlistDrag.source, target, placeAfter);
@@ -612,7 +640,9 @@ async function handleRemoveAsset(assetId) {
   try {
     await removeMemberAsset(assetId);
     await refreshMemberLibrary({ quiet: true });
-    if (state.assetId === assetId) await loadAsset("gold", { historyMode: "push", targetRoute: "overview" });
+    if (state.assetId === assetId) {
+      await loadAsset("gold", { historyMode: state.watchlistView ? "none" : "push", targetRoute: "overview" });
+    }
   } catch (error) {
     window.alert(memberErrorMessage(error));
   }
@@ -634,6 +664,9 @@ function renderMemberControls() {
   account.hidden = !active;
   $("#member-display-name").textContent = state.memberProfile?.display_name || "会员";
   $("#member-expiry").textContent = memberExpiryLabel();
+  $$('[data-member-action] span').forEach((label) => {
+    label.textContent = active ? state.memberProfile?.display_name || "账号" : state.authReady ? "登录" : "检查中";
+  });
 }
 
 function syncMemberSubmit() {
@@ -821,6 +854,26 @@ function clearCharts() {
   }
 }
 
+function syncPageMode() {
+  const watchlistView = mobileLayout.matches && locationContext().view === "watchlist";
+  state.watchlistView = watchlistView;
+  document.body.classList.toggle("watchlist-view", watchlistView);
+  $('meta[name="theme-color"]').content = watchlistView ? "#082d43" : "#f4f7fa";
+  if (watchlistView) {
+    document.body.classList.remove("methodology-view");
+    document.title = "LZ-AssetScope · 资产列表";
+    $$('[data-route]').forEach((link) => {
+      link.classList.remove("active");
+      link.removeAttribute("aria-current");
+    });
+  }
+  return watchlistView;
+}
+
+function restoreWatchlistScroll() {
+  window.requestAnimationFrame(() => window.scrollTo({ top: state.watchlistScrollY, behavior: "auto" }));
+}
+
 function syncRouteShell(route) {
   const methodologyView = route === "methodology";
   document.body.classList.toggle("methodology-view", methodologyView);
@@ -833,6 +886,12 @@ function syncRouteShell(route) {
 
 function activateRoute() {
   const route = routeFromLocation();
+  if (syncPageMode()) {
+    renderWatchlist();
+    updateRouteLinks();
+    restoreWatchlistScroll();
+    return;
+  }
   syncRouteShell(route);
   $$('[data-panel]').forEach((panel) => { panel.hidden = panel.dataset.panel !== route; });
   $$('[data-route]').forEach((link) => {
@@ -979,6 +1038,7 @@ function updateHeader() {
   document.title = `LZ-AssetScope · ${presentation.name}观察`;
   $("#asset-symbol").textContent = presentation.code;
   $("#asset-name").textContent = presentation.name;
+  $("#mobile-detail-title").textContent = `${presentation.code}/${presentation.currency || quote.currency || "USD"} · ${presentation.name}`;
   $("#overview-title").textContent = `${presentation.name}状态总览`;
   $("#footer-label").textContent = `LZ-AssetScope · ${presentation.name}观察`;
   $("#module-tabs").setAttribute("aria-label", `${presentation.name}分析模块`);
@@ -1597,6 +1657,7 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
   if (!requestAssetAccess(assetId, route)) return;
   if (historyMode === "push") history.pushState({ assetId, route }, "", routePath(route, assetId));
   if (historyMode === "replace") history.replaceState({ assetId, route }, "", routePath(route, assetId));
+  syncPageMode();
   const token = state.loadToken + 1;
   state.loadToken = token;
   state.assetId = assetId;
@@ -1648,7 +1709,7 @@ async function handleMemberLogout() {
   renderWatchlist();
   if (assets[state.assetId]?.memberOnly) {
     const targetRoute = routeFromLocation() === "methodology" ? "methodology" : "overview";
-    await loadAsset("gold", { historyMode: "push", targetRoute });
+    await loadAsset("gold", { historyMode: state.watchlistView ? "none" : "push", targetRoute });
   }
 }
 
@@ -1767,6 +1828,12 @@ document.addEventListener("click", (event) => {
     openMemberLogin();
     return;
   }
+  if (event.target.closest("[data-member-action]")) {
+    event.preventDefault();
+    if (isMember()) openMemberAccount();
+    else openMemberLogin();
+    return;
+  }
   if (event.target.closest("#member-account-button")) {
     event.preventDefault();
     openMemberAccount();
@@ -1830,10 +1897,16 @@ document.addEventListener("click", (event) => {
         : `${row?.asset?.name || "该资产"}${initializationStageLabel(job?.progress_stage)}，完成后即可打开。`);
       return;
     }
+    const fromWatchlist = state.watchlistView;
+    if (fromWatchlist) state.watchlistScrollY = window.scrollY;
     const currentRoute = routeFromLocation();
-    const targetRoute = currentRoute === "methodology" ? "overview" : currentRoute;
+    const targetRoute = fromWatchlist || currentRoute === "methodology" ? "overview" : currentRoute;
     if (assetId !== state.assetId || targetRoute !== currentRoute) {
       void loadAsset(assetId, { historyMode: "push", targetRoute });
+    } else if (fromWatchlist) {
+      history.pushState({ assetId, route: targetRoute }, "", routePath(targetRoute, assetId));
+      syncPageMode();
+      activateRoute();
     }
     return;
   }
@@ -1843,11 +1916,20 @@ document.addEventListener("click", (event) => {
     void ensureRouteData(retry.dataset.retryRoute, { force: true });
     return;
   }
+  const watchlistLink = event.target.closest("[data-watchlist-link]");
+  if (watchlistLink) {
+    event.preventDefault();
+    if (location.pathname !== watchlistPath()) history.pushState({ view: "watchlist" }, "", watchlistPath());
+    syncPageMode();
+    activateRoute();
+    return;
+  }
   const link = event.target.closest("[data-route]");
   if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
   const route = routes.has(link.dataset.route) ? link.dataset.route : "overview";
   if (location.pathname !== routePath(route)) history.pushState({ assetId: state.assetId, route }, "", routePath(route));
+  syncPageMode();
   activateRoute();
 });
 window.addEventListener("keydown", (event) => {
@@ -1856,6 +1938,13 @@ window.addEventListener("keydown", (event) => {
 });
 window.addEventListener("popstate", () => {
   let context = locationContext();
+  if (context.view === "watchlist" && mobileLayout.matches) {
+    syncPageMode();
+    renderWatchlist();
+    restoreWatchlistScroll();
+    return;
+  }
+  syncPageMode();
   if (!canAccessAsset(context.assetId)) {
     if (context.route === "methodology") {
       history.replaceState({ assetId: "gold", route: context.route }, "", routePath(context.route, "gold"));
@@ -1873,6 +1962,15 @@ window.addEventListener("popstate", () => {
     activateRoute();
   }
 });
+mobileLayout.addEventListener?.("change", () => {
+  const context = locationContext();
+  if (!mobileLayout.matches && context.view === "watchlist") {
+    const route = "overview";
+    history.replaceState({ assetId: state.assetId, route }, "", routePath(route));
+  }
+  syncPageMode();
+  activateRoute();
+});
 
 $("#member-login-form").addEventListener("submit", handleMemberLogin);
 $("#member-login-form").addEventListener("input", syncMemberSubmit);
@@ -1888,11 +1986,14 @@ $("#asset-watchlist").addEventListener("keydown", handleWatchlistKeydown);
 
 let deferredInstall;
 const installButton = $("#install-button");
+const installButtons = [installButton, ...$$('[data-install-action]')];
 const isInstalledApp = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const syncInstallButton = () => {
-  installButton.hidden = false;
-  installButton.textContent = isInstalledApp() ? "应用已安装" : "安装应用";
-  installButton.disabled = isInstalledApp();
+  installButtons.forEach((button) => {
+    button.hidden = false;
+    button.textContent = isInstalledApp() ? "已安装" : button === installButton ? "安装应用" : "安装";
+    button.disabled = isInstalledApp();
+  });
 };
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
@@ -1903,7 +2004,7 @@ window.addEventListener("appinstalled", () => {
   deferredInstall = null;
   syncInstallButton();
 });
-installButton.addEventListener("click", async () => {
+const requestInstall = async () => {
   if (!deferredInstall) {
     const appleDevice = /Macintosh|iPhone|iPad|iPod/.test(navigator.userAgent);
     window.alert(appleDevice
@@ -1915,7 +2016,8 @@ installButton.addEventListener("click", async () => {
   const choice = await deferredInstall.userChoice;
   deferredInstall = null;
   if (choice.outcome === "accepted") syncInstallButton();
-});
+};
+installButtons.forEach((button) => button.addEventListener("click", requestInstall));
 syncInstallButton();
 
 if ("serviceWorker" in navigator) {
@@ -1930,4 +2032,5 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+syncPageMode();
 boot();

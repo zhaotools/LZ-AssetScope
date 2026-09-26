@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-25T16:13:19+00:00",
+  "generatedAt": "2026-09-26T00:24:57+00:00",
   "productionReady": true,
   "asset": {
     "id": "gold",
@@ -15,14 +15,14 @@
     "priceBasis": "continuous-futures-ohlcv"
   },
   "quote": {
-    "price": 4298.0,
-    "previousClose": 4318.39990234375,
-    "date": "2026-09-24",
+    "price": 4320.5,
+    "previousClose": 4298.0,
+    "date": "2026-09-25",
     "currency": "USD",
     "source": {
       "name": "Yahoo Finance Gold Futures",
       "providerSymbol": "GC=F",
-      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?period1=1262304000&period2=1790294400&interval=1d&events=history",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?period1=1262304000&period2=1790380800&interval=1d&events=history",
       "providerPage": "https://finance.yahoo.com/quote/GC=F/history/",
       "purpose": "production-gold-futures",
       "licenseStatus": "public-endpoint; owner-accepted-display-risk; independent-rights-not-verified",
@@ -33,19 +33,19 @@
       "dailyBoundary": "Yahoo Finance provider-defined GC=F daily bar; accepted after 18:00 America/New_York",
       "volumeSemantics": "provider-reported COMEX gold-futures volume; contract rolls can change comparability",
       "volumeRuleStatus": "exchange-volume-available",
-      "fetchedAt": "2026-09-25T16:13:12+00:00",
-      "observationDate": "2026-09-24"
+      "fetchedAt": "2026-09-26T00:24:53+00:00",
+      "observationDate": "2026-09-25"
     }
   },
   "weekly": {
-    "asOf": "2026-09-18",
+    "asOf": "2026-09-25",
     "current": {
       "stage": 4,
       "observation": {
         "primaryStage": 4,
         "primary": 4,
-        "code": "S4-",
-        "label": "S4-",
+        "code": "S4",
+        "label": "S4",
         "neutral": false,
         "bias": null,
         "rawStage": 4,
@@ -55,36 +55,37 @@
       "confirmed": {
         "stage": 4,
         "primary": 4,
-        "code": "S4-",
-        "label": "S4-",
-        "weeks": 12
+        "code": "S4",
+        "label": "S4",
+        "weeks": 13
       },
       "status": "confirmed",
       "transition": null,
-      "close": 4424.89990234375,
-      "ma10": 4355.45,
-      "ma30": 4513.893343098958,
-      "slope": -0.0167787590954227,
-      "recentSlope": -0.004820948775858369,
-      "distance": -0.019715450497133524,
-      "position52": 0.3783522122686375,
-      "volumeRatio": 1.2504081562834204,
+      "close": 4320.5,
+      "ma10": 4385.6199951171875,
+      "ma30": 4482.980013020833,
+      "slope": -0.021387103593740076,
+      "recentSlope": -0.006848484828598456,
+      "distance": -0.036243751377188715,
+      "position52": 0.29710664850966717,
+      "volumeRatio": 1.109628448012336,
       "scores": {
         "1": 6,
         "2": 0,
         "3": 2,
-        "4": 8
+        "4": 9
       },
       "s2State": null,
       "s4State": {
         "key": "slowing",
-        "label": "Stage 4-",
-        "summary": "仍属于第四阶段下降，但本周收盘价已反弹到10周均线上方。下降趋势仍未结束，但跌速、低点推进或均线下行动能正在减弱。",
+        "label": "Stage 4",
+        "summary": "第四阶段下降结构仍在延续，价格仍运行在10周均线下方。下降趋势仍未结束，但跌速、低点推进或均线下行动能正在减弱。",
         "rawKey": "slowing",
         "reasons": [
           "近8周跌幅明显收窄",
           "价格已脱离S4低点",
           "连续多周未创新低",
+          "周线运行效率下降并转为震荡",
           "价格回到MA30附近"
         ],
         "signals": {
@@ -92,47 +93,47 @@
           "declineStalled": true,
           "offTrough": true,
           "noNewLow": true,
-          "choppy": false,
+          "choppy": true,
           "maFlattening": false,
           "nearMa30": true
         },
-        "repair": 3,
+        "repair": 4,
         "momentumLabel": "S4下降减速",
         "momentumSummary": "下降趋势仍未结束，但跌速、低点推进或均线下行动能正在减弱。",
         "lifecycle": {
-          "code": "4-",
-          "label": "Stage 4-",
-          "summary": "仍属于第四阶段下降，但本周收盘价已反弹到10周均线上方。",
-          "runWeeks": 12,
-          "aboveMa10": true,
+          "code": "4",
+          "label": "Stage 4",
+          "summary": "第四阶段下降结构仍在延续，价格仍运行在10周均线下方。",
+          "runWeeks": 13,
+          "aboveMa10": false,
           "mature": false
         },
-        "runWeeks": 12,
-        "weeks": 12,
-        "stateWeeks": 3
+        "runWeeks": 13,
+        "weeks": 13,
+        "stateWeeks": 4
       },
       "evidence": [
         {
           "label": "价格与MA30",
-          "value": "低于 1.97%",
+          "value": "低于 3.62%",
           "detail": "S4通常表现为价格运行在30周均线下方",
           "state": "support"
         },
         {
           "label": "MA30方向",
-          "value": "5周斜率 -1.68%",
+          "value": "5周斜率 -2.14%",
           "detail": "下降的长期均线代表趋势方向向下",
           "state": "support"
         },
         {
           "label": "10/30周结构",
-          "value": "MA10 低于 MA30 3.51%",
+          "value": "MA10 低于 MA30 2.17%",
           "detail": "中期均线位于长期均线下方支持下降结构",
           "state": "support"
         },
         {
           "label": "52周位置",
-          "value": "区间 38%",
+          "value": "区间 30%",
           "detail": "位于年度区间中下部更符合风险释放阶段",
           "state": "support"
         }
@@ -146,22 +147,22 @@
         "total": 4,
         "transitionLimited": false
       },
-      "asOf": "2026-09-18",
+      "asOf": "2026-09-25",
       "usesCompletedWeek": true,
-      "latestClose": 4298,
-      "latestMa30": 4482.230013020833,
-      "latestDistance": -0.041102311234730626,
-      "latestAsOf": "2026-09-24",
-      "hasProvisionalBar": true
+      "latestClose": 4320.5,
+      "latestMa30": 4482.980013020833,
+      "latestDistance": -0.036243751377188715,
+      "latestAsOf": "2026-09-25",
+      "hasProvisionalBar": false
     },
-    "summary": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。"
+    "summary": "周线处于 S4 下降趋势，已确认阶段持续 13 周。"
   },
   "daily": {
-    "asOf": "2026-09-24",
+    "asOf": "2026-09-25",
     "summary": {
       "ok": true,
-      "snapshotId": "77049e13f1c8c729",
-      "snapshotCreatedAt": "2026-09-25T16:13:12+00:00",
+      "snapshotId": "8816c95149f84a5f",
+      "snapshotCreatedAt": "2026-09-26T00:24:53+00:00",
       "symbol": "GC=F",
       "name": "COMEX 黄金连续合约",
       "market": "commodity",
@@ -173,17 +174,17 @@
       "referenceLabel": null,
       "referenceNote": null,
       "splitAdjustments": [],
-      "price": 4298.0,
-      "previousClose": 4318.39990234375,
-      "volume": 143873.0,
-      "date": "2026-09-24",
-      "quoteDate": "2026-09-24",
-      "updatedAt": "2026-09-25T16:13:12+00:00",
+      "price": 4320.5,
+      "previousClose": 4298.0,
+      "volume": 137070.0,
+      "date": "2026-09-25",
+      "quoteDate": "2026-09-25",
+      "updatedAt": "2026-09-26T00:24:53+00:00",
       "bullBear": {
         "status": "熊市区",
         "score": 5,
         "strength": "中",
-        "gap": -5.653294991993716,
+        "gap": -5.170090260044337,
         "summary": "当前处于熊市区，趋势环境偏弱。"
       },
       "traffic": {
@@ -194,55 +195,55 @@
           {
             "label": "MA50 > MA200",
             "pass": false,
-            "detail": "MA50 4347.97 / MA200 4555.54"
+            "detail": "MA50 4354.53 / MA200 4556.05"
           },
           {
             "label": "MA200 高于 20 天前",
             "pass": true,
-            "detail": "MA200 4555.54 / 20天前 4527.99"
+            "detail": "MA200 4556.05 / 20天前 4531.26"
           },
           {
             "label": "最新收盘价在 MA50 之上",
             "pass": false,
-            "detail": "收盘 4298.00 / MA50 4347.97"
+            "detail": "收盘 4320.50 / MA50 4354.53"
           },
           {
             "label": "最近 20 日高点高于前 20 日高点",
             "pass": false,
-            "detail": "近20日高点 4697.70 / 前20日高点 4755.00"
+            "detail": "近20日高点 4688.00 / 前20日高点 4755.00"
           },
           {
             "label": "最近 20 日低点不低于前 20 日低点",
             "pass": true,
-            "detail": "近20日低点 4273.30 / 前20日低点 4028.50"
+            "detail": "近20日低点 4273.30 / 前20日低点 4074.00"
           }
         ],
         "summary": "趋势条件不足，等待重新转强。"
       },
       "band": {
-        "index": 4181,
-        "date": "2026-09-24",
-        "status": "下行风险",
-        "score": 4,
-        "action": "波动信号转弱，注意回撤风险",
-        "k": 8.896599749774001,
-        "d": 21.800045198653077,
-        "atr": 98.85707310267857,
-        "atrPct": 2.3000715007603203,
+        "index": 4182,
+        "date": "2026-09-25",
+        "status": "超卖观察",
+        "score": 15,
+        "action": "关注修复力度，等待更明确信号",
+        "k": 7.404504061772784,
+        "d": 11.835390072972379,
+        "atr": 94.17850167410714,
+        "atrPct": 2.1798056168060906,
         "riskLevel": "低",
-        "support": 4273.2998046875,
-        "pressure": 4306.589990234375
+        "support": 4310.558325195312,
+        "pressure": 4354.533989257812
       },
       "fusion": {
-        "score": 9,
+        "score": 20,
         "status": "风险升高",
         "advice": "多项指标偏弱，趋势结构和交易条件均不理想，建议以风险控制和观察为主。",
-        "riskNote": "波动信号转弱，注意回撤风险。 趋势条件不足，等待重新转强。 当前处于熊市区，趋势环境偏弱。",
+        "riskNote": "趋势条件不足，等待重新转强。 当前处于熊市区，趋势环境偏弱。",
         "conflict": "风险优先",
         "pool": "红灯风险池"
       },
       "previousFusion": {
-        "date": "2026-09-23",
+        "date": "2026-09-24",
         "score": 9,
         "status": "风险升高",
         "advice": "多项指标偏弱，趋势结构和交易条件均不理想，建议以风险控制和观察为主。"
@@ -251,22 +252,22 @@
     "change": "日线融合状态维持“风险升高”。"
   },
   "fundamentals": {
-    "asOf": "2026-09-24",
+    "asOf": "2026-09-25",
     "regime": "偏压制",
     "summary": "压力因素包括美国10年实际利率、美国10年期国债收益率、美联储广义美元指数。",
     "factors": [
       {
         "id": "DFII10",
         "label": "美国10年实际利率",
-        "value": 2.76,
+        "value": 2.85,
         "unit": "%",
-        "observationDate": "2026-09-23",
-        "comparisonDate": "2026-09-16",
-        "change5Observations": 0.08,
+        "observationDate": "2026-09-24",
+        "comparisonDate": "2026-09-17",
+        "change5Observations": 0.24,
         "changes": [
           {
             "label": "五个观察值",
-            "value": 0.08,
+            "value": 0.24,
             "unit": "%"
           }
         ],
@@ -281,22 +282,22 @@
         "explanation": "实际利率上升通常提高持有黄金的机会成本。",
         "freshness": {
           "calendarDays": 2,
-          "businessDays": 2
+          "businessDays": 1
         },
         "status": "ok"
       },
       {
         "id": "DGS10",
         "label": "美国10年期国债收益率",
-        "value": 5.11,
+        "value": 5.18,
         "unit": "%",
-        "observationDate": "2026-09-23",
-        "comparisonDate": "2026-09-16",
-        "change5Observations": 0.1,
+        "observationDate": "2026-09-24",
+        "comparisonDate": "2026-09-17",
+        "change5Observations": 0.24,
         "changes": [
           {
             "label": "五个观察值",
-            "value": 0.1,
+            "value": 0.24,
             "unit": "%"
           }
         ],
@@ -311,22 +312,22 @@
         "explanation": "名义长端利率上升通常对无息资产估值构成压力。",
         "freshness": {
           "calendarDays": 2,
-          "businessDays": 2
+          "businessDays": 1
         },
         "status": "ok"
       },
       {
         "id": "T10YIE",
         "label": "美国10年盈亏平衡通胀率",
-        "value": 2.33,
+        "value": 2.34,
         "unit": "%",
-        "observationDate": "2026-09-24",
-        "comparisonDate": "2026-09-17",
-        "change5Observations": 0.0,
+        "observationDate": "2026-09-25",
+        "comparisonDate": "2026-09-18",
+        "change5Observations": 0.01,
         "changes": [
           {
             "label": "五个观察值",
-            "value": 0.0,
+            "value": 0.01,
             "unit": "%"
           }
         ],
@@ -341,7 +342,7 @@
         "explanation": "通胀预期上升通常增加黄金的通胀对冲需求，但仍需结合实际利率判断。",
         "freshness": {
           "calendarDays": 1,
-          "businessDays": 1
+          "businessDays": 0
         },
         "status": "ok"
       },
@@ -370,7 +371,7 @@
         },
         "explanation": "美元走强通常对美元计价黄金形成压力。",
         "freshness": {
-          "calendarDays": 7,
+          "calendarDays": 8,
           "businessDays": 5
         },
         "status": "ok"
@@ -400,40 +401,56 @@
     }
   },
   "synthesis": {
-    "headline": "周线处于 S4- 下降趋势，已确认阶段持续 12 周。日线融合状态维持“风险升高”。基本面环境：偏压制。",
+    "headline": "周线处于 S4 下降趋势，已确认阶段持续 13 周。日线融合状态维持“风险升高”。基本面环境：偏压制。",
     "kind": "convergence",
     "title": "当前主导逻辑",
     "tension": "周线下降结构与日线“风险升高”方向一致，当前仍以防守观察为主。 基本面环境为偏压制。",
     "method": "周线决定战略背景，日线描述执行与风险，基本面解释顺风、逆风与潜在变化。"
   },
   "changeSummary": {
-    "count": 0,
-    "direction": "stable",
-    "label": "过去 1 个交易日无关键状态变化",
-    "items": []
+    "count": 1,
+    "direction": "improving",
+    "label": "过去 1 个交易日有 1 项改善",
+    "items": [
+      {
+        "date": "2026-09-25",
+        "scope": "daily",
+        "direction": "improving",
+        "title": "日线风险程度改善",
+        "detail": "状态维持“风险升高”，融合分数 9 → 20"
+      }
+    ]
   },
-  "recentChanges": [],
+  "recentChanges": [
+    {
+      "date": "2026-09-25",
+      "scope": "daily",
+      "direction": "improving",
+      "title": "日线风险程度改善",
+      "detail": "状态维持“风险升高”，融合分数 9 → 20"
+    }
+  ],
   "validationConditions": [
     {
       "key": "daily-repair",
       "tone": "repair",
       "label": "日线修复",
-      "value": 4347.965991210937,
-      "condition": "确认收盘重新站上 MA50 4,348.0"
+      "value": 4354.533989257812,
+      "condition": "确认收盘重新站上 MA50 4,354.5"
     },
     {
       "key": "daily-risk",
       "tone": "risk",
       "label": "日线风险",
-      "value": 4273.2998046875,
-      "condition": "确认收盘跌破结构支撑 4,273.3"
+      "value": 4310.558325195312,
+      "condition": "确认收盘跌破结构支撑 4,310.6"
     },
     {
       "key": "weekly-confirmation",
       "tone": "repair",
       "label": "周线确认",
-      "value": 4513.893343098958,
-      "condition": "完成周线重新站上 MA30 4,513.9"
+      "value": 4482.980013020833,
+      "condition": "完成周线重新站上 MA30 4,483.0"
     }
   ],
   "quality": {
@@ -450,11 +467,11 @@
       "pendingFundamentals": [],
       "pendingFundamentalGroups": []
     },
-    "inputHash": "77049e13f1c8c7297eb3fee2dabc60508720d95f6bb2a36d7d854b61dac158ee",
-    "dataVersion": "LZAS-GOLD-20260924",
-    "dailyBars": 4182,
-    "dailyAsOf": "2026-09-24",
-    "weeklyAsOf": "2026-09-18",
+    "inputHash": "8816c95149f84a5f8e54464e3207c70f65bf13e03052b5e91060423e36879cfd",
+    "dataVersion": "LZAS-GOLD-20260925",
+    "dailyBars": 4183,
+    "dailyAsOf": "2026-09-25",
+    "weeklyAsOf": "2026-09-25",
     "volumeAvailable": true,
     "warnings": [
       "行情使用 Yahoo Finance 的 GC=F 黄金期货连续序列，价格会受合约换月影响，不等同于 XAU/USD 现货金价。",

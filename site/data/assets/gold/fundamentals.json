@@ -1,21 +1,21 @@
 {
   "schemaVersion": "gold-fundamentals-v1",
-  "generatedAt": "2026-09-25T16:13:17+00:00",
+  "generatedAt": "2026-09-26T00:24:56+00:00",
   "asset": "gold",
   "scope": "macro-minimum",
   "factors": [
     {
       "id": "DFII10",
       "label": "美国10年实际利率",
-      "value": 2.76,
+      "value": 2.85,
       "unit": "%",
-      "observationDate": "2026-09-23",
-      "comparisonDate": "2026-09-16",
-      "change5Observations": 0.08,
+      "observationDate": "2026-09-24",
+      "comparisonDate": "2026-09-17",
+      "change5Observations": 0.24,
       "changes": [
         {
           "label": "五个观察值",
-          "value": 0.08,
+          "value": 0.24,
           "unit": "%"
         }
       ],
@@ -30,22 +30,22 @@
       "explanation": "实际利率上升通常提高持有黄金的机会成本。",
       "freshness": {
         "calendarDays": 2,
-        "businessDays": 2
+        "businessDays": 1
       },
       "status": "ok"
     },
     {
       "id": "DGS10",
       "label": "美国10年期国债收益率",
-      "value": 5.11,
+      "value": 5.18,
       "unit": "%",
-      "observationDate": "2026-09-23",
-      "comparisonDate": "2026-09-16",
-      "change5Observations": 0.1,
+      "observationDate": "2026-09-24",
+      "comparisonDate": "2026-09-17",
+      "change5Observations": 0.24,
       "changes": [
         {
           "label": "五个观察值",
-          "value": 0.1,
+          "value": 0.24,
           "unit": "%"
         }
       ],
@@ -60,22 +60,22 @@
       "explanation": "名义长端利率上升通常对无息资产估值构成压力。",
       "freshness": {
         "calendarDays": 2,
-        "businessDays": 2
+        "businessDays": 1
       },
       "status": "ok"
     },
     {
       "id": "T10YIE",
       "label": "美国10年盈亏平衡通胀率",
-      "value": 2.33,
+      "value": 2.34,
       "unit": "%",
-      "observationDate": "2026-09-24",
-      "comparisonDate": "2026-09-17",
-      "change5Observations": 0.0,
+      "observationDate": "2026-09-25",
+      "comparisonDate": "2026-09-18",
+      "change5Observations": 0.01,
       "changes": [
         {
           "label": "五个观察值",
-          "value": 0.0,
+          "value": 0.01,
           "unit": "%"
         }
       ],
@@ -90,7 +90,7 @@
       "explanation": "通胀预期上升通常增加黄金的通胀对冲需求，但仍需结合实际利率判断。",
       "freshness": {
         "calendarDays": 1,
-        "businessDays": 1
+        "businessDays": 0
       },
       "status": "ok"
     },
@@ -119,7 +119,7 @@
       },
       "explanation": "美元走强通常对美元计价黄金形成压力。",
       "freshness": {
-        "calendarDays": 7,
+        "calendarDays": 8,
         "businessDays": 5
       },
       "status": "ok"

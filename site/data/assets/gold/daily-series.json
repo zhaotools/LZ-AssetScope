@@ -1,21 +1,8 @@
 {
   "schemaVersion": "daily-series-v1",
-  "asOf": "2026-09-24",
-  "inputHash": "77049e13f1c8c7297eb3fee2dabc60508720d95f6bb2a36d7d854b61dac158ee",
+  "asOf": "2026-09-25",
+  "inputHash": "8816c95149f84a5f8e54464e3207c70f65bf13e03052b5e91060423e36879cfd",
   "series": [
-    {
-      "date": "2025-06-18",
-      "open": 3409.0,
-      "high": 3419.0,
-      "low": 3380.10009765625,
-      "close": 3408.10009765625,
-      "volume": 0.0,
-      "ma20": 3360.014990234375,
-      "ma50": 3309.3639990234374,
-      "ma200": 2898.370498046875,
-      "stochK": 55.25567032928649,
-      "stochD": 70.52071382249618
-    },
     {
       "date": "2025-06-20",
       "open": 3387.10009765625,
@@ -4162,25 +4149,22 @@
       "ma200": 4555.538001708985,
       "stochK": 8.896599749774001,
       "stochD": 21.800045198653077
+    },
+    {
+      "date": "2026-09-25",
+      "open": 4309.5,
+      "high": 4351.60009765625,
+      "low": 4289.2001953125,
+      "close": 4320.5,
+      "volume": 137070.0,
+      "ma20": 4407.439965820313,
+      "ma50": 4354.533989257812,
+      "ma200": 4556.052000732422,
+      "stochK": 7.404504061772784,
+      "stochD": 11.835390072972379
     }
   ],
   "bandHistory": [
-    {
-      "index": 4110,
-      "date": "2026-06-12",
-      "status": "低位金叉",
-      "action": "等待趋势确认",
-      "score": 35,
-      "fusionScore": 35,
-      "fusionStatus": "趋势偏弱",
-      "bandScore": 30,
-      "bullBearScore": 5,
-      "trafficScore": 0,
-      "price": 4238.7998046875,
-      "return7": -5.426058470726278,
-      "return14": -1.682075303689802,
-      "markerType": "buy"
-    },
     {
       "index": 4115,
       "date": "2026-06-22",
@@ -4418,7 +4402,7 @@
       "trafficScore": 15,
       "price": 4476.60009765625,
       "return7": -1.9903519571225243,
-      "return14": null,
+      "return14": -3.4870235055835592,
       "markerType": "buy"
     },
     {
@@ -4449,7 +4433,7 @@
       "bullBearScore": 5,
       "trafficScore": 15,
       "price": 4387.5,
-      "return7": null,
+      "return7": -1.5270655270655271,
       "return14": null,
       "markerType": "buy"
     },
@@ -4484,6 +4468,22 @@
       "return7": null,
       "return14": null,
       "markerType": "sell"
+    },
+    {
+      "index": 4182,
+      "date": "2026-09-25",
+      "status": "超卖观察",
+      "action": "关注修复力度，等待更明确信号",
+      "score": 20,
+      "fusionScore": 20,
+      "fusionStatus": "风险升高",
+      "bandScore": 15,
+      "bullBearScore": 5,
+      "trafficScore": 0,
+      "price": 4320.5,
+      "return7": null,
+      "return14": null,
+      "markerType": "buy"
     }
   ]
 }

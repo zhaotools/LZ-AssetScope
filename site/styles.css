@@ -224,6 +224,16 @@ body.watchlist-dragging { cursor: grabbing; }
   font-variant-numeric: tabular-nums;
 }
 .watchlist-price { color: rgba(255, 255, 255, 0.82); }
+.watchlist-price.delayed { color: #e2a45e; }
+.watchlist-price.delayed::after {
+  content: "延迟";
+  display: block;
+  margin-top: 1px;
+  color: rgba(226, 164, 94, 0.88);
+  font-size: 8px;
+  font-weight: 750;
+  line-height: 1;
+}
 .watchlist-change { color: rgba(255, 255, 255, 0.58); }
 .watchlist-change.positive { color: #62d8ad; }
 .watchlist-change.negative { color: #ff8b8b; }

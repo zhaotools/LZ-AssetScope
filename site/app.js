@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.20";
+} from "./member-auth.js?v=1.0.21";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -131,6 +131,8 @@ function updateAssetPresentationFromSnapshot(assetId, snapshot) {
   presentation.name = name;
   presentation.shortName = name;
   presentation.category = category;
+  presentation.code = item.displaySymbol || presentation.code;
+  presentation.currency = item.currency || presentation.currency;
 }
 
 function dataRoot(assetId = state.assetId) {
@@ -306,10 +308,13 @@ function watchlistQuote(snapshot) {
   const validPrice = Number.isFinite(price);
   const validPrevious = Number.isFinite(previousClose) && previousClose !== 0;
   const change = validPrice && validPrevious ? ((price - previousClose) / previousClose) * 100 : null;
+  const freshness = snapshot?.quality?.marketFreshness;
   return {
     price: validPrice ? price.toLocaleString("zh-CN", { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—",
     change: Number.isFinite(change) ? `${change >= 0 ? "+" : ""}${change.toFixed(2)}%` : "—",
     tone: Number.isFinite(change) ? (change >= 0 ? "positive" : "negative") : "",
+    delayed: freshness?.sourceFresh === false,
+    date: freshness?.lastDate || snapshot?.quote?.date || "",
   };
 }
 
@@ -340,7 +345,7 @@ function renderAssetSearchResults() {
     const added = existing.has(asset.assetId);
     return `
       <button class="catalog-asset" type="button" data-add-result="${index}" ${added || state.assetSearchBusy ? "disabled" : ""}>
-        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>Yahoo Finance · ${esc(instrumentTypeLabel(asset.quoteType))} · 已确认分类</small></span>
+        <span><strong>${esc(asset.name)}</strong>${esc(asset.providerSymbol)} · ${esc(asset.exchange)}<small>${asset.category === "crypto" ? "Binance 现货" : "Yahoo Finance"} · ${esc(instrumentTypeLabel(asset.quoteType))} · 已确认分类</small></span>
         <em>${added ? "已添加" : "添加并初始化"}</em>
       </button>
     `;
@@ -382,7 +387,7 @@ function renderWatchlist() {
     return `
       <button class="watchlist-asset ${assetId === state.assetId ? "active" : ""} ${esc(status)}" type="button" data-asset="${esc(assetId)}" data-status="${esc(status)}" aria-pressed="${assetId === state.assetId}" ${state.watchlistSorting ? 'aria-grabbed="false"' : ""} aria-label="${esc(asset.shortName)}${state.watchlistSorting ? "，可拖动排序" : ""}">
         <span class="watchlist-asset-copy"><strong>${esc(asset.code)}/${esc(asset.currency || "USD")}</strong><small>${esc(asset.shortName)}</small></span>
-        <span class="watchlist-price">${ready ? quote.price : "—"}</span>
+        <span class="watchlist-price ${quote.delayed ? "delayed" : ""}" ${quote.delayed ? `title="${esc(`行情延迟，最近可用 ${fmtDate(quote.date)}`)}"` : ""}>${ready ? quote.price : "—"}</span>
         <span class="watchlist-change ${quote.tone}">${ready ? quote.change : "—"}</span>
         <span class="watchlist-stage ${weeklyStage ? `stage-s${weeklyStage}` : ""}">${weekly}</span>
         ${removable ? `<span class="watchlist-remove" role="button" tabindex="0" data-remove-asset="${esc(assetId)}" aria-label="从自选移除">×</span>` : ""}
@@ -1038,6 +1043,7 @@ function updateHeader() {
   const { current } = state;
   const presentation = assets[state.assetId];
   const quote = current.quote;
+  const marketFreshness = current.quality?.marketFreshness;
   document.body.dataset.asset = state.assetId;
   document.title = `LZ-AssetScope · ${presentation.name}观察`;
   $("#asset-symbol").textContent = presentation.code;
@@ -1054,6 +1060,9 @@ function updateHeader() {
     ? `${current.asset.symbol} · ${presentation.category === "cn_equity" ? "A股" : "港股"}`
     : current.asset.technicalBenchmark;
   $("#quote-price").textContent = fmt(quote.price, 1);
+  $(".quote-label").textContent = marketFreshness?.sourceFresh === false
+    ? "行情延迟 · 最近可用收盘"
+    : "最新确认收盘";
   $("#quote-currency").textContent = quote.currency;
   const change = $("#quote-change");
   change.textContent = `${delta >= 0 ? "+" : ""}${fmt(delta, 1)} · ${percent >= 0 ? "+" : ""}${fmt(percent, 2)}%`;

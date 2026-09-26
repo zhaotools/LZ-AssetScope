@@ -1318,6 +1318,19 @@ function newsTime(value) {
   }).format(parsed);
 }
 
+function recentNewsPanelMarkup() {
+  return `
+    <article class="panel recent-news-panel" id="recent-news-panel">
+      <div class="recent-news-heading">
+        <div><span class="panel-kicker">RECENT NEWS</span><h2>最近重要动态</h2></div>
+        <span class="news-asof" id="news-asof">—</span>
+      </div>
+      <div class="recent-news-list" id="recent-news-list"></div>
+      <p class="news-policy" id="news-policy">最多展示 5 条与资产直接相关的重要动态，优先采用可核验的中文来源，保留原文链接，不参与基本面方向评分。</p>
+    </article>
+  `;
+}
+
 function renderRecentNews() {
   const news = state.news || { status: "unavailable", items: [] };
   const items = news.items || [];
@@ -1350,7 +1363,6 @@ function renderRecentNews() {
 
 function renderFundamentals() {
   const fundamentals = state.current.fundamentals;
-  renderRecentNews();
   $("#fundamental-summary").textContent = fundamentals.summary;
   const factorById = new Map(fundamentals.factors.map((item) => [item.id, item]));
   const factorChanges = (item) => {
@@ -1391,24 +1403,30 @@ function renderFundamentals() {
   const groups = fundamentals.groups || [];
   const factorGrid = $("#factor-grid");
   factorGrid.classList.toggle("fundamental-group-grid", Boolean(groups.length));
-  const cards = groups.length ? groups.map((group) => `
-    <article class="fundamental-group group-${esc(group.id)} ${esc(group.tone || "neutral")}">
-      <header class="fundamental-group-header">
-        <div><span class="panel-kicker">${esc(group.eyebrow)}</span><h3>${esc(group.label)}</h3></div>
-        <span class="group-state ${esc(group.tone || "neutral")}">${esc(group.state)}</span>
-      </header>
-      <p class="fundamental-group-description">${esc(group.description)}</p>
-      <div class="fundamental-factor-list">${group.factorIds.map((id) => factorById.get(id)).filter(Boolean).map(factorRow).join("")}</div>
-    </article>
-  `) : fundamentals.factors.map((item) => `
-    <article class="factor-card ${esc(item.impact)}">
-      <div class="factor-top"><h3>${esc(item.label)}</h3><span class="tag ${esc(item.impact)}">${esc(impactLabel[item.impact] || "暂不明确")}</span></div>
-      <div class="factor-value">${fmt(item.value, 2)} <small>${esc(item.unit)}</small></div>
-      <div class="factor-change-list">${factorChanges(item)}</div>
-      <p>${esc(item.explanation)}</p>
-      <div class="factor-source"><span>${esc(item.source.name)} · ${esc(item.source.seriesId)}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
-    </article>
-  `);
+  const cards = groups.length ? groups.map((group) => ({
+    weight: Math.max(2, 1.35 + group.factorIds.length),
+    html: `
+      <article class="fundamental-group group-${esc(group.id)} ${esc(group.tone || "neutral")}">
+        <header class="fundamental-group-header">
+          <div><span class="panel-kicker">${esc(group.eyebrow)}</span><h3>${esc(group.label)}</h3></div>
+          <span class="group-state ${esc(group.tone || "neutral")}">${esc(group.state)}</span>
+        </header>
+        <p class="fundamental-group-description">${esc(group.description)}</p>
+        <div class="fundamental-factor-list">${group.factorIds.map((id) => factorById.get(id)).filter(Boolean).map(factorRow).join("")}</div>
+      </article>
+    `,
+  })) : fundamentals.factors.map((item) => ({
+    weight: 2.5,
+    html: `
+      <article class="factor-card ${esc(item.impact)}">
+        <div class="factor-top"><h3>${esc(item.label)}</h3><span class="tag ${esc(item.impact)}">${esc(impactLabel[item.impact] || "暂不明确")}</span></div>
+        <div class="factor-value">${fmt(item.value, 2)} <small>${esc(item.unit)}</small></div>
+        <div class="factor-change-list">${factorChanges(item)}</div>
+        <p>${esc(item.explanation)}</p>
+        <div class="factor-source"><span>${esc(item.source.name)} · ${esc(item.source.seriesId)}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
+      </article>
+    `,
+  }));
   const labels = {
     "real-yield": "实际利率",
     "nominal-yield": "名义利率",
@@ -1439,14 +1457,22 @@ function renderFundamentals() {
   </article>
   `;
   if (mobileLayout.matches) {
-    factorGrid.innerHTML = [...cards, coverageCard].join("");
+    factorGrid.innerHTML = [recentNewsPanelMarkup(), ...cards.map((card) => card.html), coverageCard].join("");
+    renderRecentNews();
     return;
   }
   const columns = [[], []];
-  cards.forEach((card, index) => columns[index % 2].push(card));
-  const coverageColumn = columns[0].length <= columns[1].length ? 0 : 1;
+  const columnWeights = [Math.max(3, 1.4 + (state.news?.items?.length || 0) * 1.05), 0];
+  columns[0].push(recentNewsPanelMarkup());
+  cards.forEach((card) => {
+    const column = columnWeights[0] <= columnWeights[1] ? 0 : 1;
+    columns[column].push(card.html);
+    columnWeights[column] += card.weight;
+  });
+  const coverageColumn = columnWeights[0] <= columnWeights[1] ? 0 : 1;
   columns[coverageColumn].push(coverageCard);
   factorGrid.innerHTML = columns.map((column) => `<div class="fundamental-column">${column.join("")}</div>`).join("");
+  renderRecentNews();
 }
 
 function renderMethodology() {
@@ -2188,7 +2214,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.5", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.6", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

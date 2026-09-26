@@ -1142,7 +1142,7 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
 .pending { color: var(--muted-light) !important; }
 .empty-history { padding: 30px !important; color: var(--muted) !important; text-align: center !important; }
 
-.recent-news-panel { margin-bottom: 15px; padding: 0; overflow: hidden; }
+.recent-news-panel { margin: 0; padding: 0; overflow: hidden; }
 .recent-news-heading {
   display: flex;
   align-items: flex-start;

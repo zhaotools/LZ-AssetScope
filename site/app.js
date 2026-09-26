@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.22";
+} from "./member-auth.js?v=1.0.23";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -72,6 +72,18 @@ let turnstileWidgetId = null;
 let accountCaptchaToken = "";
 let accountTurnstileWidgetId = null;
 let watchlistDrag = null;
+
+function dismissAppSplash() {
+  const splash = document.getElementById("app-splash");
+  if (!splash) return;
+  const delay = Math.max(0, 700 - performance.now());
+  window.setTimeout(() => {
+    splash.classList.add("is-ready");
+    document.body.classList.remove("app-booting");
+    document.body.setAttribute("aria-busy", "false");
+    window.setTimeout(() => splash.remove(), 420);
+  }, delay);
+}
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -2060,4 +2072,4 @@ if ("serviceWorker" in navigator) {
 }
 
 syncPageMode();
-boot();
+boot().catch((error) => console.error(error)).finally(dismissAppSplash);

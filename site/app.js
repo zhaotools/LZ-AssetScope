@@ -141,6 +141,10 @@ function localizedMarketName(category, code, symbol, ...candidates) {
   return localized || `${category === "cn_equity" ? "A股" : "港股"} ${code}`;
 }
 
+function displayAssetCode(assetId, candidate) {
+  return assetId === "gold" ? "GOLD" : candidate;
+}
+
 function updateAssetPresentationFromSnapshot(assetId, snapshot) {
   const presentation = assets[assetId];
   const item = snapshot?.asset;
@@ -156,7 +160,7 @@ function updateAssetPresentationFromSnapshot(assetId, snapshot) {
   presentation.name = name;
   presentation.shortName = name;
   presentation.category = category;
-  presentation.code = item.displaySymbol || presentation.code;
+  presentation.code = displayAssetCode(assetId, item.displaySymbol || presentation.code);
   presentation.currency = item.currency || presentation.currency;
 }
 
@@ -281,7 +285,7 @@ function registerMemberAssets(rows) {
   for (const row of state.memberAssets) {
     const item = row.asset;
     if (!item?.asset_id) continue;
-    const code = item.display_symbol || item.provider_symbol;
+    const code = displayAssetCode(item.asset_id, item.display_symbol || item.provider_symbol);
     const name = localizedMarketName(item.category, code, item.provider_symbol, item.name);
     assets[item.asset_id] = {
       id: item.asset_id,
@@ -2214,7 +2218,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.6", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.7", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

@@ -318,6 +318,16 @@ function registerMemberSummaries(rows) {
       updateAssetPresentationFromSnapshot(row.asset_id, row.payload);
     }
   }
+  // A published current snapshot is the strongest readiness signal. This also
+  // repairs a stale in-memory `initializing` row when iOS suspended polling
+  // while the background initialization job completed.
+  for (const memberRow of state.memberAssets) {
+    const assetId = memberRow?.asset?.asset_id;
+    if (!assetId || !summaries.has(assetId)) continue;
+    memberRow.status = "ready";
+    if (memberRow.asset) memberRow.asset.status = "ready";
+    if (assets[assetId]) assets[assetId].status = "ready";
+  }
   state.assetSummaries = summaries;
 }
 
@@ -596,15 +606,26 @@ async function refreshMemberLibrary({ quiet = false } = {}) {
     state.memberJobs = jobs;
     renderWatchlist();
     const activeJobs = jobs.filter((job) => ["queued", "running"].includes(job.status));
+    const pendingAssets = state.memberAssets.filter((row) => row.status === "initializing");
     if (activeJobs.length && !quiet) {
       const latest = activeJobs[0];
       setAssetPickerMessage(`${initializationStageLabel(latest.progress_stage)}，完成后会自动出现在自选中。`);
     }
-    scheduleMemberAssetPoll(activeJobs.length > 0);
+    scheduleMemberAssetPoll(activeJobs.length > 0 || pendingAssets.length > 0);
   } catch (error) {
     if (!quiet) setAssetPickerMessage("暂时无法读取会员自选，请稍后重试。", "error");
     console.error(error);
   }
+}
+
+let lastMemberResumeRefresh = 0;
+
+function refreshMemberLibraryOnResume() {
+  if (!isMember() || document.visibilityState === "hidden") return;
+  const now = Date.now();
+  if (now - lastMemberResumeRefresh < 1500) return;
+  lastMemberResumeRefresh = now;
+  void refreshMemberLibrary({ quiet: true });
 }
 
 function scheduleMemberAssetPoll(active) {
@@ -2007,6 +2028,10 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !$("#asset-picker").hidden) setAssetPicker(false);
   if (event.key === "Escape" && !$("#member-dialog").hidden) closeMemberDialog();
 });
+document.addEventListener("visibilitychange", refreshMemberLibraryOnResume);
+window.addEventListener("pageshow", refreshMemberLibraryOnResume);
+window.addEventListener("focus", refreshMemberLibraryOnResume);
+window.addEventListener("online", refreshMemberLibraryOnResume);
 window.addEventListener("popstate", () => {
   let context = locationContext();
   if (context.view === "watchlist" && mobileLayout.matches) {
@@ -2101,7 +2126,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.3", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.4", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

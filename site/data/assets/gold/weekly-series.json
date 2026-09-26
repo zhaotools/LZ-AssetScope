@@ -1,7 +1,7 @@
 {
   "schemaVersion": "weekly-series-v1",
   "asOf": "2026-09-25",
-  "inputHash": "e57dde072750ce026f0c4d09473bdfb00961b5f8d8b0817880fcb69dc09e1f40",
+  "inputHash": "158a7c9db0fa446cb7dfa1853b296f5fca5faae9c1fff5b26b61daca60fa06d7",
   "availableSeriesBars": 873,
   "publishedSeriesLimit": 220,
   "series": [
@@ -2638,10 +2638,10 @@
       "open": 4413,
       "high": 4422.10009765625,
       "low": 4278.2998046875,
-      "close": 4320.5,
-      "volume": 762092,
-      "ma10": 4385.6199951171875,
-      "ma30": 4482.980013020833,
+      "close": 4321.2001953125,
+      "volume": 789836,
+      "ma10": 4385.690014648438,
+      "ma30": 4483.003352864584,
       "stage": 4,
       "provisional": false
     }
@@ -3586,7 +3586,7 @@
     {
       "asOf": "2026-09-25",
       "weekStart": "2026-09-21",
-      "close": 4320.5,
+      "close": 4321.2001953125,
       "observation": {
         "primaryStage": 4,
         "primary": 4,

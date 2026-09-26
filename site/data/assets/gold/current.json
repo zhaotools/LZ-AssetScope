@@ -1,6 +1,6 @@
 {
   "schemaVersion": "asset-snapshot-v1",
-  "generatedAt": "2026-09-26T03:35:23+00:00",
+  "generatedAt": "2026-09-26T04:51:26+00:00",
   "productionReady": true,
   "asset": {
     "id": "gold",
@@ -15,7 +15,7 @@
     "priceBasis": "continuous-futures-ohlcv"
   },
   "quote": {
-    "price": 4320.5,
+    "price": 4321.2001953125,
     "previousClose": 4298.0,
     "date": "2026-09-25",
     "currency": "USD",
@@ -33,7 +33,7 @@
       "dailyBoundary": "Yahoo Finance provider-defined GC=F daily bar; accepted after 18:00 America/New_York",
       "volumeSemantics": "provider-reported COMEX gold-futures volume; contract rolls can change comparability",
       "volumeRuleStatus": "exchange-volume-available",
-      "fetchedAt": "2026-09-26T03:35:13+00:00",
+      "fetchedAt": "2026-09-26T04:51:14+00:00",
       "observationDate": "2026-09-25"
     }
   },
@@ -61,14 +61,14 @@
       },
       "status": "confirmed",
       "transition": null,
-      "close": 4320.5,
-      "ma10": 4385.6199951171875,
-      "ma30": 4482.980013020833,
-      "slope": -0.021387103593740076,
-      "recentSlope": -0.006848484828598456,
-      "distance": -0.036243751377188715,
-      "position52": 0.29710664850966717,
-      "volumeRatio": 1.1166256693058618,
+      "close": 4321.2001953125,
+      "ma10": 4385.690014648438,
+      "ma30": 4483.003352864584,
+      "slope": -0.021382008618516468,
+      "recentSlope": -0.006843314160623781,
+      "distance": -0.03609258008890248,
+      "position52": 0.29749549464536634,
+      "volumeRatio": 1.1258960435748833,
       "scores": {
         "1": 6,
         "2": 0,
@@ -115,7 +115,7 @@
       "evidence": [
         {
           "label": "价格与MA30",
-          "value": "低于 3.62%",
+          "value": "低于 3.61%",
           "detail": "S4通常表现为价格运行在30周均线下方",
           "state": "support"
         },
@@ -149,9 +149,9 @@
       },
       "asOf": "2026-09-25",
       "usesCompletedWeek": true,
-      "latestClose": 4320.5,
-      "latestMa30": 4482.980013020833,
-      "latestDistance": -0.036243751377188715,
+      "latestClose": 4321.2001953125,
+      "latestMa30": 4483.003352864584,
+      "latestDistance": -0.03609258008890248,
       "latestAsOf": "2026-09-25",
       "hasProvisionalBar": false
     },
@@ -161,8 +161,8 @@
     "asOf": "2026-09-25",
     "summary": {
       "ok": true,
-      "snapshotId": "e57dde072750ce02",
-      "snapshotCreatedAt": "2026-09-26T03:35:19+00:00",
+      "snapshotId": "158a7c9db0fa446c",
+      "snapshotCreatedAt": "2026-09-26T04:51:19+00:00",
       "symbol": "GC=F",
       "name": "COMEX 黄金连续合约",
       "market": "commodity",
@@ -174,17 +174,17 @@
       "referenceLabel": null,
       "referenceNote": null,
       "splitAdjustments": [],
-      "price": 4320.5,
+      "price": 4321.2001953125,
       "previousClose": 4298.0,
-      "volume": 137070.0,
+      "volume": 164814.0,
       "date": "2026-09-25",
       "quoteDate": "2026-09-25",
-      "updatedAt": "2026-09-26T03:35:19+00:00",
+      "updatedAt": "2026-09-26T04:51:19+00:00",
       "bullBear": {
         "status": "熊市区",
         "score": 5,
         "strength": "中",
-        "gap": -5.170090260044337,
+        "gap": -5.154794675095375,
         "summary": "当前处于熊市区，趋势环境偏弱。"
       },
       "traffic": {
@@ -195,17 +195,17 @@
           {
             "label": "MA50 > MA200",
             "pass": false,
-            "detail": "MA50 4354.53 / MA200 4556.05"
+            "detail": "MA50 4354.55 / MA200 4556.06"
           },
           {
             "label": "MA200 高于 20 天前",
             "pass": true,
-            "detail": "MA200 4556.05 / 20天前 4531.26"
+            "detail": "MA200 4556.06 / 20天前 4531.26"
           },
           {
             "label": "最新收盘价在 MA50 之上",
             "pass": false,
-            "detail": "收盘 4320.50 / MA50 4354.53"
+            "detail": "收盘 4321.20 / MA50 4354.55"
           },
           {
             "label": "最近 20 日高点高于前 20 日高点",
@@ -226,13 +226,13 @@
         "status": "超卖观察",
         "score": 15,
         "action": "关注修复力度，等待更明确信号",
-        "k": 7.404504061772784,
-        "d": 11.835390072972379,
+        "k": 7.625241736767507,
+        "d": 11.90896929797062,
         "atr": 94.17850167410714,
-        "atrPct": 2.1798056168060906,
+        "atrPct": 2.179452407140705,
         "riskLevel": "低",
-        "support": 4310.558325195312,
-        "pressure": 4354.533989257812
+        "support": 4310.569995117187,
+        "pressure": 4354.547993164062
       },
       "fusion": {
         "score": 20,
@@ -435,21 +435,21 @@
       "key": "daily-repair",
       "tone": "repair",
       "label": "日线修复",
-      "value": 4354.533989257812,
+      "value": 4354.547993164062,
       "condition": "确认收盘重新站上 MA50 4,354.5"
     },
     {
       "key": "daily-risk",
       "tone": "risk",
       "label": "日线风险",
-      "value": 4310.558325195312,
+      "value": 4310.569995117187,
       "condition": "确认收盘跌破结构支撑 4,310.6"
     },
     {
       "key": "weekly-confirmation",
       "tone": "repair",
       "label": "周线确认",
-      "value": 4482.980013020833,
+      "value": 4483.003352864584,
       "condition": "完成周线重新站上 MA30 4,483.0"
     }
   ],
@@ -467,7 +467,7 @@
       "pendingFundamentals": [],
       "pendingFundamentalGroups": []
     },
-    "inputHash": "e57dde072750ce026f0c4d09473bdfb00961b5f8d8b0817880fcb69dc09e1f40",
+    "inputHash": "158a7c9db0fa446cb7dfa1853b296f5fca5faae9c1fff5b26b61daca60fa06d7",
     "dataVersion": "LZAS-GOLD-20260925",
     "dailyBars": 4183,
     "dailyAsOf": "2026-09-25",

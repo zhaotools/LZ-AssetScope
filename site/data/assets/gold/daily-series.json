@@ -1,7 +1,7 @@
 {
   "schemaVersion": "daily-series-v1",
   "asOf": "2026-09-25",
-  "inputHash": "e57dde072750ce026f0c4d09473bdfb00961b5f8d8b0817880fcb69dc09e1f40",
+  "inputHash": "158a7c9db0fa446cb7dfa1853b296f5fca5faae9c1fff5b26b61daca60fa06d7",
   "series": [
     {
       "date": "2025-06-20",
@@ -4155,13 +4155,13 @@
       "open": 4309.5,
       "high": 4351.60009765625,
       "low": 4289.2001953125,
-      "close": 4320.5,
-      "volume": 137070.0,
-      "ma20": 4407.439965820313,
-      "ma50": 4354.533989257812,
-      "ma200": 4556.052000732422,
-      "stochK": 7.404504061772784,
-      "stochD": 11.835390072972379
+      "close": 4321.2001953125,
+      "volume": 164814.0,
+      "ma20": 4407.4749755859375,
+      "ma50": 4354.547993164062,
+      "ma200": 4556.055501708985,
+      "stochK": 7.625241736767507,
+      "stochD": 11.90896929797062
     }
   ],
   "bandHistory": [
@@ -4402,7 +4402,7 @@
       "trafficScore": 15,
       "price": 4476.60009765625,
       "return7": -1.9903519571225243,
-      "return14": -3.4870235055835592,
+      "return14": -3.4713822756942374,
       "markerType": "buy"
     },
     {
@@ -4433,7 +4433,7 @@
       "bullBearScore": 5,
       "trafficScore": 15,
       "price": 4387.5,
-      "return7": -1.5270655270655271,
+      "return7": -1.5111066595441596,
       "return14": null,
       "markerType": "buy"
     },
@@ -4480,7 +4480,7 @@
       "bandScore": 15,
       "bullBearScore": 5,
       "trafficScore": 0,
-      "price": 4320.5,
+      "price": 4321.2001953125,
       "return7": null,
       "return14": null,
       "markerType": "buy"

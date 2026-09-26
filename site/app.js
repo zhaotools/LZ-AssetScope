@@ -1306,7 +1306,7 @@ function renderFundamentals() {
   const groups = fundamentals.groups || [];
   const factorGrid = $("#factor-grid");
   factorGrid.classList.toggle("fundamental-group-grid", Boolean(groups.length));
-  factorGrid.innerHTML = groups.length ? groups.map((group) => `
+  const cards = groups.length ? groups.map((group) => `
     <article class="fundamental-group group-${esc(group.id)} ${esc(group.tone || "neutral")}">
       <header class="fundamental-group-header">
         <div><span class="panel-kicker">${esc(group.eyebrow)}</span><h3>${esc(group.label)}</h3></div>
@@ -1315,7 +1315,7 @@ function renderFundamentals() {
       <p class="fundamental-group-description">${esc(group.description)}</p>
       <div class="fundamental-factor-list">${group.factorIds.map((id) => factorById.get(id)).filter(Boolean).map(factorRow).join("")}</div>
     </article>
-  `).join("") : fundamentals.factors.map((item) => `
+  `) : fundamentals.factors.map((item) => `
     <article class="factor-card ${esc(item.impact)}">
       <div class="factor-top"><h3>${esc(item.label)}</h3><span class="tag ${esc(item.impact)}">${esc(impactLabel[item.impact] || "暂不明确")}</span></div>
       <div class="factor-value">${fmt(item.value, 2)} <small>${esc(item.unit)}</small></div>
@@ -1323,7 +1323,7 @@ function renderFundamentals() {
       <p>${esc(item.explanation)}</p>
       <div class="factor-source"><span>${esc(item.source.name)} · ${esc(item.source.seriesId)}</span><span>${esc(fmtDate(item.observationDate))}</span></div>
     </article>
-  `).join("");
+  `);
   const labels = {
     "real-yield": "实际利率",
     "nominal-yield": "名义利率",
@@ -1345,14 +1345,22 @@ function renderFundamentals() {
   };
   const coverage = state.fundamentals.coverage || {};
   const implemented = coverage.implemented || [];
-  const planned = coverage.planned || [];
-  $("#coverage-panel").innerHTML = `
+  const coverageCard = `
+  <article class="panel coverage-panel" id="coverage-panel">
     <div class="panel-heading"><span class="panel-kicker">COVERAGE</span><h2>基本面覆盖进度</h2></div>
     <div class="coverage-columns">
       <div><h3>已经接入</h3><ul>${implemented.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("") || "<li>暂无已接入数据</li>"}</ul></div>
-      <div><h3>待接入 · 不参与当前判断</h3><ul>${planned.map((key) => `<li>${esc(labels[key] || key)}</li>`).join("") || "<li>暂无待接入数据</li>"}</ul></div>
     </div>
+  </article>
   `;
+  if (mobileLayout.matches) {
+    factorGrid.innerHTML = [...cards, coverageCard].join("");
+    return;
+  }
+  const columns = [[], []];
+  cards.forEach((card, index) => columns[index % 2].push(card));
+  columns[1].push(coverageCard);
+  factorGrid.innerHTML = columns.map((column) => `<div class="fundamental-column">${column.join("")}</div>`).join("");
 }
 
 function renderMethodology() {
@@ -2029,6 +2037,7 @@ mobileLayout.addEventListener?.("change", () => {
   }
   syncPageMode();
   activateRoute();
+  if (state.fundamentals && routeFromLocation() === "fundamentals") renderFundamentals();
 });
 
 $("#member-login-form").addEventListener("submit", handleMemberLogin);
@@ -2088,7 +2097,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.0", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.1", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

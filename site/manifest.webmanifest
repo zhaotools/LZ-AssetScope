@@ -1,7 +1,7 @@
 {
-  "name": "LZ-AssetScope 多资产观察",
-  "short_name": "AssetScope",
-  "description": "黄金与比特币的周线、日线与基本面观察系统",
+  "name": "LZ-StageScope 我的趋势观察",
+  "short_name": "趋势观察",
+  "description": "多资产周线、日线与基本面趋势观察系统",
   "lang": "zh-CN",
   "start_url": "./watchlist",
   "scope": "./",

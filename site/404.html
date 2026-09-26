@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="robots" content="noindex">
-    <title>LZ-AssetScope · 正在返回首页</title>
-    <link rel="icon" href="/LZ-AssetScope/icons/favicon-v3.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
-    <link rel="icon" href="/LZ-AssetScope/icons/favicon-32-v3.png" type="image/png" sizes="32x32">
+    <title>LZ-StageScope · 正在返回首页</title>
+    <link rel="icon" href="/LZ-StageScope/icons/favicon-v3.ico" type="image/x-icon" sizes="16x16 32x32 48x48">
+    <link rel="icon" href="/LZ-StageScope/icons/favicon-32-v3.png" type="image/png" sizes="32x32">
     <script>
       const watchlist = /\/watchlist\/?$/.test(location.pathname);
       const match = location.pathname.match(/\/([a-z0-9-]+)\/(overview|weekly|daily|fundamentals|methodology)\/?$/);
       const asset = match ? match[1] : "gold";
       const route = match ? match[2] : "overview";
-      location.replace("/LZ-AssetScope/?route=" + encodeURIComponent(watchlist ? "/watchlist" : `/${asset}/${route}`));
+      location.replace("/LZ-StageScope/?route=" + encodeURIComponent(watchlist ? "/watchlist" : `/${asset}/${route}`));
     </script>
   </head>
-  <body><a href="/LZ-AssetScope/?route=%2Fwatchlist">返回 LZ-AssetScope 资产列表</a></body>
+  <body><a href="/LZ-StageScope/?route=%2Fwatchlist">返回 LZ-StageScope 观察列表</a></body>
 </html>

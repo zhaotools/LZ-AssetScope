@@ -15,12 +15,13 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.18";
+} from "./member-auth.js?v=1.0.19";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
 const routes = new Set(["overview", "weekly", "daily", "fundamentals", "methodology"]);
 const mobileLayout = window.matchMedia("(max-width: 760px)");
+let forceInitialMobileWatchlist = mobileLayout.matches;
 const assets = {
   gold: {
     id: "gold",
@@ -163,7 +164,9 @@ function locationContext() {
   const forwardedPath = new URLSearchParams(location.search).get("route");
   const candidatePath = forwardedPath || location.pathname.slice(SITE_BASE_PATH.length);
   const parts = candidatePath.split("/").filter(Boolean);
-  const watchlist = parts[0] === "watchlist" || (!parts.length && mobileLayout.matches);
+  const watchlist = forceInitialMobileWatchlist
+    || parts[0] === "watchlist"
+    || (!parts.length && mobileLayout.matches);
   const assetId = assets[parts[0]] ? parts[0] : "gold";
   const pathRoute = parts[1];
   const legacyRoute = location.hash.split("/").filter(Boolean).at(-1);
@@ -184,6 +187,7 @@ function normalizeRoute() {
     if (location.pathname !== target || location.search || location.hash) {
       history.replaceState({ view: "watchlist" }, "", target);
     }
+    forceInitialMobileWatchlist = false;
     syncPageMode();
     updateRouteLinks();
     return "overview";

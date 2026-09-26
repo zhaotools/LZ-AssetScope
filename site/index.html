@@ -22,7 +22,7 @@
       #app-splash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:28px;color:#fff;background:#082d43;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;opacity:1;visibility:visible;transition:opacity .36s ease,visibility .36s ease;animation:app-splash-failsafe .3s ease 12s forwards}#app-splash.is-ready{pointer-events:none;opacity:0;visibility:hidden;animation:none}.app-splash-inner{display:grid;width:min(290px,82vw);justify-items:center;text-align:center}.app-splash-mark{display:grid;width:92px;height:92px;margin-bottom:22px;place-items:center;border:1px solid rgba(126,192,226,.28);border-radius:24px;background:#0b344b;box-shadow:0 20px 55px rgba(0,9,20,.28)}.app-splash-mark img{display:block;width:76px;height:76px;border-radius:18px}.app-splash-title{margin:0;color:#fff;font-size:24px;font-weight:760;letter-spacing:.01em}.app-splash-brand{margin:7px 0 0;color:rgba(255,255,255,.58);font-size:11px;font-weight:760;letter-spacing:.2em}.app-splash-rule{width:42px;height:2px;margin:22px 0 17px;border-radius:2px;background:#a87320}.app-splash-status{margin:0;color:rgba(255,255,255,.7);font-size:11px;letter-spacing:.08em}.app-splash-progress{width:116px;height:2px;margin-top:13px;overflow:hidden;border-radius:2px;background:rgba(255,255,255,.12)}.app-splash-progress span{display:block;width:48%;height:100%;border-radius:inherit;background:#5eb4dc;animation:app-splash-progress 1.35s ease-in-out infinite}.app-splash-note{position:absolute;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));left:20px;margin:0;color:rgba(255,255,255,.34);font-size:9px;letter-spacing:.12em;text-align:center}@keyframes app-splash-progress{0%{transform:translateX(-110%)}100%{transform:translateX(220%)}}@keyframes app-splash-failsafe{to{pointer-events:none;opacity:0;visibility:hidden}}@media(prefers-reduced-motion:reduce){#app-splash{transition:none}.app-splash-progress span{animation:none;width:100%;opacity:.7}}
       @media (min-width:761px) and (display-mode:browser) and (pointer:fine){#app-splash{display:none}}
     </style>
-    <link rel="stylesheet" href="./styles.css?v=1.1.1">
+    <link rel="stylesheet" href="./styles.css?v=1.1.2">
   </head>
   <body class="app-booting" aria-busy="true">
     <div id="app-splash" role="status" aria-live="polite" aria-label="正在加载我的趋势观察">
@@ -239,6 +239,14 @@
 
       <section class="route-panel shell" data-panel="fundamentals" hidden>
         <div class="route-data-state" data-route-state="fundamentals" hidden></div>
+        <article class="panel recent-news-panel" id="recent-news-panel">
+          <div class="recent-news-heading">
+            <div><span class="panel-kicker">RECENT NEWS</span><h2>最近重要动态</h2></div>
+            <span class="news-asof" id="news-asof">—</span>
+          </div>
+          <div class="recent-news-list" id="recent-news-list"></div>
+          <p class="news-policy" id="news-policy">最多展示 5 条与资产直接相关的重要动态，保留来源和文章链接，不参与基本面方向评分。</p>
+        </article>
         <article class="panel fundamental-intro">
           <p id="fundamental-summary">—</p>
           <p>每项因素按自己的实际发布频率更新。“未更新”不会被解释成中性，方向也不会合并成不透明的买卖分数。</p>
@@ -359,6 +367,6 @@
     </div>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script type="module" src="./app.js?v=1.1.4"></script>
+    <script type="module" src="./app.js?v=1.1.5"></script>
   </body>
 </html>

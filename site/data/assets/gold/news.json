@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "asset-news-v1",
+  "asset": "gold",
+  "generatedAt": "2026-09-26T10:51:35+00:00",
+  "asOf": "2026-09-26",
+  "status": "ok",
+  "maxItems": 5,
+  "items": [
+    {
+      "id": "358bc352-4de2-3817-a355-839825acd549",
+      "title": "China imported 1,100 tonnes of gold in 8 months — a record $158.8B haul that beats 2025, and a potential sign",
+      "publisher": "Moneywise",
+      "publishedAt": "2026-09-26T10:30:00Z",
+      "url": "https://finance.yahoo.com/markets/commodities/articles/china-imported-1-100-tonnes-103000537.html",
+      "eventType": "资产动态",
+      "selectionReason": "涉及资产动态，且与该资产代码直接关联。",
+      "relatedTickers": [
+        "GC=F"
+      ],
+      "sourceType": "full-article-link"
+    },
+    {
+      "id": "e3398238-2790-3179-9293-e0c7a1b2d9de",
+      "title": "Gold Futures Settle Higher As Dollar Slips",
+      "publisher": "The Wall Street Journal",
+      "publishedAt": "2026-09-25T18:20:00Z",
+      "url": "https://finance.yahoo.com/m/e3398238-2790-3179-9293-e0c7a1b2d9de/gold-futures-settle-higher-as.html",
+      "eventType": "资产动态",
+      "selectionReason": "涉及资产动态，且与该资产代码直接关联。",
+      "relatedTickers": [
+        "CL=F",
+        "DX-Y.NYB",
+        "GC=F",
+        "SI=F"
+      ],
+      "sourceType": "full-article-link"
+    },
+    {
+      "id": "dfea8735-1c08-34ac-8387-9e1d2000657b",
+      "title": "BC-Gold Futures",
+      "publisher": "Associated Press",
+      "publishedAt": "2026-09-25T14:00:25Z",
+      "url": "https://finance.yahoo.com/markets/commodities/articles/bc-gold-futures-140025259.html",
+      "eventType": "资产动态",
+      "selectionReason": "涉及资产动态，且与该资产代码直接关联。",
+      "relatedTickers": [
+        "GC=F"
+      ],
+      "sourceType": "full-article-link"
+    },
+    {
+      "id": "cee110b1-414f-4dbc-8a85-e00b63d7c82b",
+      "title": "Gold price today, Friday, September 25, 2026: Gold prices hold as investors have a lot to consider",
+      "publisher": "Yahoo Personal Finance",
+      "publishedAt": "2026-09-25T11:01:39Z",
+      "url": "https://finance.yahoo.com/personal-finance/investing/article/gold-price-today-friday-september-25-2026-gold-prices-hold-as-investors-have-a-lot-to-consider-110139291.html",
+      "eventType": "资产动态",
+      "selectionReason": "涉及资产动态，且与该资产代码直接关联。",
+      "relatedTickers": [
+        "CL=F",
+        "DX-Y.NYB",
+        "GC=F"
+      ],
+      "sourceType": "full-article-link"
+    },
+    {
+      "id": "780f70f6-e51c-3bd7-a815-e1e000177cf8",
+      "title": "Gold Heads for Weekly Decline as Markets Assess Fed Rate Outlook and Dollar Strength",
+      "publisher": "InvestorsHub",
+      "publishedAt": "2026-09-25T09:19:02Z",
+      "url": "https://finance.yahoo.com/markets/commodities/articles/gold-heads-weekly-decline-markets-091902512.html",
+      "eventType": "资产动态",
+      "selectionReason": "涉及资产动态，且与该资产代码直接关联。",
+      "relatedTickers": [
+        "CL=F",
+        "DX-Y.NYB",
+        "GC=F"
+      ],
+      "sourceType": "full-article-link"
+    }
+  ],
+  "warnings": [],
+  "policy": {
+    "windowDays": 30,
+    "selection": "relevance, material-event keywords, recency and deduplication",
+    "bodyStored": false,
+    "directionImpact": false
+  },
+  "sources": [
+    {
+      "name": "Yahoo Finance Search",
+      "url": "https://query1.finance.yahoo.com/v1/finance/search?q=GC%3DF"
+    }
+  ]
+}

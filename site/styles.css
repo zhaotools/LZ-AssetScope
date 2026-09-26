@@ -1142,6 +1142,47 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
 .pending { color: var(--muted-light) !important; }
 .empty-history { padding: 30px !important; color: var(--muted) !important; text-align: center !important; }
 
+.recent-news-panel { margin-bottom: 15px; padding: 0; overflow: hidden; }
+.recent-news-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 24px 17px;
+}
+.recent-news-heading h2 { margin: 4px 0 0; color: var(--ink-strong); font-size: 23px; }
+.news-asof {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 7px;
+  color: var(--muted);
+  background: #f1f5f7;
+  font-size: 11px;
+  font-weight: 720;
+}
+.recent-news-list { border-top: 1px solid var(--line); }
+.recent-news-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 17px 24px;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+  transition: background .16s ease;
+}
+.recent-news-item:hover { background: #f7fafc; }
+.news-item-main { min-width: 0; }
+.news-item-meta { display: flex; align-items: center; gap: 10px; color: var(--muted-light); font-size: 10px; }
+.news-item-meta span { color: var(--blue); font-weight: 760; }
+.news-item-main h3 { margin: 6px 0 0; color: var(--ink-strong); font-size: 15px; line-height: 1.5; }
+.news-item-main p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.news-item-source { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.news-item-source strong { color: var(--blue); font-size: 11px; }
+.news-policy { margin: 0; padding: 13px 24px 15px; color: var(--muted-light); background: #fbfcfd; font-size: 10px; line-height: 1.6; }
+.news-empty { padding: 24px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+
 .fundamental-intro {
   display: grid;
   grid-template-columns: 1.3fr 0.7fr;
@@ -1410,6 +1451,10 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .section-heading { align-items: flex-end; }
   .section-heading h2 { font-size: 25px; }
   .fundamental-intro, .coverage-columns, .provenance-grid { grid-template-columns: 1fr; }
+  .recent-news-heading { padding: 19px 18px 15px; }
+  .recent-news-item { grid-template-columns: 1fr; gap: 11px; padding: 16px 18px; }
+  .news-item-source { flex-direction: row; justify-content: space-between; align-items: center; }
+  .news-policy { padding-inline: 18px; }
   .fundamental-group-header, .fundamental-factor { padding-inline: 18px; }
   .fundamental-group-description { padding-inline: 18px; }
   .fundamental-factor-reading { align-items: flex-start; flex-direction: column; }

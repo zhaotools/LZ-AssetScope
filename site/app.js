@@ -47,6 +47,7 @@ const state = {
   daily: null,
   weekly: null,
   fundamentals: null,
+  news: null,
   charts: new Map(),
   routeLoads: new Map(),
   loadToken: 0,
@@ -579,6 +580,7 @@ function initializationFailureMessage(job) {
     daily_analysis_failed: "日线状态分析未完成，请稍后重试。",
     weekly_analysis_failed: "周线阶段分析未完成，请稍后重试。",
     fundamentals_build_failed: "基本面初始状态生成未完成，请稍后重试。",
+    news_build_failed: "最近重要动态生成未完成，请稍后重试。",
     snapshot_build_failed: "分析快照生成未完成，请稍后重试。",
     snapshot_validation_failed: "分析快照校验未通过，请稍后重试。",
     snapshot_publish_failed: "分析快照发布未完成，请稍后重试。",
@@ -1059,9 +1061,20 @@ async function ensureRouteData(route, { force = false } = {}) {
       requestAnimationFrame(renderDailyChart);
     }
     if (route === "fundamentals") {
-      state.fundamentals = force || !state.fundamentals
-        ? await loadAssetResource(assetId, "fundamentals.json")
-        : state.fundamentals;
+      const fundamentalsPromise = force || !state.fundamentals
+        ? loadAssetResource(assetId, "fundamentals.json")
+        : Promise.resolve(state.fundamentals);
+      const publicNewsPromise = assets[assetId]?.memberOnly
+        ? Promise.resolve(null)
+        : force || !state.news
+          ? loadAssetResource(assetId, "news.json").catch(() => null)
+          : Promise.resolve(state.news);
+      const [fundamentals, publicNews] = await Promise.all([fundamentalsPromise, publicNewsPromise]);
+      const news = (assets[assetId]?.memberOnly ? fundamentals.recentNews : publicNews) || {
+        schemaVersion: "asset-news-v1", asset: assetId, status: "unavailable", items: [], warnings: [],
+      };
+      state.fundamentals = fundamentals;
+      state.news = news;
       if (assetId !== state.assetId) return;
       renderFundamentals();
     }
@@ -1288,8 +1301,56 @@ function renderDaily() {
   }).join("") || '<tr><td colspan="6" class="empty-history">暂无历史状态变化。</td></tr>';
 }
 
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(String(value || ""));
+    return url.protocol === "https:" ? url.href : "#";
+  } catch {
+    return "#";
+  }
+}
+
+function newsTime(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "—";
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
+  }).format(parsed);
+}
+
+function renderRecentNews() {
+  const news = state.news || { status: "unavailable", items: [] };
+  const items = news.items || [];
+  const stateLabels = {
+    ok: `更新至 ${fmtDate(news.asOf || news.generatedAt)}`,
+    empty: `更新至 ${fmtDate(news.asOf || news.generatedAt)}`,
+    stale: `沿用至 ${fmtDate(news.asOf || news.generatedAt)}`,
+    unavailable: "暂不可用",
+  };
+  $("#news-asof").textContent = stateLabels[news.status] || "—";
+  if (!items.length) {
+    $("#recent-news-list").innerHTML = `<div class="news-empty">${
+      news.status === "unavailable"
+        ? "最近重要动态暂时无法获取，其他基本面数据不受影响。"
+        : "最近 30 天未筛选到符合条件的重要动态，不使用低价值内容补足数量。"
+    }</div>`;
+    return;
+  }
+  $("#recent-news-list").innerHTML = items.map((item) => `
+    <a class="recent-news-item" href="${esc(safeExternalUrl(item.url))}" target="_blank" rel="noopener noreferrer">
+      <div class="news-item-main">
+        <div class="news-item-meta"><span>${esc(item.eventType || "资产动态")}</span><time datetime="${esc(item.publishedAt)}">${esc(newsTime(item.publishedAt))}</time></div>
+        <h3>${esc(item.title)}</h3>
+        <p>${esc(item.selectionReason || "与该资产直接相关的重要动态。")}</p>
+      </div>
+      <div class="news-item-source"><span>${esc(item.publisher || "来源待确认")}</span><strong>查看原文 ↗</strong></div>
+    </a>
+  `).join("");
+}
+
 function renderFundamentals() {
   const fundamentals = state.current.fundamentals;
+  renderRecentNews();
   $("#fundamental-summary").textContent = fundamentals.summary;
   const factorById = new Map(fundamentals.factors.map((item) => [item.id, item]));
   const factorChanges = (item) => {
@@ -1757,6 +1818,7 @@ async function loadAsset(assetId, { historyMode = "none", targetRoute = routeFro
   state.daily = null;
   state.weekly = null;
   state.fundamentals = null;
+  state.news = null;
   state.routeLoads.clear();
   clearCharts();
   updateRouteLinks();
@@ -2126,7 +2188,7 @@ if ("serviceWorker" in navigator) {
       return;
     }
     navigator.serviceWorker
-      .register(new URL("service-worker.js?v=1.1.4", SITE_ROOT), { updateViaCache: "none" })
+      .register(new URL("service-worker.js?v=1.1.5", SITE_ROOT), { updateViaCache: "none" })
       .then((registration) => registration.update())
       .catch(console.warn);
   });

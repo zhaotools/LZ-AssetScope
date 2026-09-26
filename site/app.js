@@ -15,7 +15,7 @@ import {
   signOutMember,
   updateMemberDisplayName,
   updateMemberPassword,
-} from "./member-auth.js?v=1.0.27";
+} from "./member-auth.js?v=1.0.28";
 
 const SITE_ROOT = new URL("./", import.meta.url);
 const SITE_BASE_PATH = SITE_ROOT.pathname.replace(/\/$/, "");
@@ -1094,7 +1094,7 @@ function updateHeader() {
   $("#asset-name").textContent = presentation.name;
   $("#mobile-detail-title").textContent = `${presentation.code}/${presentation.currency || quote.currency || "USD"} · ${presentation.name}`;
   $("#overview-title").textContent = `${presentation.name}状态总览`;
-  $("#footer-label").textContent = `LZ-AssetScope · ${presentation.name}观察`;
+  $("#footer-label").textContent = `LZ-StageScope · ${presentation.name}观察`;
   $("#module-tabs").setAttribute("aria-label", `${presentation.name}分析模块`);
   $("#weekly-chart").setAttribute("aria-label", `${presentation.name}周线价格图`);
   $("#daily-chart").setAttribute("aria-label", `${presentation.name}日线价格图`);

@@ -1451,7 +1451,10 @@ body.methodology-view [data-panel="methodology"] { min-height: 100vh; padding-to
   .section-heading { align-items: flex-end; }
   .section-heading h2 { font-size: 25px; }
   .fundamental-intro, .coverage-columns, .provenance-grid { grid-template-columns: 1fr; }
-  .recent-news-heading { padding: 19px 18px 15px; }
+  .recent-news-heading { align-items: center; gap: 10px; padding: 19px 18px 15px; }
+  .recent-news-heading > div { min-width: 0; }
+  .recent-news-heading h2 { margin-top: 2px; font-size: 21px; white-space: nowrap; }
+  .news-asof { padding: 5px 8px; font-size: 10px; }
   .recent-news-item { grid-template-columns: 1fr; gap: 11px; padding: 16px 18px; }
   .news-item-source { flex-direction: row; justify-content: space-between; align-items: center; }
   .news-policy { padding-inline: 18px; }
